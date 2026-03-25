@@ -1,5 +1,7 @@
 #022 | 2026-03-25 — DONE | Баян B-system: `docs/bayan-b-system.md` (теория + формулы), `lib/bayan-b-system.js`, `app/bayan-keyboard.html|css|mjs|page.mjs`; `music-theory.md`, `domain.md`, `overview.md`, `README.md`, `documentation-map.mdc`, `static-server.js`, `verify-theory.js`; эталон `Расположение_нот_на_баяне.jpg`; `npm run verify` OK
 
+#022 | 2026-03-25 — DONE | Git в `music/`: init, `.gitignore`, коммит `7a36197` (начальный снимок проекта)
+
 #021 | 2026-03-25 — DONE | `piano-keyboard.html`: схема белых/чёрных клавиш (октавы 4–5); `music-theory.md` (раскладка клавиш), `overview.md`, `README.md`; `npm run verify` OK
 
 #020 | 2026-03-25 — DONE | circle-scales: убраны заголовок и текст над клавиатурой; уменьшены отступы панели от круга (`circle-scales.html`, `circle-scales.css`)

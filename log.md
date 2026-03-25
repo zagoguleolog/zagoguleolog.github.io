@@ -10,6 +10,8 @@
 
 ## 2026-03-25
 
+- Репозиторий Git в каталоге `music/`: `git init`, `.gitignore` (node_modules, .env, секреты), первый коммит `7a36197` — «Начальный коммит: music (теория, круг, синтез, схема клавиш фортепиано)».
+
 - Баян **B-system**: документ `docs/bayan-b-system.md` (горизонтальное описание рядов, шаг **м3** вдоль ряда, хроматика по диагонали, формулы `r`, `k`, `x_unit` от **номера ноты MIDI**); модуль `lib/bayan-b-system.js`; страница `app/bayan-keyboard.html` (+ CSS/модули) с настраиваемым диапазоном MIDI и параметрами вёрстки. Обновлены `music-theory.md`, `domain.md`, `overview.md`, `README.md`, `.cursor/rules/documentation-map.mdc`, `scripts/static-server.js`, `scripts/verify-theory.js`. В каталог `music` добавлен эталон `Расположение_нот_на_баяне.jpg`. Проверка: `npm run verify`.
 
 - Страница `piano-keyboard.html`: верстка схемы клавиш фортепиано (две октавы C4–B5), подсказки PC и энгармоника; документация: `docs/music-theory.md` (подраздел «Раскладка клавиш фортепиано»), `docs/overview.md`, `README.md`.
