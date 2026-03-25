@@ -1,0 +1,103 @@
+:root {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  line-height: 1.45;
+  color: #1a1a1a;
+  background: #e8e4df;
+}
+
+body {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 1.25rem 1rem 2.5rem;
+}
+
+h1 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 0.35rem;
+}
+
+.byk-lead {
+  font-size: 0.92rem;
+  color: #444;
+  margin: 0 0 1.25rem;
+  max-width: 58rem;
+}
+
+.byk-lead a {
+  color: #1a5f7a;
+}
+
+.byk-panel {
+  background: #fff;
+  border: 1px solid #cfc8c0;
+  border-radius: 10px;
+  padding: 1rem 1.1rem 1.2rem;
+  margin-bottom: 1.1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.byk-panel h2 {
+  font-size: 1.02rem;
+  margin: 0 0 0.75rem;
+  font-weight: 600;
+}
+
+.byk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.65rem 1rem;
+  align-items: end;
+}
+
+.byk-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.86rem;
+}
+
+.byk-field span.byk-label {
+  color: #333;
+}
+
+.byk-field input[type="number"],
+.byk-field input[type="range"] {
+  width: 100%;
+  max-width: 12rem;
+}
+
+.byk-mono {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 0.9em;
+}
+
+#byk-svg-wrap {
+  overflow: auto;
+  background: #f6f4f1;
+  border-radius: 8px;
+  border: 1px solid #dcd6cf;
+  padding: 0.5rem;
+}
+
+#byk-svg-wrap svg {
+  display: block;
+  min-width: 480px;
+  height: auto;
+}
+
+.byk-row-hint {
+  font-size: 0.82rem;
+  color: #555;
+  margin-top: 0.75rem;
+}
+
+.byk-warning {
+  background: #fff4e5;
+  border: 1px solid #e8c48a;
+  color: #5c4a2a;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
+}

@@ -1,0 +1,134 @@
+:root {
+  --cof-bg: #f7f7f5;
+  --cof-ink: #1a1a1a;
+  --cof-border: #2a2a2a;
+  --cof-accent: #c9e6f5;
+  --cof-accent-border: #4a90b8;
+  --cof-focus: #2563eb;
+  --cof-muted: #666;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  background: var(--cof-bg);
+  color: var(--cof-ink);
+}
+
+.cof-page {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2rem;
+}
+
+.cof-page h1 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.cof-controls {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.cof-controls label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--cof-muted);
+  margin-bottom: 0.25rem;
+}
+
+.cof-controls textarea {
+  width: 100%;
+  min-height: 4.5rem;
+  padding: 0.5rem 0.6rem;
+  font: inherit;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  resize: vertical;
+}
+
+.cof-controls textarea:focus-visible {
+  outline: 2px solid var(--cof-focus);
+  outline-offset: 2px;
+}
+
+.cof-controls button {
+  justify-self: start;
+  padding: 0.45rem 1rem;
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: 1px solid var(--cof-border);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.cof-controls button:focus-visible {
+  outline: 2px solid var(--cof-focus);
+  outline-offset: 2px;
+}
+
+.cof-svg-wrap {
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+}
+
+.cof-svg-wrap svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.cof-sector path {
+  fill: #fff;
+  stroke: var(--cof-border);
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.cof-sector.is-selected path {
+  fill: var(--cof-accent);
+  stroke: var(--cof-accent-border);
+}
+
+.cof-sector:focus {
+  outline: none;
+}
+
+.cof-sector:focus-visible path {
+  stroke: var(--cof-focus);
+  stroke-width: 2;
+}
+
+.cof-sector text {
+  fill: var(--cof-ink);
+  font-size: 28px;
+  font-weight: 500;
+  pointer-events: none;
+  user-select: none;
+}
+
+.cof-center-disk {
+  fill: var(--cof-bg);
+  stroke: var(--cof-border);
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.cof-hint {
+  font-size: 0.8rem;
+  color: var(--cof-muted);
+  margin: 0.5rem 0 0;
+  line-height: 1.4;
+}

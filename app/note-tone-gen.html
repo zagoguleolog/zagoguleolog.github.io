@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Генератор тона по нотам</title>
+  <link rel="stylesheet" href="note-tone-gen.css" />
+</head>
+<body>
+  <div class="ntg-page">
+    <h1>Генератор тона по нотам</h1>
+    <p class="ntg-lead">
+      Частоты в <strong>равномерной темпации</strong> из
+      <span class="ntg-mono">lib/music-theory.js</span>
+      (<a href="../docs/music-theory.md">music-theory.md</a>).
+      Для работы модулей откройте страницу через
+      <span class="ntg-mono">npm run serve</span> в каталоге <span class="ntg-mono">music</span>.
+    </p>
+
+    <p id="ntg-module-warning" class="ntg-warning" hidden></p>
+
+    <section class="ntg-panel" aria-label="Камертон и диапазон октав">
+      <h2>Камертон и диапазон октав</h2>
+      <p class="ntg-hint">
+        Научная нотация: <strong>C4</strong> — средняя до. Ниже — ряд кнопок на каждую октаву в выбранном диапазоне.
+      </p>
+      <div class="ntg-grid ntg-grid-tuning">
+        <label class="ntg-field">
+          <span class="ntg-label">Опорная частота A4 (Гц)</span>
+          <input type="number" id="ntg-a4" min="1" max="2000" step="0.1" value="440" />
+        </label>
+        <label class="ntg-field">
+          <span class="ntg-label">Октава с (нижняя граница)</span>
+          <input type="number" id="ntg-octave-min" min="0" max="8" step="1" value="3" />
+        </label>
+        <label class="ntg-field">
+          <span class="ntg-label">Октава по (верхняя граница)</span>
+          <input type="number" id="ntg-octave-max" min="0" max="8" step="1" value="6" />
+        </label>
+      </div>
+    </section>
+
+    <section class="ntg-panel" aria-label="Громкость и форма колебания">
+      <h2>Громкость и основной генератор</h2>
+      <div class="ntg-grid ntg-grid-sound">
+        <label class="ntg-field ntg-field-span">
+          <span class="ntg-label">Громкость: <strong id="ntg-vol-val">25</strong>%</span>
+          <input type="range" id="ntg-volume" min="0" max="100" value="25" />
+        </label>
+        <label class="ntg-field">
+          <span class="ntg-label">Форма колебания (все включённые частичные тона n=1…16)</span>
+          <select id="ntg-waveform" aria-label="Форма колебания">
+            <option value="sine" selected>Синусоида</option>
+            <option value="triangle">Треугольник</option>
+            <option value="square">Квадрат</option>
+            <option value="sawtooth">Пила</option>
+          </select>
+        </label>
+        <label class="ntg-field">
+          <span class="ntg-label">Детун (центы): <strong id="ntg-detune-val">0</strong></span>
+          <input type="range" id="ntg-detune" min="-50" max="50" value="0" />
+        </label>
+      </div>
+    </section>
+
+    <section class="ntg-panel" aria-label="Обертоны">
+      <h2>Обертоны (синусоиды кратных частот)</h2>
+      <p class="ntg-hint">
+        Основной тон — <span class="ntg-mono">n=1</span> (форма из блока выше); к нему добавляются синусоиды
+        <span class="ntg-mono">2f, 3f, …</span> для включённых шагов. Снимите <span class="ntg-mono">n=1</span>,
+        чтобы оставить только обертоны. Слайдер <strong>смесь</strong> задаёт долю этих синусоид относительно основного тона (суммарная громкость нормируется, иначе при росте смеси клиппинг).
+      </p>
+      <div class="ntg-grid ntg-grid-sound">
+        <label class="ntg-field ntg-field-span">
+          <span class="ntg-label">Смесь обертонов: <strong id="ntg-harm-mix-val">40</strong>%</span>
+          <input type="range" id="ntg-harm-mix" min="0" max="100" value="40" />
+        </label>
+        <label class="ntg-field ntg-field-span">
+          <span class="ntg-label">Спад амплитуды по номеру обертона: <strong id="ntg-harm-rolloff-val">1.0</strong> (амплитуда ∝ 1/n<sup>x</sup>)</span>
+          <input type="range" id="ntg-harm-rolloff" min="0.3" max="2.5" value="1" step="0.05" />
+        </label>
+      </div>
+      <div class="ntg-harmonics" id="ntg-harmonics" role="group" aria-label="Частичные тона n=1…16">
+        <label class="ntg-harm-toggle">
+          <input type="checkbox" data-partial="1" checked />
+          n=1 (основной тон)
+        </label>
+      </div>
+    </section>
+
+    <section class="ntg-panel" aria-label="Режим воспроизведения">
+      <h2>Режим и ноты</h2>
+      <div class="ntg-row ntg-mode-row">
+        <span class="ntg-label">Управление звуком</span>
+        <div class="ntg-seg ntg-seg-modes" role="group" aria-label="Режим удержания">
+          <button type="button" class="ntg-seg-btn" id="ntg-mode-hold" aria-pressed="true">Удержание (нажал — отпустил)</button>
+          <button type="button" class="ntg-seg-btn" id="ntg-mode-latch" aria-pressed="false">Фиксация (клик вкл/выкл)</button>
+          <button type="button" class="ntg-seg-btn" id="ntg-mode-latch-poly" aria-pressed="false">Фиксация полифония (новые ноты не глушат предыдущие)</button>
+        </div>
+      </div>
+      <label class="ntg-field ntg-field-span">
+        <span class="ntg-label">Угасание при отпускании: <strong id="ntg-release-ms-val">55</strong> мс</span>
+        <input type="range" id="ntg-release-ms" min="20" max="5000" value="55" step="10" aria-valuetext="55 миллисекунд" />
+      </label>
+      <div class="ntg-row">
+        <button type="button" class="ntg-stop" id="ntg-stop">Стоп</button>
+        <span class="ntg-status" id="ntg-status" aria-live="polite">Тишина</span>
+      </div>
+      <div class="ntg-keys-wrap" id="ntg-keys-wrap" aria-label="Ноты по октавам"></div>
+    </section>
+  </div>
+
+  <script type="module" src="note-tone-gen.mjs"></script>
+</body>
+</html>

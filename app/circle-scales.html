@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Кварто-квинтовый круг и тональность (теория)</title>
+  <link rel="stylesheet" href="circle-of-fifths.css" />
+  <link rel="stylesheet" href="circle-scales.css" />
+</head>
+<body>
+  <div class="cof-page cts-wide-page">
+    <div class="cts-layout">
+      <aside class="cts-tone-rail" aria-label="Синтез: камертон и триады выбранных секторов">
+        <section class="ntg-panel cts-ntg-panel" aria-label="Камертон и октавы">
+          <h2 class="cts-ntg-h2">Камертон и октавы</h2>
+          <div class="ntg-grid ntg-grid-tuning cts-ntg-grid">
+            <label class="ntg-field">
+              <span class="ntg-label">A4 (Гц)</span>
+              <input type="number" id="cts-ntg-a4" min="1" max="2000" step="0.1" value="440" />
+            </label>
+            <label class="ntg-field">
+              <span class="ntg-label">Октава с</span>
+              <input type="number" id="cts-ntg-octave-min" min="0" max="8" step="1" value="3" />
+            </label>
+            <label class="ntg-field">
+              <span class="ntg-label">Октава по</span>
+              <input type="number" id="cts-ntg-octave-max" min="0" max="8" step="1" value="6" />
+            </label>
+            <label class="ntg-field">
+              <span class="ntg-label">Октава корня триады</span>
+              <input type="number" id="cts-chord-root-octave" min="0" max="8" step="1" value="4" />
+            </label>
+          </div>
+        </section>
+
+        <section class="ntg-panel cts-ntg-panel" aria-label="Громкость и тембр">
+          <h2 class="cts-ntg-h2">Громкость и тембр</h2>
+          <div class="ntg-grid ntg-grid-sound cts-ntg-grid">
+            <label class="ntg-field ntg-field-span">
+              <span class="ntg-label">Громкость: <strong id="cts-ntg-vol-val">25</strong>%</span>
+              <input type="range" id="cts-ntg-volume" min="0" max="100" value="25" />
+            </label>
+            <label class="ntg-field">
+              <span class="ntg-label">Форма (все вкл. частичные тона)</span>
+              <select id="cts-ntg-waveform" aria-label="Форма колебания">
+                <option value="sine" selected>Синусоида</option>
+                <option value="triangle">Треугольник</option>
+                <option value="square">Квадрат</option>
+                <option value="sawtooth">Пила</option>
+              </select>
+            </label>
+            <label class="ntg-field">
+              <span class="ntg-label">Детун (центы): <strong id="cts-ntg-detune-val">0</strong></span>
+              <input type="range" id="cts-ntg-detune" min="-50" max="50" value="0" />
+            </label>
+          </div>
+        </section>
+
+        <section class="ntg-panel cts-ntg-panel" aria-label="Обертоны">
+          <h2 class="cts-ntg-h2">Обертоны</h2>
+          <div class="ntg-grid ntg-grid-sound cts-ntg-grid">
+            <label class="ntg-field ntg-field-span">
+              <span class="ntg-label">Смесь обертонов: <strong id="cts-ntg-harm-mix-val">40</strong>%</span>
+              <input type="range" id="cts-ntg-harm-mix" min="0" max="100" value="40" />
+            </label>
+            <label class="ntg-field ntg-field-span">
+              <span class="ntg-label">Спад 1/n<sup>x</sup>: <strong id="cts-ntg-harm-rolloff-val">1.0</strong></span>
+              <input type="range" id="cts-ntg-harm-rolloff" min="0.3" max="2.5" value="1" step="0.05" />
+            </label>
+          </div>
+          <div class="ntg-harmonics cts-ntg-harmonics" id="cts-ntg-harmonics" role="group" aria-label="Частичные тона n=1…16"></div>
+        </section>
+
+        <section class="ntg-panel cts-ntg-panel" aria-label="Режим и стоп">
+          <h2 class="cts-ntg-h2">Режим и стоп</h2>
+          <div class="ntg-row ntg-mode-row cts-ntg-mode">
+            <span class="ntg-label">Круг как клавиатура: удержание / одна триада / несколько</span>
+            <div class="ntg-seg ntg-seg-modes" role="group" aria-label="Режим удержания">
+              <button type="button" class="ntg-seg-btn" id="cts-ntg-mode-hold" aria-pressed="false">Удержание</button>
+              <button type="button" class="ntg-seg-btn" id="cts-ntg-mode-latch" aria-pressed="false">Фиксация</button>
+              <button type="button" class="ntg-seg-btn" id="cts-ntg-mode-latch-poly" aria-pressed="true">Полифония</button>
+            </div>
+          </div>
+          <label class="ntg-field ntg-field-span">
+            <span class="ntg-label">Угасание: <strong id="cts-ntg-release-ms-val">55</strong> мс</span>
+            <input type="range" id="cts-ntg-release-ms" min="20" max="5000" value="55" step="10" />
+          </label>
+          <div class="ntg-row cts-ntg-stop-row">
+            <button type="button" class="ntg-stop" id="cts-ntg-stop">Стоп</button>
+            <span class="ntg-status" id="cts-ntg-status" aria-live="polite">Тишина</span>
+          </div>
+        </section>
+      </aside>
+
+      <div class="cts-main-column">
+        <h1>Круг и тональность</h1>
+        <p id="cts-theory-warning" class="cts-warning" hidden>
+          Подсветка тональности (диатоника) не загрузилась (часто при открытии с диска <span class="mono">file://</span>).
+          Запустите из каталога <span class="mono">music</span>: <span class="mono">npm run serve</span> и откройте страницу по <span class="mono">http://…</span>
+          — тогда подключится <span class="mono">lib/music-theory.js</span>.
+        </p>
+        <p class="cof-hint">
+          На кольцах — аккорды (внешнее: мажорные центры, внутреннее: относительные миноры). Зелёная подсветка по умолчанию — <strong>три спицы</strong> кластера IV–I–V опорного мажора (шесть аккордов, по два кольца на спице); опционально галочка «седьмая триада» добавляет vii° / ii° на остальной окружности. У <strong>относительных тональностей</strong> (например <strong>C мажор</strong> и <strong>A нат. минор</strong>) кластер на круге тот же геометрически, см. <a href="../docs/music-theory.md">music-theory.md</a>.
+          Синий/голубой выделенный сектор: в режимах <strong>удержание</strong> и <strong>полифония</strong> клик по сектору по-прежнему вкл/выкл выделение; в режиме <strong>фиксация</strong> на круге всегда не больше одного синего сектора — клик <strong>переключает</strong> на новый аккорд (повторный клик по тому же сектору не глушит звук). <strong>Удержание</strong> — звук пока нажата кнопка мыши/пера; <strong>фиксация</strong> — одна триада у выбранного сектора; <strong>полифония</strong> — несколько выделенных секторов и триад. <strong>Стоп</strong> глушит круг до следующего изменения выделения.
+          Базовая страница без теории: <a href="circle-of-fifths.html">circle-of-fifths.html</a>.
+        </p>
+
+        <section class="cts-theory-panel" aria-label="Выбор тональности: тоника и лад">
+          <h2>Тональность (подсветка на круге)</h2>
+          <div class="cts-row">
+            <span class="cts-row-label">Тоника</span>
+            <div id="cts-tonic-group" class="cts-row" style="margin-bottom: 0" role="group" aria-label="Тоника">
+              <button type="button" class="cts-chip" data-tonic="C" aria-pressed="true">C</button>
+              <button type="button" class="cts-chip" data-tonic="C#" aria-pressed="false">C#</button>
+              <button type="button" class="cts-chip" data-tonic="D" aria-pressed="false">D</button>
+              <button type="button" class="cts-chip" data-tonic="Eb" aria-pressed="false">Eb</button>
+              <button type="button" class="cts-chip" data-tonic="E" aria-pressed="false">E</button>
+              <button type="button" class="cts-chip" data-tonic="F" aria-pressed="false">F</button>
+              <button type="button" class="cts-chip" data-tonic="F#" aria-pressed="false">F#</button>
+              <button type="button" class="cts-chip" data-tonic="G" aria-pressed="false">G</button>
+              <button type="button" class="cts-chip" data-tonic="Ab" aria-pressed="false">Ab</button>
+              <button type="button" class="cts-chip" data-tonic="A" aria-pressed="false">A</button>
+              <button type="button" class="cts-chip" data-tonic="Bb" aria-pressed="false">Bb</button>
+              <button type="button" class="cts-chip" data-tonic="B" aria-pressed="false">B</button>
+            </div>
+          </div>
+          <div class="cts-row">
+            <span class="cts-row-label">Лад</span>
+            <div id="cts-key-mode-group" class="cts-row" style="margin-bottom: 0" role="group" aria-label="Лад тональности">
+              <button type="button" class="cts-chip" data-key-mode="major" aria-pressed="true">мажор</button>
+              <button type="button" class="cts-chip" data-key-mode="naturalMinor" aria-pressed="false">нат. минор</button>
+            </div>
+          </div>
+          <div class="cts-row">
+            <span class="cts-row-label">Седьмая триада вне IV–I–V</span>
+            <label class="cts-checkbox-label">
+              <input type="checkbox" id="cts-highlight-seventh" />
+              Подсвечивать vii° / ii° на остальной окружности (одно кольцо на спице)
+            </label>
+          </div>
+          <div class="cts-row cts-mode">
+            <span class="cts-row-label">Клик по сектору круга</span>
+            <div id="cts-click-mode" class="cts-row" style="margin-bottom: 0">
+              <button type="button" class="cts-toggle" data-click-mode="toggle" aria-pressed="true">
+                Только выделение сектора (тональность не меняется)
+              </button>
+              <button type="button" class="cts-toggle" data-click-mode="tonic" aria-pressed="false">
+                Задать тональность по подписи (тоника и лад)
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <div class="cof-controls">
+          <div>
+            <label for="cts-major-line">Внешнее кольцо</label>
+            <textarea id="cts-major-line" rows="3" spellcheck="false">C G D A E B F# Db Ab Eb Bb F</textarea>
+          </div>
+          <div>
+            <label for="cts-minor-line">Внутреннее кольцо</label>
+            <textarea id="cts-minor-line" rows="3" spellcheck="false">Am Em Bm F#m C#m G#m D#m Bbm Fm Cm Gm Dm</textarea>
+          </div>
+          <button type="button" id="cts-redraw">Перерисовать круг</button>
+        </div>
+
+        <div class="cof-svg-wrap">
+          <svg id="cts-circle" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" aria-label="Кварто-квинтовый круг с подсветкой диатоники выбранной тональности"></svg>
+        </div>
+
+        <section class="cts-piano-panel" aria-label="Клавиатура нот по октавам">
+          <div class="cts-kbd-toolbar">
+            <span class="cts-kbd-toolbar-label" id="cts-kbd-toolbar-label">Вид клавиатуры</span>
+            <div
+              id="cts-kbd-mode-group"
+              class="cts-kbd-seg"
+              role="group"
+              aria-labelledby="cts-kbd-toolbar-label"
+            >
+              <button type="button" class="cts-kbd-btn" data-cts-kbd="linear" aria-pressed="true">
+                linear
+              </button>
+              <button type="button" class="cts-kbd-btn" data-cts-kbd="piano" aria-pressed="false">
+                piano
+              </button>
+              <button type="button" class="cts-kbd-btn" data-cts-kbd="bayiano" aria-pressed="false">
+                bayiano
+              </button>
+            </div>
+          </div>
+          <div id="cts-keyboard-stage" class="cts-keyboard-stage">
+            <div id="cts-keys-linear" class="cts-kbd-view">
+              <div class="ntg-keys-wrap" aria-label="Ноты по октавам (линейная раскладка)"></div>
+            </div>
+            <div id="cts-keys-piano" class="cts-kbd-view" hidden>
+              <div class="cts-scroll-x">
+                <div
+                  class="cts-piano-keyboard"
+                  role="group"
+                  aria-label="Ноты по октавам (раскладка пиано)"
+                ></div>
+              </div>
+            </div>
+            <div id="cts-keys-bayiano" class="cts-kbd-view cts-kbd-view--bayiano" hidden>
+              <p class="cts-kbd-placeholder">Скоро</p>
+            </div>
+          </div>
+        </section>
+
+        <div id="cts-chord-notes" class="cts-chord-notes" hidden aria-live="polite"></div>
+
+        <p class="cof-hint">
+          В режиме «Задать тональность…» клик по <strong>внешнему</strong> сектору задаёт <strong>мажорную</strong> тональность по корню подписи; по <strong>внутреннему</strong> — <strong>натуральный минор</strong> (для «Am» тоника A). Учитывается «A / B».
+          По умолчанию зелёным подсвечиваются только спицы <strong>IV–I–V</strong> по внешнему кольцу (относительный мажор в режиме нат. минора). Галочка выше — также седьмая диатоническая триада вне этой тройки. Подробнее — <span class="mono">docs/music-theory.md</span>.
+          Для своих строк подписей надёжнее форматы как по умолчанию (<strong>C</strong>, <strong>Am</strong> …): разбор корня рассчитан на имя ноты и суффикс <strong>m</strong> у минора; обозначения вроде <strong>Bdim</strong>, <strong>C7</strong>, <strong>Am7</strong> не гарантируются.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script defer src="circle-of-fifths.js"></script>
+  <script defer src="circle-scales-core.js"></script>
+  <script type="module" src="circle-scales.mjs"></script>
+</body>
+</html>

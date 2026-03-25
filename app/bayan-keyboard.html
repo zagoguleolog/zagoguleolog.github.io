@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Баян — раскладка B-system (горизонтально)</title>
+  <link rel="stylesheet" href="bayan-keyboard.css" />
+</head>
+<body>
+  <h1>Клавиатура баяна — B-system</h1>
+  <p class="byk-lead">
+    Горизонтальное представление трёх рядов (как «лежа на боку» относительно типичной вертикальной схемы).
+    Теория и формулы — <a href="../docs/bayan-b-system.md">docs/bayan-b-system.md</a>;
+    генерация координат — <span class="byk-mono">lib/bayan-b-system.js</span>.
+    Откройте через <span class="byk-mono">npm run serve</span> в каталоге <span class="byk-mono">music</span> (ES-модули).
+  </p>
+
+  <p id="byk-warning" class="byk-warning" hidden></p>
+
+  <section class="byk-panel" aria-label="Параметры поля">
+    <h2>Диапазон и шаг вёрстки</h2>
+    <div class="byk-grid">
+      <label class="byk-field">
+        <span class="byk-label">MIDI с</span>
+        <input type="number" id="byk-midi-min" min="0" max="127" value="48" />
+      </label>
+      <label class="byk-field">
+        <span class="byk-label">MIDI по</span>
+        <input type="number" id="byk-midi-max" min="0" max="127" value="84" />
+      </label>
+      <label class="byk-field">
+        <span class="byk-label">Шаг колонки (px)</span>
+        <input type="number" id="byk-cell" min="8" max="80" value="28" />
+      </label>
+      <label class="byk-field">
+        <span class="byk-label">Радиус кнопки (px)</span>
+        <input type="number" id="byk-radius" min="6" max="40" value="14" />
+      </label>
+      <label class="byk-field">
+        <span class="byk-label">Зазор между рядами (px)</span>
+        <input type="number" id="byk-rowgap" min="0" max="30" value="6" />
+      </label>
+      <label class="byk-field">
+        <span class="byk-label">Доля диагонали (0…1)</span>
+        <input type="number" id="byk-stagger" min="0" max="1" step="0.05" value="0.333333" />
+      </label>
+      <label class="byk-field">
+        <span class="byk-label">Кирпичный сдвиг рядов (× половины R)</span>
+        <input type="number" id="byk-brick" min="0" max="2" step="0.5" value="1" />
+      </label>
+    </div>
+    <p class="byk-row-hint">
+      Сверху вниз: <strong>3-й</strong>, <strong>2-й</strong>, <strong>1-й</strong> ряд.
+      Вдоль ряда — шаг <strong>м3</strong> (3 полутона); хроматика — по диагонали между рядами.
+    </p>
+  </section>
+
+  <section class="byk-panel" aria-label="Поле кнопок">
+    <h2>Поле кнопок</h2>
+    <div id="byk-svg-wrap"></div>
+  </section>
+
+  <script type="module" src="bayan-keyboard.page.mjs"></script>
+</body>
+</html>

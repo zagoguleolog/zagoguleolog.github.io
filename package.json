@@ -1,0 +1,10 @@
+{
+  "name": "music",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "serve": "node scripts/static-server.js",
+    "verify": "node scripts/verify-theory.js",
+    "verify:http": "node scripts/verify-http.mjs"
+  }
+}
