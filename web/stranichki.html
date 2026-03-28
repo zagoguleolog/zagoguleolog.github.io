@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Страницы (site map) — music</title>
+  <title>Главная — карта сайта (music)</title>
+  <link rel="stylesheet" href="../site-nav.css" />
   <style>
     :root {
       font-family: "Segoe UI", system-ui, sans-serif;
@@ -55,20 +56,23 @@
   </style>
 </head>
 <body>
-  <h1>Страницы (site map)</h1>
+  <h1>Главная — карта сайта</h1>
   <p class="hint">
-    Список всех “страничек” (HTML) и основных доков (MD) внутри каталога <code>music/</code>.
+    Официальная точка входа: список всех “страничек” (HTML) и основных доков (MD) внутри каталога
+    <code>music/</code>. По адресу корня сервера (<code>http://127.0.0.1:4173/</code>) открывается эта страница.
     Для корректной загрузки ES-модулей используйте <code>npm run serve</code> в <code>music</code>.
   </p>
 
   <section class="block" aria-label="HTML страницы">
     <h2>HTML-страницы</h2>
     <ul>
+      <li><a href="stranichki.html">`web/stranichki.html` (главная)</a></li>
       <li><a href="index.html">`web/index.html` (таблицы из теории)</a></li>
       <li><a href="../theory-tables.html">`theory-tables.html` (корень music)</a></li>
       <li><a href="../piano-keyboard.html">`piano-keyboard.html` (клавиатура)</a></li>
       <li><a href="../app/bayan-keyboard.html">`app/bayan-keyboard.html` (B-system)</a></li>
       <li><a href="../app/note-tone-gen.html">`app/note-tone-gen.html` (генератор тона)</a></li>
+      <li><a href="../app/template-synth.html">`app/template-synth.html` (темплейт-синт, synth-kit)</a></li>
       <li><a href="../app/circle-of-fifths.html">`app/circle-of-fifths.html` (круг)</a></li>
       <li><a href="../app/circle-scales.html">`app/circle-scales.html` (круг + тональность)</a></li>
       <li><a href="../app/synth-kit-demo.html">`app/synth-kit-demo.html` (демо UI-синта)</a></li>
@@ -85,6 +89,7 @@
       <li><a href="../docs/bayan-b-system.md">`docs/bayan-b-system.md`</a></li>
       <li><a href="../docs/AI_RULES.md">`docs/AI_RULES.md`</a></li>
       <li><a href="../docs/architecture.md">`docs/architecture.md`</a></li>
+      <li><a href="../docs/synth-structure.md">`docs/synth-structure.md` (слои синта)</a></li>
       <li><a href="../docs/testing.md">`docs/testing.md`</a></li>
       <li><a href="../docs/errors.md">`docs/errors.md`</a></li>
       <li><a href="../docs/dev-cheatsheet.md">`docs/dev-cheatsheet.md`</a></li>
@@ -98,6 +103,10 @@
       <li><a href="../docs/system/pipeline.md">`docs/system/pipeline.md`</a></li>
     </ul>
   </section>
+  <script type="module">
+    import { mountSiteNav } from '../site-nav.mjs';
+    mountSiteNav();
+  </script>
 </body>
 </html>
 

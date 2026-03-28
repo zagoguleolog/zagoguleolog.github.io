@@ -1,5 +1,5 @@
 /**
- * Общее чтение полей формы генератора тона (префикс id: ntg- или cts-ntg-).
+ * Общее чтение полей формы генератора тона (префикс id: ntg-, cts-ntg- или tpl-).
  */
 import {
   clamp,
@@ -16,13 +16,25 @@ export function parseA4Hz(raw) {
 }
 
 /**
- * @param {HTMLElement} harmWrapEl контейнер с .ntg-harm-toggle
+ * @param {HTMLElement} harmWrapEl контейнер частичных тонов: либо `.ntg-harm-toggle`, либо любые `input[type="checkbox"][data-partial]` (например матрица synth-kit)
  * @returns {Record<number, boolean>}
  */
 export function readHarmEnabled(harmWrapEl) {
   /** @type {Record<number, boolean>} */
   const m = {};
   for (let n = 1; n <= HARMONIC_END; n++) m[n] = false;
+
+  const byPartial = harmWrapEl.querySelectorAll('input[type="checkbox"][data-partial]');
+  if (byPartial.length > 0) {
+    for (const el of byPartial) {
+      const n = Number(/** @type {HTMLInputElement} */ (el).dataset.partial);
+      if (n >= 1 && n <= HARMONIC_END) {
+        m[n] = /** @type {HTMLInputElement} */ (el).checked;
+      }
+    }
+    return m;
+  }
+
   for (const el of harmWrapEl.querySelectorAll('.ntg-harm-toggle input[type="checkbox"]')) {
     const n = Number(/** @type {HTMLInputElement} */ (el).dataset.partial);
     if (n >= 1 && n <= HARMONIC_END) {

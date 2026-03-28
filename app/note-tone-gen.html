@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-site-nav-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Генератор тона по нотам</title>
   <link rel="stylesheet" href="note-tone-gen.css" />
+  <link rel="stylesheet" href="../site-nav.css" />
 </head>
 <body>
   <div class="ntg-page">
@@ -111,5 +112,9 @@
   </div>
 
   <script type="module" src="note-tone-gen.mjs"></script>
+  <script type="module">
+    import { mountSiteNav } from '../site-nav.mjs';
+    mountSiteNav();
+  </script>
 </body>
 </html>

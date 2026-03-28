@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Квартово-квинтовый круг</title>
   <link rel="stylesheet" href="circle-of-fifths.css" />
+  <link rel="stylesheet" href="../site-nav.css" />
 </head>
 <body>
   <div class="cof-page">
@@ -28,5 +29,9 @@
     </p>
   </div>
   <script src="circle-of-fifths.js"></script>
+  <script type="module">
+    import { mountSiteNav } from '../site-nav.mjs';
+    mountSiteNav();
+  </script>
 </body>
 </html>

@@ -1,0 +1,278 @@
+@import url("synth-kit/synth-kit.css");
+
+/* Ряды клавиш — те же классы, что на note-tone-gen (без полного note-tone-gen.css). */
+.ntg-keys-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.ntg-key-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.ntg-oct-label {
+  flex: 0 0 1.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--synth-muted, #8b9bab);
+  align-self: center;
+  text-align: right;
+  line-height: 1.2;
+}
+
+.ntg-keys {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(2.85rem, 1fr));
+  gap: 0.35rem;
+}
+
+.ntg-key {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.55rem 0.35rem;
+  min-height: 2.6rem;
+  border: 1px solid var(--synth-border, #2d3a47);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #2c3a4d 0%, #243040 100%);
+  color: var(--synth-ink, #e8eef4);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.ntg-key:hover {
+  border-color: var(--synth-muted, #8b9bab);
+}
+
+.ntg-key:focus-visible {
+  outline: 2px solid var(--synth-focus, #38bdf8);
+  outline-offset: 2px;
+}
+
+.ntg-key.ntg-key-active {
+  border-color: var(--synth-accent, #5eead4);
+  background: #134e4a;
+  color: var(--synth-accent, #5eead4);
+  box-shadow: 0 0 0 1px var(--synth-accent, #5eead4);
+}
+
+.ntg-key.ntg-key-down {
+  transform: scale(0.97);
+}
+
+:root {
+  --tpl-bg: #0f1419;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: radial-gradient(1200px 600px at 20% 0%, #1a2836 0%, var(--tpl-bg) 55%);
+  color: var(--synth-ink, #e8eef4);
+}
+
+.tpl-page {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 1.35rem 1rem 2.5rem;
+}
+
+.tpl-page h1 {
+  font-size: 1.45rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.tpl-lead {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--synth-muted, #8b9bab);
+  margin: 0 0 1rem;
+}
+
+.tpl-lead a {
+  color: var(--synth-accent, #5eead4);
+}
+
+.tpl-mono {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.86em;
+}
+
+.tpl-warning {
+  padding: 0.65rem 0.8rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: #f5e6c8;
+  background: #2a2218;
+  border: 1px solid #b8860b;
+  border-radius: 8px;
+}
+
+.tpl-panel {
+  margin-bottom: 1rem;
+  padding: 1rem 1.05rem;
+  background: var(--synth-surface, #1a222c);
+  border: 1px solid var(--synth-border, #2d3a47);
+  border-radius: 10px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+}
+
+.tpl-panel h2 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.tpl-hint {
+  font-size: 0.82rem;
+  color: var(--synth-muted, #8b9bab);
+  margin: 0 0 0.75rem;
+  line-height: 1.45;
+}
+
+.tpl-grid-tuning {
+  display: grid;
+  gap: 0.75rem 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+}
+
+.tpl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.tpl-label {
+  font-size: 0.78rem;
+  color: var(--synth-muted, #8b9bab);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tpl-field input[type="number"],
+.tpl-field select {
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--synth-border, #2d3a47);
+  border-radius: 6px;
+  background: var(--synth-bg, #0f1419);
+  color: var(--synth-ink, #e8eef4);
+  max-width: 100%;
+}
+
+.tpl-field select:focus,
+.tpl-field input:focus {
+  outline: 2px solid var(--synth-focus, #38bdf8);
+  outline-offset: 2px;
+}
+
+/* Скрытые ползунки — значения читает tone-gen-ui-shared.mjs */
+.tpl-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.tpl-synth-root {
+  --synth-scale: 0.92;
+}
+
+.tpl-kit-main {
+  display: grid;
+  gap: 1rem 1.25rem;
+  align-items: end;
+  grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+}
+
+.tpl-kit-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.tpl-kit-cell--fader {
+  grid-row: span 2;
+  align-self: stretch;
+  justify-content: flex-end;
+}
+
+.tpl-kit-cell--wave {
+  grid-column: 1 / -1;
+  align-items: flex-start;
+}
+
+.tpl-wave-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.tpl-harmonics-wrap {
+  margin-top: 0.5rem;
+}
+
+.tpl-harmonics-wrap .synth-matrix {
+  --matrix-cell: calc(var(--synth-u, 3rem) * 0.42 * var(--synth-scale, 1));
+}
+
+.tpl-release-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.tpl-release-label {
+  font-size: 0.78rem;
+  color: var(--synth-muted, #8b9bab);
+  margin: 0 0 0.35rem;
+}
+
+.tpl-stop-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.tpl-stop {
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  border: 1px solid #7f1d1d;
+  border-radius: 8px;
+  background: #450a0a;
+  color: #fecaca;
+  cursor: pointer;
+}
+
+.tpl-stop:hover {
+  background: #5c1010;
+}
+
+.tpl-status {
+  font-size: 0.88rem;
+  color: var(--synth-muted, #8b9bab);
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,14 @@
+{
+  "w": 8,
+  "h": 8,
+  "c": [
+    "knob", "knob", "fader_v", "fader_v", "btn_red", "btn_red", "power_toggle", "power_toggle",
+    "knob", "knob", "fader_v", "fader_v", "btn_red", "btn_red", "power_toggle", "power_toggle",
+    "btn_grid_4", "btn_grid_4", "frame_display", "frame_display", "wave_icons", "wave_icons", "checkbox", "checkbox",
+    "btn_grid_4", "btn_grid_4", "frame_display", "frame_display", "wave_icons", "wave_icons", "checkbox", "checkbox",
+    "frame_wide", "frame_wide", "arrows_ud", "arrows_ud", "jack", "jack", "slider_mini", "slider_mini",
+    "frame_wide", "frame_wide", "arrows_ud", "arrows_ud", "jack", "jack", "slider_mini", "slider_mini",
+    "tile_blank_a", "tile_blank_a", "tile_blank_b", "tile_blank_b", "brand_interface", "brand_interface", "brand_interface", "brand_interface",
+    "tile_blank_a", "tile_blank_a", "tile_blank_b", "tile_blank_b", "brand_interface", "brand_interface", "knob", "knob"
+  ]
+}

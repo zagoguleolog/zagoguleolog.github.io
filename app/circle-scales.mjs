@@ -13,17 +13,16 @@ import {
   parseNoteName,
   referenceMajorTonicForIvIvCluster,
 } from '../lib/music-theory.js';
-import {
-  clamp,
-  HARMONIC_END,
-  HARMONIC_START,
-  initToneGenTheory,
-  parseVoiceKey,
-  ToneGen,
-} from './tone-gen-engine.mjs';
+import { clamp, initToneGenTheory, parseVoiceKey, ToneGen } from './tone-gen-engine.mjs';
 import { buildBaseParams, buildPlayPayload, readOctaveRange, readToneGenParams } from './tone-gen-ui-shared.mjs';
+import { mountTemplateSynthKit } from './template-synth.mjs';
 import { renderBayanKeyboard } from './bayan-keyboard.mjs';
 import { buildLinearKeys, buildPianoKeys } from './keyboard-layouts.mjs';
+import {
+  createBayanCodeMap,
+  createPianoCodeMap,
+  linearComputerCodesForOctaveRange,
+} from './computer-keyboard-music.mjs';
 import { createKeyboardSynthController } from './keyboard-synth-controller.mjs';
 import { clearTheoryHighlight, setTheoryPcsHighlight } from './keyboard-theory-highlight.mjs';
 
@@ -115,21 +114,6 @@ function keyFromSectorLabel(raw, kind) {
   if (!tonicName) return null;
   const keyMode = kind === 'major' ? 'major' : 'naturalMinor';
   return { tonicName, keyMode };
-}
-
-/**
- * Имена ступеней мажорной или минорной триады в канонической энгармонике (как CANONICAL_TONIC_BY_PC).
- * @param {number} rootPc
- * @param {'major' | 'minor'} sectorKind
- */
-function triadCanonicalNames(rootPc, sectorKind) {
-  const thirdPc = sectorKind === 'major' ? (rootPc + 4) % 12 : (rootPc + 3) % 12;
-  const fifthPc = (rootPc + 7) % 12;
-  return [
-    CANONICAL_TONIC_BY_PC[rootPc],
-    CANONICAL_TONIC_BY_PC[thirdPc],
-    CANONICAL_TONIC_BY_PC[fifthPc],
-  ];
 }
 
 /**
@@ -423,18 +407,15 @@ function rebuildAllKeyboards() {
 }
 
 /**
- * Список нот под кругом и синхрон звука триад с выделением секторов.
+ * Синхрон звука триад круга с выделением секторов (ключи полифонии с префиксом `cts:`).
  * @param {SVGSVGElement} svg
  */
 function syncChordAudioAndList(svg) {
-  const listEl = document.getElementById('cts-chord-notes');
   const rootOctave = getChordRootOctaveClamped();
 
   const selected = svg.querySelectorAll('.cof-sector.is-selected');
   /** @type {Set<string>} полифония по всем выделенным секторам (база для latchPoly) */
   const selectionKeysAll = new Set();
-  /** @type {string[]} */
-  const lineHtml = [];
 
   for (const g of selected) {
     const raw = g.dataset.labelRaw ?? '';
@@ -443,32 +424,14 @@ function syncChordAudioAndList(svg) {
     const rootPc = chordRootPcFromLabel(raw);
 
     if (rootPc == null) {
-      lineHtml.push(
-        `<p class="cts-chord-line cts-chord-line--warn"><span class="cts-chord-label">?</span> — не удалось извлечь корень из подписи</p>`,
-      );
       continue;
     }
 
-    const names = triadCanonicalNames(rootPc, sectorKind);
     const midis = triadMidiNotes(rootPc, sectorKind, rootOctave);
-    const rootLabel = names[0];
-    lineHtml.push(
-      `<p class="cts-chord-line"><strong class="cts-chord-root">${rootLabel}</strong> — ${names.join(' ')}</p>`,
-    );
 
     for (let i = 0; i < 3; i++) {
       const { name, octave } = noteNameOctaveFromMidi(midis[i]);
       selectionKeysAll.add(chordVoiceMapKey(sectorId, name, octave));
-    }
-  }
-
-  if (listEl) {
-    if (lineHtml.length === 0) {
-      listEl.innerHTML = '';
-      listEl.hidden = true;
-    } else {
-      listEl.hidden = false;
-      listEl.innerHTML = lineHtml.join('');
     }
   }
 
@@ -516,79 +479,64 @@ function syncChordAudioAndList(svg) {
   refreshToneRailStatus();
 }
 
-function updateToneRailStatusText() {
-  const status = document.getElementById('cts-ntg-status');
-  if (!status || !toneEngine) return;
-  try {
-    const p = readToneGenParams(CTS_PREFIX);
-    const n = toneEngine.polyVoiceCount();
-    if (n > 0) {
-      const bits = [];
-      for (const key of [...toneEngine.polyVoices.keys()].sort()) {
-        const { name, octave } = parseVoiceKey(key);
-        const hz = toneEngine.getFreq(name, octave, p.a4Hz);
-        bits.push(`${name}${octave} (${hz.toFixed(1)} Гц)`);
-      }
-      status.textContent = `Играют (${n}): ${bits.join('; ')}`;
-    } else if (toneEngine.monoVoice && toneEngine.latchedKey) {
-      const { name, octave } = parseVoiceKey(toneEngine.latchedKey);
-      const hz = toneEngine.getFreq(name, octave, p.a4Hz);
-      status.textContent = `${name}${octave} — ${hz.toFixed(2)} Гц`;
-    } else {
-      status.textContent = 'Тишина';
-    }
-  } catch {
-    status.textContent = '—';
-  }
+function refreshToneRailStatus() {
+  kbdController?.syncExecutionHighlight();
 }
 
-function refreshToneRailStatus() {
-  const status = document.getElementById('cts-ntg-status');
-  if (!status || !toneEngine) {
-    kbdController?.syncExecutionHighlight();
-    return;
+/** @param {'hold' | 'latch' | 'latchPoly'} m */
+function syncCircleModeUi(m) {
+  const h = document.getElementById('cts-circle-mode-hold');
+  const l = document.getElementById('cts-circle-mode-latch');
+  const p = document.getElementById('cts-circle-mode-latch-poly');
+  if (!h || !l || !p) return;
+  h.setAttribute('aria-pressed', m === 'hold' ? 'true' : 'false');
+  l.setAttribute('aria-pressed', m === 'latch' ? 'true' : 'false');
+  p.setAttribute('aria-pressed', m === 'latchPoly' ? 'true' : 'false');
+}
+
+/** @param {'hold' | 'latch' | 'latchPoly'} m */
+function syncKeyboardModeUi(m) {
+  const h = document.getElementById('cts-kbd-mode-hold');
+  const l = document.getElementById('cts-kbd-mode-latch');
+  const p = document.getElementById('cts-kbd-mode-latch-poly');
+  if (!h || !l || !p) return;
+  h.setAttribute('aria-pressed', m === 'hold' ? 'true' : 'false');
+  l.setAttribute('aria-pressed', m === 'latch' ? 'true' : 'false');
+  p.setAttribute('aria-pressed', m === 'latchPoly' ? 'true' : 'false');
+}
+
+/** Режим только для круга (`toneEngine.mode`): выделение секторов и триады с `mapKey` `cts:…`. */
+function setCircleMode(m) {
+  if (!toneEngine) return;
+  toneEngine.mode = m;
+  syncCircleModeUi(m);
+  for (const pid of [...holdPointerVoices.keys()]) {
+    releaseHoldPointer(pid);
   }
-  updateToneRailStatusText();
-  kbdController?.syncExecutionHighlight();
+  chordAudioEnabled = true;
+  const svg = document.getElementById('cts-circle');
+  if (svg) syncChordAudioAndList(svg);
+  refreshToneRailStatus();
+}
+
+/** Режим только для клавиатуры (`toneEngine.keyboardMode`). */
+function setKeyboardMode(m) {
+  if (!toneEngine) return;
+  toneEngine.keyboardMode = m;
+  syncKeyboardModeUi(m);
+  clearPianoPointerVisual();
+  toneEngine.setLatchedKeyForMono(null);
+  toneEngine.stopMonoSmooth();
+  for (const k of [...toneEngine.polyVoices.keys()]) {
+    if (!k.startsWith('cts:')) toneEngine.stopPolyVoiceSmooth(k);
+  }
+  refreshToneRailStatus();
 }
 
 function wireToneRail() {
   const harmWrap = document.getElementById(`${CTS_PREFIX}harmonics`);
   if (!harmWrap || harmWrap.dataset.ctsHarmWired) return;
   harmWrap.dataset.ctsHarmWired = '1';
-
-  for (let n = 1; n <= HARMONIC_END; n++) {
-    const lab = document.createElement('label');
-    lab.className = 'ntg-harm-toggle';
-    if (n === 1) {
-      lab.innerHTML =
-        '<input type="checkbox" data-partial="1" checked /> n=1 (основной тон, форма колебания)';
-    } else {
-      lab.innerHTML = `<input type="checkbox" data-partial="${n}" /> n=${n}`;
-      if (n <= 6) lab.querySelector('input').checked = true;
-    }
-    harmWrap.appendChild(lab);
-  }
-
-  toneEngine = new ToneGen();
-  toneEngine.mode = 'latchPoly';
-
-  kbdController = createKeyboardSynthController({
-    getPointerRoot: getKeyboardStage,
-    getClearRoot: getKeyboardStage,
-    getHighlightRoot: getActiveKeyHighlightScope,
-    keySelector: '.cts-play-key',
-    engine: toneEngine,
-    buildPlayPayload: (name, octave) => buildPlayPayload(CTS_PREFIX, name, octave),
-    onChange: updateToneRailStatusText,
-  });
-
-  const $ = (suffix) => {
-    const id = `${CTS_PREFIX}${suffix}`;
-    const el = document.getElementById(id);
-    if (!el) throw new Error(`Missing #${id}`);
-    return el;
-  };
 
   function formatReleaseLabel(ms) {
     const m = Number(ms);
@@ -609,6 +557,63 @@ function wireToneRail() {
     toneEngine.setOutputLinear(p.volume);
   }
 
+  mountTemplateSynthKit(CTS_PREFIX, {
+    applyVolumeFromUi,
+    updateIfPlaying,
+    formatReleaseLabel,
+  });
+
+  toneEngine = new ToneGen();
+  toneEngine.mode = 'latchPoly';
+  toneEngine.keyboardMode = 'latchPoly';
+
+  kbdController = createKeyboardSynthController({
+    getPointerRoot: getKeyboardStage,
+    getClearRoot: getKeyboardStage,
+    getHighlightRoot: getActiveKeyHighlightScope,
+    keySelector: '.cts-play-key',
+    engine: toneEngine,
+    buildPlayPayload: (name, octave) => buildPlayPayload(CTS_PREFIX, name, octave),
+    onChange: refreshToneRailStatus,
+  });
+
+  kbdController.bindComputerKeyboard({
+    getLayout: () => keyboardLayout,
+    getPianoCodeMap: () => {
+      try {
+        const { octaveMin, octaveMax } = readOctaveRange(CTS_PREFIX);
+        return createPianoCodeMap(octaveMin, octaveMax);
+      } catch {
+        return createPianoCodeMap(3, 6);
+      }
+    },
+    getLinearComputerCodes: () => {
+      try {
+        const { octaveMin, octaveMax } = readOctaveRange(CTS_PREFIX);
+        return linearComputerCodesForOctaveRange(octaveMin, octaveMax);
+      } catch {
+        return linearComputerCodesForOctaveRange(3, 6);
+      }
+    },
+    getBayanCodeMap: () => {
+      try {
+        const { octaveMin, octaveMax } = readOctaveRange(CTS_PREFIX);
+        const midiMin = midiNoteFromPcOctave(0, octaveMin);
+        const midiMax = midiNoteFromPcOctave(11, octaveMax);
+        return createBayanCodeMap(midiMin, midiMax);
+      } catch {
+        return createBayanCodeMap(midiNoteFromPcOctave(0, 3), midiNoteFromPcOctave(11, 6));
+      }
+    },
+  });
+
+  const $ = (suffix) => {
+    const id = `${CTS_PREFIX}${suffix}`;
+    const el = document.getElementById(id);
+    if (!el) throw new Error(`Missing #${id}`);
+    return el;
+  };
+
   function stopAllSound() {
     if (!toneEngine) return;
     clearPianoPointerVisual();
@@ -621,35 +626,6 @@ function wireToneRail() {
     refreshToneRailStatus();
   }
 
-  $('volume').addEventListener('input', () => {
-    document.getElementById(`${CTS_PREFIX}vol-val`).textContent = String(
-      /** @type {HTMLInputElement} */ ($('volume')).value,
-    );
-    applyVolumeFromUi();
-  });
-  $('detune').addEventListener('input', () => {
-    document.getElementById(`${CTS_PREFIX}detune-val`).textContent = String(
-      /** @type {HTMLInputElement} */ ($('detune')).value,
-    );
-    updateIfPlaying();
-  });
-  $('harm-mix').addEventListener('input', () => {
-    document.getElementById(`${CTS_PREFIX}harm-mix-val`).textContent = String(
-      /** @type {HTMLInputElement} */ ($('harm-mix')).value,
-    );
-    updateIfPlaying();
-  });
-  $('harm-rolloff').addEventListener('input', () => {
-    document.getElementById(`${CTS_PREFIX}harm-rolloff-val`).textContent = String(
-      /** @type {HTMLInputElement} */ ($('harm-rolloff')).value,
-    );
-    updateIfPlaying();
-  });
-  $('release-ms').addEventListener('input', () => {
-    const ms = Number(/** @type {HTMLInputElement} */ ($('release-ms')).value);
-    document.getElementById(`${CTS_PREFIX}release-ms-val`).textContent = formatReleaseLabel(ms);
-    updateIfPlaying();
-  });
   $('waveform').addEventListener('change', () => updateIfPlaying());
   $('a4').addEventListener('input', () => updateIfPlaying());
 
@@ -685,33 +661,19 @@ function wireToneRail() {
     });
   }
 
-  harmWrap.addEventListener('change', () => updateIfPlaying());
+  const circleHold = document.getElementById('cts-circle-mode-hold');
+  const circleLatch = document.getElementById('cts-circle-mode-latch');
+  const circleLatchPoly = document.getElementById('cts-circle-mode-latch-poly');
+  if (circleHold) circleHold.addEventListener('click', () => setCircleMode('hold'));
+  if (circleLatch) circleLatch.addEventListener('click', () => setCircleMode('latch'));
+  if (circleLatchPoly) circleLatchPoly.addEventListener('click', () => setCircleMode('latchPoly'));
 
-  const btnHold = $('mode-hold');
-  const btnLatch = $('mode-latch');
-  const btnLatchPoly = $('mode-latch-poly');
-
-  function setMode(m) {
-    if (!toneEngine) return;
-    clearPianoPointerVisual();
-    toneEngine.mode = m;
-    btnHold.setAttribute('aria-pressed', m === 'hold' ? 'true' : 'false');
-    btnLatch.setAttribute('aria-pressed', m === 'latch' ? 'true' : 'false');
-    btnLatchPoly.setAttribute('aria-pressed', m === 'latchPoly' ? 'true' : 'false');
-    toneEngine.setLatchedKeyForMono(null);
-    toneEngine.stopMonoSmooth();
-    toneEngine.stopAllPolySmooth();
-    prevChordVoiceKeys.clear();
-    holdPointerVoices.clear();
-    chordAudioEnabled = true;
-    const svg = document.getElementById('cts-circle');
-    if (svg) syncChordAudioAndList(svg);
-    refreshToneRailStatus();
-  }
-
-  btnHold.addEventListener('click', () => setMode('hold'));
-  btnLatch.addEventListener('click', () => setMode('latch'));
-  btnLatchPoly.addEventListener('click', () => setMode('latchPoly'));
+  const kbdHold = document.getElementById('cts-kbd-mode-hold');
+  const kbdLatch = document.getElementById('cts-kbd-mode-latch');
+  const kbdLatchPoly = document.getElementById('cts-kbd-mode-latch-poly');
+  if (kbdHold) kbdHold.addEventListener('click', () => setKeyboardMode('hold'));
+  if (kbdLatch) kbdLatch.addEventListener('click', () => setKeyboardMode('latch'));
+  if (kbdLatchPoly) kbdLatchPoly.addEventListener('click', () => setKeyboardMode('latchPoly'));
 
   $('stop').addEventListener('click', () => stopAllSound());
 

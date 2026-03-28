@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Music theory — таблицы из библиотеки</title>
+  <link rel="stylesheet" href="../site-nav.css" />
   <style>
     :root {
       font-family: "Segoe UI", system-ui, sans-serif;
@@ -72,6 +73,10 @@
   <script type="module">
     import { renderTheoryTables } from '../lib/music-theory.js';
     renderTheoryTables(document.getElementById('root'));
+  </script>
+  <script type="module">
+    import { mountSiteNav } from '../site-nav.mjs';
+    mountSiteNav();
   </script>
 </body>
 </html>

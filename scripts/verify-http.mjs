@@ -8,6 +8,7 @@ const PORT = Number(process.env.PORT || 4173);
 const HOST = '127.0.0.1';
 
 const checks = [
+  { path: '/', needType: 'text/html' },
   { path: '/lib/music-theory.js', needType: 'application/javascript' },
   { path: '/app/circle-scales.html', needType: 'text/html' },
   { path: '/theory-tables.html', needType: 'text/html' },
@@ -52,6 +53,7 @@ try {
   const base = `http://${HOST}:${PORT}`;
   console.log('');
   console.log('Ссылки (вставьте в браузер):');
+  console.log(`  ${base}/`);
   console.log(`  ${base}/app/circle-scales.html`);
   console.log(`  ${base}/theory-tables.html`);
   console.log(`  ${base}/lib/music-theory.js`);

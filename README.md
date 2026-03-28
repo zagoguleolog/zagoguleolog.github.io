@@ -52,7 +52,7 @@ project_template/
 | Таблицы из теории | **http://127.0.0.1:4173/theory-tables.html** |
 | Демо synth-kit | **http://127.0.0.1:4173/app/synth-kit-demo.html** |
 | Галерея атласа knobs.png | **http://127.0.0.1:4173/app/knobs-atlas-showcase.html** |
-| Корень (редирект на theory-tables) | **http://127.0.0.1:4173/** |
+| Корень (главная — карта сайта, `web/stranichki.html`) | **http://127.0.0.1:4173/** |
 
 Проверка отдачи `lib/music-theory.js` с `application/javascript`: в отдельном терминале при уже запущенном сервере — `npm run verify:http`.
 

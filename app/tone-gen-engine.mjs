@@ -251,8 +251,14 @@ export class ToneGen {
     this.monoVoice = null;
     /** @type {Map<string, NonNullable<ReturnType<typeof createVoice>>>} */
     this.polyVoices = new Map();
-    /** @type {'hold' | 'latch' | 'latchPoly'} */
+    /** @type {'hold' | 'latch' | 'latchPoly'} взаимодействие с кругом / полифония с префиксом `cts:` */
     this.mode = 'hold';
+    /**
+     * Если не `null`, `keyboard-synth-controller` использует это вместо `mode` для клавиш;
+     * на остальных страницах оставить `null`.
+     * @type {'hold' | 'latch' | 'latchPoly' | null}
+     */
+    this.keyboardMode = null;
     /** @type {string | null} моно-режим: последняя зафиксированная нота|октава */
     this.latchedKey = null;
     /** Длительность плавного отпускания голоса (сек), задаётся из UI */
@@ -439,6 +445,7 @@ export class ToneGen {
  * @typedef {object} ToneSynthEngine
  * @property {() => AudioContext} ensureCtx
  * @property {'hold' | 'latch' | 'latchPoly'} mode
+ * @property {'hold' | 'latch' | 'latchPoly' | null} [keyboardMode]
  * @property {Map<string, unknown>} polyVoices
  * @property {unknown | null} monoVoice
  * @property {string | null} latchedKey

@@ -2,6 +2,7 @@
  * Клавиатура ↔ движок звука: pointer, классы ntg-key-active / ntg-key-down.
  * Зависит от контракта ToneSynthEngine, не от класса ToneGen.
  */
+import { linearBayianoIndexFromCode, linearIndexFromCode } from './computer-keyboard-music.mjs';
 import { parseVoiceKey, voiceKey } from './tone-gen-engine.mjs';
 
 /**
@@ -21,6 +22,14 @@ import { parseVoiceKey, voiceKey } from './tone-gen-engine.mjs';
  */
 
 /**
+ * @typedef {object} ComputerKeyboardBindOptions
+ * @property {() => 'linear' | 'piano' | 'bayiano'} getLayout вид клавиатуры под кругом
+ * @property {() => Map<string, { name: string, octave: number }>} getPianoCodeMap карта `event.code` для режима piano (кламп по MIDI)
+ * @property {() => Map<string, { name: string, octave: number }>} [getBayanCodeMap] карта для режима bayiano (`createBayanCodeMap`); без колбэка — запасной путь `SEQUENTIAL_ROW_CODES` + порядок DOM
+ * @property {() => readonly string[]} [getLinearComputerCodes] порядок `event.code` для режима linear (длина = число кнопок линейной сетки); без колбэка ввод с ПК в linear не обрабатывается
+ */
+
+/**
  * @param {KeyboardSynthControllerOptions} opts
  */
 export function createKeyboardSynthController(opts) {
@@ -34,6 +43,10 @@ export function createKeyboardSynthController(opts) {
     includeVoiceInHighlight = () => true,
     onChange,
   } = opts;
+
+  function effectiveKeyboardMode() {
+    return engine.keyboardMode != null ? engine.keyboardMode : engine.mode;
+  }
 
   function syncExecutionHighlight() {
     const clearRoot = getClearRoot();
@@ -81,13 +94,13 @@ export function createKeyboardSynthController(opts) {
 
     void engine.ensureCtx();
 
-    if (engine.mode === 'latchPoly') {
+    if (effectiveKeyboardMode() === 'latchPoly') {
       engine.startOrTogglePoly(buildPlayPayload(name, octave));
       notify();
       return;
     }
 
-    if (engine.mode === 'latch') {
+    if (effectiveKeyboardMode() === 'latch') {
       const key = voiceKey(name, octave);
       if (engine.latchedKey === key && engine.monoVoice) {
         engine.stopMonoSmooth();
@@ -112,7 +125,7 @@ export function createKeyboardSynthController(opts) {
   function onPointerUp(ev) {
     const btn = /** @type {HTMLButtonElement} */ (ev.currentTarget);
     btn.classList.remove('ntg-key-down');
-    if (engine.mode !== 'hold') return;
+    if (effectiveKeyboardMode() !== 'hold') return;
     try {
       btn.releasePointerCapture(ev.pointerId);
     } catch {
@@ -127,7 +140,7 @@ export function createKeyboardSynthController(opts) {
   function onPointerCancel(ev) {
     const btn = /** @type {HTMLButtonElement} */ (ev.currentTarget);
     btn.classList.remove('ntg-key-down');
-    if (engine.mode !== 'hold') return;
+    if (effectiveKeyboardMode() !== 'hold') return;
     engine.stopMonoSmooth();
     engine.setLatchedKeyForMono(null);
     notify();
@@ -136,7 +149,7 @@ export function createKeyboardSynthController(opts) {
   /** @param {PointerEvent} ev */
   function onPointerLeave(ev) {
     const btn = /** @type {HTMLButtonElement} */ (ev.currentTarget);
-    if (engine.mode !== 'hold' || !btn.classList.contains('ntg-key-down')) return;
+    if (effectiveKeyboardMode() !== 'hold' || !btn.classList.contains('ntg-key-down')) return;
     btn.classList.remove('ntg-key-down');
     engine.stopMonoSmooth();
     engine.setLatchedKeyForMono(null);
@@ -154,9 +167,155 @@ export function createKeyboardSynthController(opts) {
     }
   }
 
+  /**
+   * Глобальные keydown/keyup: та же семантика, что у pointer (`hold` / `latch` / `latchPoly`).
+   * Не вызывать, если фокус в полях ввода — обрабатывается внутри.
+   * @param {ComputerKeyboardBindOptions} ck
+   * @returns {{ unbind: () => void }}
+   */
+  function bindComputerKeyboard(ck) {
+    const { getLayout, getPianoCodeMap, getBayanCodeMap, getLinearComputerCodes } = ck;
+    /** @type {Set<string>} */
+    const pressedHold = new Set();
+
+    /** @param {KeyboardEvent} ev */
+    function resolveNote(ev) {
+      const code = ev.code;
+      const layout = getLayout();
+      if (layout === 'piano') {
+        const hit = getPianoCodeMap().get(code);
+        return hit ? { name: hit.name, octave: hit.octave } : null;
+      }
+      if (layout === 'linear') {
+        if (!getLinearComputerCodes) return null;
+        const codes = getLinearComputerCodes();
+        const idx = linearIndexFromCode(code, codes);
+        if (idx < 0) return null;
+        const root = getHighlightRoot();
+        if (!root) return null;
+        const buttons = root.querySelectorAll(keySelector);
+        if (idx >= buttons.length) return null;
+        const btn = buttons[idx];
+        const name = btn.dataset.note;
+        const octave = Number(btn.dataset.octave);
+        if (!name || !Number.isFinite(octave)) return null;
+        return { name, octave };
+      }
+      if (layout === 'bayiano' && getBayanCodeMap) {
+        const hit = getBayanCodeMap().get(code);
+        return hit ? { name: hit.name, octave: hit.octave } : null;
+      }
+      const idx = linearBayianoIndexFromCode(code);
+      if (idx < 0) return null;
+      const root = getHighlightRoot();
+      if (!root) return null;
+      const buttons = root.querySelectorAll(keySelector);
+      if (idx >= buttons.length) return null;
+      const btn = buttons[idx];
+      const name = btn.dataset.note;
+      const octave = Number(btn.dataset.octave);
+      if (!name || !Number.isFinite(octave)) return null;
+      return { name, octave };
+    }
+
+    function findBtn(name, octave) {
+      const root = getHighlightRoot();
+      if (!root) return null;
+      return root.querySelector(
+        `${keySelector}[data-note="${CSS.escape(name)}"][data-octave="${String(octave)}"]`,
+      );
+    }
+
+    /** @param {KeyboardEvent} ev */
+    function onKeyDown(ev) {
+      if (ev.repeat) return;
+      if (ev.ctrlKey || ev.metaKey) return;
+      const t = ev.target;
+      if (
+        t instanceof Element &&
+        t.closest('input, textarea, select, [contenteditable="true"], [contenteditable=""]')
+      ) {
+        return;
+      }
+
+      const resolved = resolveNote(ev);
+      if (!resolved) return;
+
+      const { name, octave } = resolved;
+      const code = ev.code;
+
+      void engine.ensureCtx();
+
+      const mode = effectiveKeyboardMode();
+
+      if (mode === 'latchPoly') {
+        engine.startOrTogglePoly(buildPlayPayload(name, octave));
+        notify();
+        ev.preventDefault();
+        return;
+      }
+
+      if (mode === 'latch') {
+        const key = voiceKey(name, octave);
+        if (engine.latchedKey === key && engine.monoVoice) {
+          engine.stopMonoSmooth();
+          engine.setLatchedKeyForMono(null);
+        } else {
+          engine.setLatchedKeyForMono(key);
+          engine.startMono(buildPlayPayload(name, octave));
+        }
+        notify();
+        ev.preventDefault();
+        return;
+      }
+
+      const btn = findBtn(name, octave);
+      if (btn) btn.classList.add('ntg-key-down');
+      engine.setLatchedKeyForMono(voiceKey(name, octave));
+      engine.startMono(buildPlayPayload(name, octave));
+      pressedHold.add(code);
+      notify();
+      ev.preventDefault();
+    }
+
+    /** @param {KeyboardEvent} ev */
+    function onKeyUp(ev) {
+      if (effectiveKeyboardMode() !== 'hold') return;
+      const code = ev.code;
+      if (!pressedHold.has(code)) return;
+
+      const resolved = resolveNote(ev);
+      pressedHold.delete(code);
+      if (!resolved) return;
+
+      const { name, octave } = resolved;
+      const vk = voiceKey(name, octave);
+      if (engine.latchedKey !== vk) return;
+
+      const btn = findBtn(name, octave);
+      if (btn) btn.classList.remove('ntg-key-down');
+      engine.stopMonoSmooth();
+      engine.setLatchedKeyForMono(null);
+      notify();
+      ev.preventDefault();
+    }
+
+    window.addEventListener('keydown', onKeyDown, true);
+    window.addEventListener('keyup', onKeyUp, true);
+
+    return {
+      unbind() {
+        window.removeEventListener('keydown', onKeyDown, true);
+        window.removeEventListener('keyup', onKeyUp, true);
+        pressedHold.clear();
+      },
+    };
+  }
+
   return {
     bindKeys,
     syncExecutionHighlight,
     notify,
+    bindComputerKeyboard,
   };
 }

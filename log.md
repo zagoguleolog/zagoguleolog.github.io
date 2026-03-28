@@ -2,6 +2,54 @@
 
 ## 2026-03-29
 
+- **Linear** + ПК: каждая октава в диапазоне — **один ряд** клавиш (`1234567890-=`, `qwertyuiop[]`, третий ряд + `Backslash`, четвёртый + `Backquote` и `Space`); первая клавиша ряда = до (C) октавы на экране. [`app/computer-keyboard-music.mjs`](app/computer-keyboard-music.mjs), [`docs/synth-structure.md`](docs/synth-structure.md), [`docs/overview.md`](docs/overview.md). Проверка: `node --check`, `npm run verify`, 48 уникальных кодов для октав 3–6.
+
+- Линейная клавиатура: верстка снова **одна сетка на октаву** (`buildLinearKeys`); привязка ПК по-прежнему `linearComputerCodesForOctaveRange` (начала рядов `Digit1` / `KeyQ` / `KeyA` / `KeyZ`). Удалены стили `.ntg-linear-oct` / `.ntg-linear-row`. Документация: `docs/synth-structure.md`, `docs/overview.md`. Проверка: `node --check`, `npm run verify`.
+
+- Линейная клавиатура: четыре визуальных ряда по три полутона на октаву (`keyboard-layouts.mjs`); привязка ПК — `linearComputerCodesForOctaveRange` / `linearIndexFromCode` (`computer-keyboard-music.mjs`), ввод в **linear** через `getLinearComputerCodes` в `keyboard-synth-controller.mjs` + `circle-scales.mjs`; четвёртая октава при диапазоне 3–6 — остаток из `SEQUENTIAL_ROW_CODES` + `Space`. Стили: `circle-scales.css`, `note-tone-gen.css`, `template-synth.css`. Документация: `docs/synth-structure.md`, `docs/overview.md`. Проверка: `node --check`, `npm run verify`, счётчик 48 уникальных `event.code` для 3–6.
+
+- [`app/computer-keyboard-music.mjs`](app/computer-keyboard-music.mjs): режим **piano** — раскладка по четырём рядам (цифры и ASDF — чёрные с «немыми» между ми–фа и си–до; Q и Z — непрерывные натуральные ноты от C в опорной октаве); [`docs/synth-structure.md`](docs/synth-structure.md). Проверка: `node --check`, `npm run verify`, отсутствие дубликатов MIDI в карте для тестовых диапазонов октав.
+
+- [`app/computer-keyboard-music.mjs`](app/computer-keyboard-music.mjs), [`app/keyboard-synth-controller.mjs`](app/keyboard-synth-controller.mjs), [`app/circle-scales.mjs`](app/circle-scales.mjs): игра с физической клавиатуры под кругом — `event.code` (US QWERTY), режимы **linear** / **piano** / **bayiano** и те же **удержание / фиксация / полифония**, что у мыши; [`docs/synth-structure.md`](docs/synth-structure.md), [`docs/overview.md`](docs/overview.md). Проверка: `node --check`, `npm run verify`.
+
+- [`app/circle-scales.html`](app/circle-scales.html), [`app/circle-scales.css`](app/circle-scales.css): блок тембра — **сетка 3×2** `.cts-synth-kit-row` (шесть слотов `.cts-synth-kit-slot` в порядке: громкость | обертоны; детун | спад; смесь | угасание), `align-items` / `justify-items: start` для совпадения строк по горизонтали и выравнивания с полями панели. [`docs/synth-ui.md`](docs/synth-ui.md). Проверка: `npm run verify`.
+
+- [`app/circle-scales.html`](app/circle-scales.html), [`app/circle-scales.css`](app/circle-scales.css): блок тембра — **две равные по flex колонки** `.cts-synth-kit-col`: слева три крутилки (громкость, детун, смесь обертонов); справа матрица обертонов, под ней спад \(1/n^x\) и фейдер угасания; для правой подсетки снят `grid-row: span 2` у фейдера. [`docs/synth-ui.md`](docs/synth-ui.md). Проверка: `npm run verify`.
+
+- [`app/circle-scales.html`](app/circle-scales.html), [`app/circle-scales.css`](app/circle-scales.css): блок «Громкость, тембр и обертоны» — общий ряд `.cts-synth-kit-row`: сетка крутилок и фейдер угасания слева, матрица n=1…16 справа (при узкой колонке перенос); подсказка и `aria-label` матрицы — «Обертоны». [`docs/synth-ui.md`](docs/synth-ui.md). Проверка: `npm run verify`; визуально — страница `http://127.0.0.1:4173/app/circle-scales.html`.
+
+- [`app/synth-kit/synth-kit.css`](app/synth-kit/synth-kit.css): индикаторы `synth-seg--value-control` без `min-height: var(--synth-cell)`, уменьшены вертикальные поля — высота по цифрам.
+
+- [`app/synth-kit/segment-value-control.mjs`](app/synth-kit/segment-value-control.mjs): индикатор в стиле семисегмента с тем же управлением мышью/колесом, что у крутилки; галерея [`app/knobs-atlas-showcase-page.mjs`](app/knobs-atlas-showcase-page.mjs) переведена на него; стили в [`app/synth-kit/synth-kit.css`](app/synth-kit/synth-kit.css); [`docs/synth-ui.md`](docs/synth-ui.md). Проверка: `node --check`, `npm run verify`.
+
+- Галерея атласа: тестовая сетка 8×8 внизу [`app/knobs-atlas-showcase.html`](app/knobs-atlas-showcase.html), паттерн — [`app/knobs-atlas-showcase-grid-pattern.json`](app/knobs-atlas-showcase-grid-pattern.json), рендер в [`app/knobs-atlas-showcase-page.mjs`](app/knobs-atlas-showcase-page.mjs); [`docs/synth-ui.md`](docs/synth-ui.md). Проверка: `node --check`, `npm run verify`.
+
+- [`app/knobs-atlas-showcase-page.mjs`](app/knobs-atlas-showcase-page.mjs): `DEFAULT_XS` — правый край сетки 997 px (обновление экспорта). Проверка: `node --check`, `npm run verify`.
+
+- [`app/knobs-atlas-showcase-page.mjs`](app/knobs-atlas-showcase-page.mjs): зашитые по умолчанию `DEFAULT_XS` / `DEFAULT_YS` из экспорта подрезки атласа; [`docs/synth-ui.md`](docs/synth-ui.md). Проверка: `node --check`, `npm run verify`.
+
+- Галерея атласа: общая сетка границ `xs`/`ys` в [`app/knobs-atlas-showcase-page.mjs`](app/knobs-atlas-showcase-page.mjs) (`knobs-atlas-showcase-grid-v1`, опционально восстановление из `knobs-atlas-showcase-crops-v2`); ячейки `col`/`row`/`colSpan`/`rowSpan`, экспорт JSON `{ xs, ys, slices }`; обновлены [`app/knobs-atlas-showcase.html`](app/knobs-atlas-showcase.html), [`docs/synth-ui.md`](docs/synth-ui.md). Проверка: `node --check app/knobs-atlas-showcase-page.mjs`, `npm run verify`.
+
+- Галерея атласа: внизу [`app/knobs-atlas-showcase.html`](app/knobs-atlas-showcase.html) — динамическая одна строка JSON со всеми кропами (порядок ключей как в коде), кнопка «Копировать в буфер»; [`app/knobs-atlas-showcase-page.mjs`](app/knobs-atlas-showcase-page.mjs), `docs/synth-ui.md`. Проверка: `node --check`, `npm run verify`.
+
+- Тёмная навигация: в [`site-nav.css`](site-nav.css) — переопределения под `html[data-site-nav-theme="dark"]` (фон/границы как у synth `#1a222c` / `#2d3a47`, ссылки `#7dd3fc` / hover `#5eead4`, активная кнопка меню светлее). Атрибут на `<html>`: [`app/note-tone-gen.html`](app/note-tone-gen.html), [`app/template-synth.html`](app/template-synth.html), [`app/synth-kit-demo.html`](app/synth-kit-demo.html), [`app/knobs-atlas-showcase.html`](app/knobs-atlas-showcase.html), [`app/circle-scales.html`](app/circle-scales.html). Документация — [`docs/architecture.md`](docs/architecture.md). Проверка: `npm run verify`.
+
+- [`app/circle-scales.html`](app/circle-scales.html): отдельные три режима для **круга** (блок «Круг» слева под SVG) и для **клавиатуры** (над клавиатурой); **Стоп** на одной строке с режимами клавиатуры. В [`app/tone-gen-engine.mjs`](app/tone-gen-engine.mjs) — поле `keyboardMode`; [`app/keyboard-synth-controller.mjs`](app/keyboard-synth-controller.mjs) использует `keyboardMode ?? mode`. Обновлены [`app/circle-scales.mjs`](app/circle-scales.mjs), [`app/circle-scales.css`](app/circle-scales.css), [`docs/synth-structure.md`](docs/synth-structure.md), [`docs/overview.md`](docs/overview.md). Проверка: `npm run verify`.
+
+- Страница [`app/circle-scales.html`](app/circle-scales.html): панель синтеза переведена на UI synth-kit (`mountTemplateSynthKit` из [`app/template-synth.mjs`](app/template-synth.mjs), стили [`app/template-synth.css`](app/template-synth.css)); переключатели **удержание / фиксация / полифония** и кнопка **Стоп** перенесены над клавиатурой; убраны текстовый блок аккордов под кругом и строка статуса с нотами и частотами. Обновлены [`app/circle-scales.mjs`](app/circle-scales.mjs), [`app/circle-scales.css`](app/circle-scales.css), [`docs/overview.md`](docs/overview.md). Проверка: `npm run verify`.
+
+- Навигация по сайту: общие `site-nav.css` и `site-nav.mjs` (кнопка «Меню», ссылка «Главная», список как на карте сайта, пути от корня сервера). Подключено на всех 11 HTML. Главная — `web/stranichki.html` (обновлены заголовок и подсказка, в списке HTML добавлен пункт про эту страницу). Корень `npm run serve` отдаёт `web/stranichki.html`; `scripts/verify-http.mjs` проверяет `GET /`; README и `docs/music-theory.md` согласованы. Проверка: `npm run verify`, `npm run verify:http` (сервер запущен).
+
+- `template-synth`: убран UI режимов клавиатуры (hold/latch/latchPoly); на странице зафиксирован режим **hold** по умолчанию `ToneGen`; ссылка на `note-tone-gen.html` в подсказке. Обновлены `docs/synth-structure.md`, `docs/synth-ui.md`. Проверка: `node --check app/template-synth.mjs`, `npm run verify`.
+
+- Галерея [`app/knobs-atlas-showcase.html`](app/knobs-atlas-showcase.html): на каждый фрагмент — прямоугольник подрезки в координатах исходника; мини-карта (без Ctrl — левый верхний угол, Ctrl/⌘ — правый нижний) и четыре крутилки [`createKnob`](app/synth-kit/knob.mjs); [`app/knobs-atlas-showcase-page.mjs`](app/knobs-atlas-showcase-page.mjs); `localStorage` `knobs-atlas-showcase-crops-v2`; `docs/synth-ui.md`. Проверка: `node --check app/knobs-atlas-showcase-page.mjs`, `npm run verify`.
+
+- Темплейт-синт (`app/template-synth.html`, `template-synth.mjs`, `template-synth.css`): тот же `ToneGen` и префикс `tpl-`, UI из synth-kit; `readHarmEnabled` — чекбоксы с `data-partial` в контейнере `harmonics` (матрица 4×4). Документация `docs/synth-structure.md`, правки `overview.md`, `architecture.md`, `synth-ui.md`, `.cursor/rules/documentation-map.mdc`, `web/stranichki.html`, `scripts/static-server.js`. Проверка: `node --check app/template-synth.mjs`, `npm run verify`.
+
+- Самопроверка галереи атласа: задан `--knobs-cell` на странице (равен `--synth-cell`); убран неиспользуемый `root` в скрипте; `npm run verify`, HTTP 200 для `app/knobs-atlas-showcase.html` и `knobs.png`.
+
+- Галерея [`app/knobs-atlas-showcase.html`](app/knobs-atlas-showcase.html): отступы от краёв **всего** `knobs.png`, затем деление внутренней области на 4×4 и показ фрагментов через `background-size` / `background-position` в JS; сохранение в `localStorage`; обновление `docs/synth-ui.md`.
+
 - Файл `knobs.png` в корне `music/`; страница [`app/knobs-atlas-showcase.html`](app/knobs-atlas-showcase.html) — сетка карточек с каждым фрагментом спрайта (`synth-atlas-tile--…`). Обновлены `docs/synth-ui.md`, `docs/overview.md`, `README.md`, `web/stranichki.html`. Проверка: `npm run verify`.
 
 - Фейдер synth-kit: исправлено горизонтальное смещение ручки (двойное центрирование CSS + JS); удалена отладочная отправка логов из `app/synth-kit/fader.mjs`.

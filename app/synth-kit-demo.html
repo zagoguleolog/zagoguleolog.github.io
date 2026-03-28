@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-site-nav-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Synth UI kit — демо</title>
     <link rel="stylesheet" href="synth-kit/synth-kit.css" />
     <link rel="stylesheet" href="synth-kit/knobs-atlas.css" />
+    <link rel="stylesheet" href="../site-nav.css" />
     <style>
       body {
         margin: 0;
@@ -196,6 +197,10 @@
       pxEl.addEventListener('input', applyPx);
       applyScale();
       applyPx();
+    </script>
+    <script type="module">
+      import { mountSiteNav } from '../site-nav.mjs';
+      mountSiteNav();
     </script>
   </body>
 </html>

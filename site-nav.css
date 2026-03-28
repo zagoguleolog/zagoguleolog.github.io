@@ -1,0 +1,113 @@
+/* Общая навигация по HTML-страницам music (корень сервера `npm run serve`). */
+.site-nav {
+  position: fixed;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.site-nav__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.site-nav__home,
+.site-nav__toggle {
+  border: 1px solid #c9c4bd;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 0.35rem 0.65rem;
+  cursor: pointer;
+  color: #0b5bd3;
+  text-decoration: none;
+  font: inherit;
+}
+
+.site-nav__home:hover,
+.site-nav__toggle:hover {
+  text-decoration: underline;
+}
+
+.site-nav__toggle[aria-expanded="true"] {
+  background: #e8f0fc;
+}
+
+.site-nav__panel {
+  display: none;
+  min-width: min(20rem, calc(100vw - 1.5rem));
+  max-height: min(70vh, 28rem);
+  overflow: auto;
+  margin: 0;
+  padding: 0.55rem 0.65rem;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #dcd8d3;
+  border-radius: 10px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+}
+
+.site-nav--open .site-nav__panel {
+  display: block;
+}
+
+.site-nav__panel li {
+  margin: 0.28rem 0;
+}
+
+.site-nav__panel a {
+  color: #0b5bd3;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.site-nav__panel a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .site-nav {
+    top: 0.4rem;
+    right: 0.4rem;
+    font-size: 0.82rem;
+  }
+}
+
+/* Тёмная тема: на <html> задаётся data-site-nav-theme="dark" (страницы с тёмным фоном synth). */
+html[data-site-nav-theme="dark"] .site-nav__home,
+html[data-site-nav-theme="dark"] .site-nav__toggle {
+  border-color: #2d3a47;
+  background: #1a222c;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  color: #7dd3fc;
+}
+
+html[data-site-nav-theme="dark"] .site-nav__toggle[aria-expanded="true"] {
+  background: #2c3a4d;
+  color: #bae6fd;
+}
+
+html[data-site-nav-theme="dark"] .site-nav__panel {
+  background: #1a222c;
+  border-color: #2d3a47;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+  color: #e8eef4;
+}
+
+html[data-site-nav-theme="dark"] .site-nav__panel a {
+  color: #7dd3fc;
+}
+
+html[data-site-nav-theme="dark"] .site-nav__panel a:hover {
+  color: #5eead4;
+}

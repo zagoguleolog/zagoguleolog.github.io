@@ -1,3 +1,55 @@
+#053 | 2026-03-29 — DONE | **bayiano** + ПК: `createBayanCodeMap` — ряды `ROW2`/`ROW1`/`ROW0` ↔ ряды (баян) 1-й…3-й, порядок по `rowIndexTopDownFromMidi` / `chromaticColumnFromMidi`, усечение слева при избытке кнопок; `getBayanCodeMap` в `keyboard-synth-controller.mjs`, `circle-scales.mjs`; `docs/synth-structure.md`, `overview.md`; `node --check`, `npm run verify`, smoke `createBayanCodeMap` OK
+
+#052 | 2026-03-29 — DONE | **Linear** ПК: октава UI = целый физический ряд (`1234567890-=`, `qwertyuiop[]`, `asdfghjkl;'`+`Backslash`, `zxcvbnm,./`+`Backquote`+`Space`); `linearComputerCodesForOctaveRange`; `docs/synth-structure.md`, `overview.md`; `node --check`, `npm run verify` OK
+
+#051 | 2026-03-29 — DONE | Линейная клавиатура: **верстка** снова одна сетка `.ntg-keys` на октаву; привязка ПК без изменений (`linearComputerCodesForOctaveRange`, ряды с `Digit1` / `KeyQ` / `KeyA` / `KeyZ`); убраны `.ntg-linear-oct` / `.ntg-linear-row`; `docs/synth-structure.md`, `overview.md`; `node --check`, `npm run verify` OK
+
+#050 | 2026-03-29 — DONE | Линейная клавиатура **4×3** на октаву (ряды как `Digit1` / `KeyQ` / `KeyA` / `KeyZ`): `buildLinearKeys`, `linearComputerCodesForOctaveRange` + `linearIndexFromCode`, `bindComputerKeyboard.getLinearComputerCodes` (`circle-scales.mjs`); **bayiano** — прежний `SEQUENTIAL_ROW_CODES`; стили `.ntg-linear-oct` / `.ntg-linear-row`; `docs/synth-structure.md`, `overview.md`; `node --check`, `npm run verify` OK
+
+#049 | 2026-03-29 — DONE | Режим **piano** на ПК: `createPianoCodeMap` — четыре ряда (цифры / Q…\\ / ASDF…' / Z…/), белые подряд от C в `octave-min`, чёрные с дырами EF/BC; кламп MIDI; `docs/synth-structure.md`; `node --check`, `npm run verify`, проверка уникальности MIDI в карте OK
+
+#048 | 2026-03-29 — DONE | `circle-scales`: ввод с ПК — `computer-keyboard-music.mjs` (`SEQUENTIAL_ROW_CODES`, `createPianoCodeMap`), `keyboard-synth-controller` `bindComputerKeyboard` (hold/latch/latchPoly, `ntg-key-down`, игнор repeat и полей ввода); `docs/synth-structure.md`, `overview.md`; `node --check`, `npm run verify` OK
+
+#047 | 2026-03-29 — DONE | `circle-scales`: тембр — CSS Grid 3×2 вместо двух flex-колонок (пары строк выровнены по верху, `justify-items: start`); лог H3 row-pair top deltas; `docs/synth-ui.md`; `npm run verify` OK
+
+#046 | 2026-03-29 — DONE | `circle-scales`: две колонки `.cts-synth-kit-col` — слева 3 крутилки, справа обертоны + спад + фейдер; CSS overrides для `tpl-kit-cell--fader`; лог H2 (ingest d27c8d); `docs/synth-ui.md`; `npm run verify` OK
+
+#045 | 2026-03-29 — DONE | `circle-scales`: панель тембра — ряд `.cts-synth-kit-row` (крутилки+фейдер слева, матрица справа), подписи «Обертоны»; `docs/synth-ui.md`; отладочный лог геометрии (ingest d27c8d) до подтверждения и снятия; `npm run verify` OK
+
+#044 | 2026-03-29 — DONE | `.synth-seg--value-control`: убрана высота ячейки крутилки, плотные вертикальные отступы и `line-height: 1` — блок координат по высоте цифр
+
+#043 | 2026-03-29 — DONE | synth-kit `segment-value-control.mjs` + CSS: семисегмент и жесты как у крутилки; галерея атласа на `createSegmentValueControl`; `docs/synth-ui.md`, `documentation-map.mdc`, HTML; `node --check`, `npm run verify` OK
+
+#042 | 2026-03-29 — DONE | `knobs-atlas-showcase`: тестовая сетка 8×8 внизу страницы по `knobs-atlas-showcase-grid-pattern.json` (64 ключа, все фрагменты атласа, структура 2×2-квадранты); `docs/synth-ui.md`; `node --check`, `npm run verify` OK
+
+#041 | 2026-03-29 — DONE | `knobs-atlas-showcase`: `DEFAULT_XS[4]` 997 (было 1003); `node --check`, `npm run verify` OK
+
+#040 | 2026-03-29 — DONE | `knobs-atlas-showcase`: дефолтная сетка `DEFAULT_XS`/`DEFAULT_YS` захардкожена из экспорта (xs/ys для подрезки атласа); `docs/synth-ui.md`; `node --check`, `npm run verify` OK
+
+#039 | 2026-03-29 — DONE | Галерея `knobs-atlas-showcase`: общая сетка `xs`/`ys` (5×5 линий), `col`/`row`/`colSpan`/`rowSpan` в SLICES, `brand_interface` 2×1 ячейка, `normalizeGrid`, `renderAll`, ключ `knobs-atlas-showcase-grid-v1`, миграция из `crops-v2`, экспорт `{ xs, ys, slices }`; `docs/synth-ui.md`, подсказки в HTML; `node --check`, `npm run verify` OK
+
+#038 | 2026-03-29 — DONE | Тёмная тема `site-nav`: `html[data-site-nav-theme="dark"]` в `site-nav.css`; атрибут на `note-tone-gen`, `template-synth`, `synth-kit-demo`, `knobs-atlas-showcase`, `circle-scales`; абзац в `docs/architecture.md`; `npm run verify` OK
+
+#037 | 2026-03-29 — DONE | `circle-scales`: два набора режимов — круг под SVG, клавиатура + Стоп в одной строке; `ToneGen.keyboardMode`, `keyboard-synth-controller` (`effectiveKeyboardMode`); `synth-structure.md`, `overview.md`, подсказка в HTML; `npm run verify` OK
+
+#036 | 2026-03-29 — DONE | `circle-scales.html`: synth-kit (`mountTemplateSynthKit`, `template-synth.css`), режимы удержания/фиксации/полифонии + Стоп над клавиатурой; убраны список триад под кругом и текстовый статус с частотами; `circle-scales.css`, `circle-scales.mjs`; `docs/overview.md`; `npm run verify` OK
+
+#035 | 2026-03-29 — DONE | Навигация: `site-nav.css|mjs`, все 11 HTML, главная `web/stranichki.html` + пункт в списке; `/` → stranichki в `static-server.js`; `verify-http` для `/`; README + `music-theory.md`; `npm run verify`, `npm run verify:http` OK
+
+#034 | 2026-03-29 — DONE | `template-synth`: убран блок режимов клавиатуры; фиксирован hold; правки `synth-structure.md`, `synth-ui.md`; `node --check`, `npm run verify` OK
+
+#033 | 2026-03-29 — DONE | Темплейт-синт: `app/template-synth.html|css|mjs`, `readHarmEnabled` + `[data-partial]`, `docs/synth-structure.md`, overview/architecture/synth-ui/documentation-map/stranichki/static-server; `node --check`, `npm run verify` OK
+
+#034 | 2026-03-29 — DONE | `knobs-atlas-showcase`: блок экспорта — одна строка JSON координат + копирование; `docs/synth-ui.md`
+
+#033 | 2026-03-29 — DONE | Галерея атласа: на блок — кроп (x0,y0,x1,y1), мини-карта + 4× createKnob; `knobs-atlas-showcase-page.mjs`; `docs/synth-ui.md`
+
+#032 | 2026-03-29 — DONE | Самопроверка `knobs-atlas-showcase`: в корне задано `--knobs-cell: var(--synth-cell)` (после снятия knobs-atlas.css иначе замер 0); HTTP 200 страница и `knobs.png`; `npm run verify` OK
+
+#031 | 2026-03-29 — DONE | Галерея `knobs-atlas-showcase`: обрезка краёв всего `knobs.png`, затем сетка 4×4 в JS; `docs/synth-ui.md`
+
+#030 | 2026-03-29 — DONE | `knobs-atlas-showcase.html`: шапка — 4 поля отступов обрезки рамки ячейки (px), localStorage; `docs/synth-ui.md`
+
 #029 | 2026-03-29 — DONE | Фейдер: центр ручки — убраны инлайн `left`/`transform` в `fader.mjs` (оставлено центрирование из `synth-kit.css`); снята отладочная инструментация ingest
 
 #029 | 2026-03-29 — DONE | `knobs.png` в корне music; страница `app/knobs-atlas-showcase.html` (галерея фрагментов атласа); `docs/synth-ui.md`, `overview.md`, `README.md`; `npm run verify` OK

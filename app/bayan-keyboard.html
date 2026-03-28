@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Баян — раскладка B-system (горизонтально)</title>
   <link rel="stylesheet" href="bayan-keyboard.css" />
+  <link rel="stylesheet" href="../site-nav.css" />
 </head>
 <body>
   <h1>Клавиатура баяна — B-system</h1>
@@ -61,5 +62,9 @@
   </section>
 
   <script type="module" src="bayan-keyboard.page.mjs"></script>
+  <script type="module">
+    import { mountSiteNav } from '../site-nav.mjs';
+    mountSiteNav();
+  </script>
 </body>
 </html>

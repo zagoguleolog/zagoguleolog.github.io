@@ -18,7 +18,8 @@ export const PIANO_BLACK_KEYS = [
 ];
 
 /**
- * Линейные кнопки по октавам: chromatic ряд, data-note / data-octave.
+ * Линейные кнопки по октавам: одна сетка на октаву, хроматика по `NOTE_NAMES`, data-note / data-octave.
+ * Привязка физической клавиатуры ПК к кнопкам — в `linearComputerCodesForOctaveRange` (computer-keyboard-music.mjs).
  * @param {HTMLElement} container
  * @param {{ octaveMin: number, octaveMax: number, keyButtonClass: string }} opts
  */

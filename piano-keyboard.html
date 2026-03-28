@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Клавиатура фортепиано — раскладка</title>
   <link rel="stylesheet" href="app/keyboard-piano.css" />
+  <link rel="stylesheet" href="./site-nav.css" />
 </head>
 <body class="pkb-page">
   <h1>Раскладка клавиш фортепиано</h1>
@@ -32,5 +33,9 @@
   </div>
 
   <script type="module" src="app/piano-keyboard-static.mjs"></script>
+  <script type="module">
+    import { mountSiteNav } from './site-nav.mjs';
+    mountSiteNav();
+  </script>
 </body>
 </html>

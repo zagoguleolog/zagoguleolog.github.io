@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru" data-site-nav-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Темплейт-синт (synth-kit)</title>
+  <link rel="stylesheet" href="template-synth.css" />
+  <link rel="stylesheet" href="../site-nav.css" />
+</head>
+<body>
+  <div class="tpl-page">
+    <h1>Темплейт-синт</h1>
+    <p class="tpl-lead">
+      Тот же движок и поля, что на
+      <a href="note-tone-gen.html">генераторе тона по нотам</a>, с UI из
+      <span class="tpl-mono">app/synth-kit/</span>
+      (<a href="../docs/synth-structure.md">synth-structure.md</a>).
+      Нужен <span class="tpl-mono">npm run serve</span> в каталоге <span class="tpl-mono">music</span>.
+    </p>
+
+    <p id="tpl-module-warning" class="tpl-warning" hidden></p>
+
+    <section class="tpl-panel" aria-label="Камертон и диапазон октав">
+      <h2>Камертон и диапазон октав</h2>
+      <p class="tpl-hint">
+        Научная нотация: <strong>C4</strong> — средняя до. Ниже — ряд кнопок на каждую октаву в выбранном диапазоне.
+      </p>
+      <div class="tpl-grid-tuning">
+        <label class="tpl-field">
+          <span class="tpl-label">Опорная частота A4 (Гц)</span>
+          <input type="number" id="tpl-a4" min="1" max="2000" step="0.1" value="440" />
+        </label>
+        <label class="tpl-field">
+          <span class="tpl-label">Октава с (нижняя граница)</span>
+          <input type="number" id="tpl-octave-min" min="0" max="8" step="1" value="3" />
+        </label>
+        <label class="tpl-field">
+          <span class="tpl-label">Октава по (верхняя граница)</span>
+          <input type="number" id="tpl-octave-max" min="0" max="8" step="1" value="6" />
+        </label>
+      </div>
+    </section>
+
+    <section class="tpl-panel synth-kit-root tpl-synth-root" aria-label="Синтез и обертоны">
+      <h2>Громкость, тембр и обертоны</h2>
+      <p class="tpl-hint">
+        Частичные тоны n=1…16 — матрица 4×4 (слева направо, сверху вниз). Основной тон — n=1; к нему добавляются синусоиды кратных частот для включённых ячеек.
+      </p>
+
+      <input type="range" id="tpl-volume" class="tpl-sr-only" min="0" max="100" value="25" tabindex="-1" aria-hidden="true" />
+      <input type="range" id="tpl-detune" class="tpl-sr-only" min="-50" max="50" value="0" tabindex="-1" aria-hidden="true" />
+      <input type="range" id="tpl-harm-mix" class="tpl-sr-only" min="0" max="100" value="40" tabindex="-1" aria-hidden="true" />
+      <input type="range" id="tpl-harm-rolloff" class="tpl-sr-only" min="0.3" max="2.5" value="1" step="0.05" tabindex="-1" aria-hidden="true" />
+      <input type="range" id="tpl-release-ms" class="tpl-sr-only" min="20" max="5000" value="55" step="10" tabindex="-1" aria-hidden="true" />
+
+      <div class="tpl-wave-row">
+        <label class="tpl-field tpl-kit-cell--wave">
+          <span class="tpl-label">Форма колебания (включённые частичные тона)</span>
+          <select id="tpl-waveform" aria-label="Форма колебания">
+            <option value="sine" selected>Синусоида</option>
+            <option value="triangle">Треугольник</option>
+            <option value="square">Квадрат</option>
+            <option value="sawtooth">Пила</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="tpl-kit-main">
+        <div class="tpl-kit-cell">
+          <div id="tpl-mount-volume"></div>
+          <div id="tpl-seg-volume"></div>
+        </div>
+        <div class="tpl-kit-cell">
+          <div id="tpl-mount-detune"></div>
+          <div id="tpl-seg-detune"></div>
+        </div>
+        <div class="tpl-kit-cell">
+          <div id="tpl-mount-harm-mix"></div>
+          <div id="tpl-seg-harm-mix"></div>
+        </div>
+        <div class="tpl-kit-cell">
+          <div id="tpl-mount-harm-rolloff"></div>
+          <div id="tpl-seg-harm-rolloff"></div>
+        </div>
+        <div class="tpl-kit-cell tpl-kit-cell--fader">
+          <div id="tpl-mount-release"></div>
+          <p class="tpl-release-label">Угасание: <strong id="tpl-release-ms-val">55 мс</strong></p>
+        </div>
+      </div>
+
+      <div class="tpl-harmonics-wrap">
+        <span class="tpl-label">Частичные тона n=1…16</span>
+        <div id="tpl-harmonics" role="group" aria-label="Частичные тона n=1…16"></div>
+      </div>
+    </section>
+
+    <section class="tpl-panel" aria-label="Клавиатура">
+      <h2>Клавиатура</h2>
+      <p class="tpl-hint">
+        Режим удержания / фиксации / полифонии — на странице
+        <a href="note-tone-gen.html">генератора тона по нотам</a> (связано с клавиатурой, не с панелью синтеза).
+      </p>
+      <div class="tpl-stop-row">
+        <button type="button" class="tpl-stop" id="tpl-stop">Стоп</button>
+        <span class="tpl-status" id="tpl-status" aria-live="polite">Тишина</span>
+      </div>
+      <div class="ntg-keys-wrap" id="tpl-keys-wrap" aria-label="Ноты по октавам"></div>
+    </section>
+  </div>
+
+  <script type="module" src="template-synth.mjs"></script>
+  <script type="module">
+    import { mountSiteNav } from '../site-nav.mjs';
+    mountSiteNav();
+  </script>
+</body>
+</html>

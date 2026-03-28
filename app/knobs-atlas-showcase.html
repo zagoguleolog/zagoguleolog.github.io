@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-site-nav-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Атлас knobs.png — фрагменты</title>
+    <title>Атлас knobs.png — подрезка по блокам</title>
     <link rel="stylesheet" href="synth-kit/synth-kit.css" />
-    <link rel="stylesheet" href="synth-kit/knobs-atlas.css" />
+    <link rel="stylesheet" href="../site-nav.css" />
     <style>
       body.synth-kit-root {
         margin: 0;
         min-height: 100vh;
         --synth-scale: 1;
-        --synth-u: min(26vw, 10.5rem);
+        --synth-u: min(22vw, 9rem);
+        --knobs-cell: var(--synth-cell);
         background: radial-gradient(1200px 600px at 20% 0%, #1a2836 0%, var(--synth-bg) 55%);
       }
 
       .kas-page {
-        max-width: 70rem;
+        max-width: 72rem;
         margin: 0 auto;
         padding: 1.35rem 1rem 2.5rem;
       }
@@ -32,9 +33,9 @@
       .kas-lead {
         font-size: 0.88rem;
         color: var(--synth-muted);
-        margin: 0 0 1.35rem;
+        margin: 0 0 1.15rem;
         line-height: 1.5;
-        max-width: 42rem;
+        max-width: 48rem;
       }
 
       .kas-lead a {
@@ -43,18 +44,18 @@
 
       .kas-grid {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 1rem 1rem;
-        align-items: end;
+        align-items: start;
       }
 
-      @media (max-width: 960px) {
+      @media (min-width: 1100px) {
         .kas-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
+          grid-template-columns: repeat(3, minmax(0, 1fr));
         }
       }
 
-      @media (max-width: 520px) {
+      @media (max-width: 640px) {
         .kas-grid {
           grid-template-columns: 1fr;
         }
@@ -64,7 +65,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.45rem;
         padding: 0.85rem 0.65rem 1rem;
         background: var(--synth-surface);
         border: 1px solid var(--synth-border);
@@ -73,174 +74,234 @@
       }
 
       .kas-card--wide {
-        grid-column: 3 / -1;
+        grid-column: 1 / -1;
       }
 
-      @media (max-width: 960px) {
-        .kas-card--wide {
-          grid-column: 1 / -1;
-        }
-      }
-
-      .kas-tile-wrap {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: calc(var(--knobs-cell) + 4px);
-      }
-
-      .kas-card--wide .kas-tile-wrap {
+      .kas-result-wrap {
         width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+
+      .kas-result {
+        width: 100%;
+        max-width: min(14rem, 88vw);
+        min-height: 3.5rem;
+        box-sizing: border-box;
+        background-color: var(--synth-track);
+        border: 1px solid var(--synth-border);
+        border-radius: 8px;
+      }
+
+      .kas-map {
+        position: relative;
+        width: 100%;
+        max-width: 11rem;
+        aspect-ratio: 1 / 1;
+        margin: 0 auto;
+        background-image: url('../knobs.png');
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        border: 1px solid var(--synth-border);
+        border-radius: 6px;
+        cursor: crosshair;
+        touch-action: none;
+      }
+
+      .kas-map:focus-visible {
+        outline: 2px solid var(--synth-focus);
+        outline-offset: 2px;
+      }
+
+      .kas-map__rect {
+        position: absolute;
+        box-sizing: border-box;
+        border: 2px dashed var(--synth-accent);
+        border-radius: 2px;
+        pointer-events: none;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+      }
+
+      .kas-map-hint {
+        font-size: 0.72rem;
+        color: var(--synth-muted);
+        margin: 0;
+        line-height: 1.35;
+        max-width: 20rem;
+      }
+
+      .kas-knobs-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.35rem 0.65rem;
+        justify-items: center;
+        width: 100%;
+        max-width: 22rem;
+        margin-top: 0.25rem;
+      }
+
+      .kas-knobs-grid .synth-block {
+        min-width: 0;
       }
 
       .kas-title {
         font-size: 0.82rem;
         font-weight: 600;
         color: var(--synth-ink);
-        margin: 0;
+        margin: 0.35rem 0 0;
         line-height: 1.25;
       }
 
       .kas-id {
         font-family: ui-monospace, monospace;
-        font-size: 0.68rem;
+        font-size: 0.65rem;
         color: var(--synth-muted);
         margin: 0;
         word-break: break-all;
       }
+
+      .kas-export {
+        margin-top: 2rem;
+        padding: 1rem 1.05rem;
+        background: var(--synth-surface);
+        border: 1px solid var(--synth-border);
+        border-radius: 10px;
+      }
+
+      .kas-export__title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 0 0 0.35rem;
+        color: var(--synth-ink);
+      }
+
+      .kas-export__hint {
+        font-size: 0.78rem;
+        color: var(--synth-muted);
+        margin: 0 0 0.65rem;
+        line-height: 1.45;
+      }
+
+      .kas-export__line {
+        margin: 0 0 0.65rem;
+        padding: 0.55rem 0.65rem;
+        background: var(--synth-track);
+        border: 1px solid var(--synth-border);
+        border-radius: 6px;
+        font-family: ui-monospace, monospace;
+        font-size: 0.72rem;
+        line-height: 1.4;
+        color: var(--synth-accent);
+        white-space: pre-wrap;
+        word-break: break-all;
+        overflow-x: auto;
+        max-height: 6rem;
+      }
+
+      .kas-export__btn {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        border-radius: 6px;
+        border: 1px solid var(--synth-border);
+        background: #243040;
+        color: var(--synth-ink);
+        cursor: pointer;
+      }
+
+      .kas-export__btn:hover {
+        background: #2d3d50;
+      }
+
+      .kas-export__btn:focus-visible {
+        outline: 2px solid var(--synth-focus);
+        outline-offset: 2px;
+      }
+
+      .kas-pattern {
+        margin-top: 2.25rem;
+        padding-top: 1.35rem;
+        border-top: 1px solid var(--synth-border);
+      }
+
+      .kas-pattern__title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 0 0 0.35rem;
+        color: var(--synth-ink);
+      }
+
+      .kas-pattern__lead {
+        font-size: 0.78rem;
+        color: var(--synth-muted);
+        margin: 0 0 0.75rem;
+        line-height: 1.45;
+        max-width: 42rem;
+      }
+
+      .kas-pattern__grid {
+        display: grid;
+        gap: 3px;
+        width: 100%;
+        max-width: min(36rem, 100%);
+        margin: 0 auto;
+        aspect-ratio: 1 / 1;
+        background: var(--synth-track);
+        padding: 4px;
+        border-radius: 8px;
+        border: 1px solid var(--synth-border);
+        box-sizing: border-box;
+      }
+
+      .kas-pattern__cell {
+        min-width: 0;
+        min-height: 0;
+        border-radius: 4px;
+        background-color: #0f1419;
+        border: 1px solid rgba(45, 58, 71, 0.85);
+        box-sizing: border-box;
+      }
     </style>
   </head>
   <body class="synth-kit-root">
-    <div class="kas-page">
-      <h1>Атлас knobs.png — нарезка по ячейкам</h1>
+    <div class="kas-page" id="kas-root">
+      <h1>Атлас knobs.png — подрезка по блокам</h1>
       <p class="kas-lead">
-        Каждый блок — отдельный элемент с классом <code>synth-atlas-tile--…</code> из
-        <a href="synth-kit/knobs-atlas.css">knobs-atlas.css</a>. Исходный файл —
-        <a href="../knobs.png">knobs.png</a> (1024×1024). Демо виджетов:
-        <a href="synth-kit-demo.html">synth-kit-demo.html</a>.
+        Общая сетка границ исходника 1024×1024: пять вертикальных и пять горизонтальных линий
+        (<code>xs[0..4]</code>, <code>ys[0..4]</code>); у каждого блока — ячейка в этой сетке (у подписи INTERFACE —
+        на две колонки). Соседние блоки делят одну линию реза. На мини-карте: <strong>без Ctrl</strong> — левый верхний
+        узел ячейки, с <strong>Ctrl</strong> (на Mac — <strong>⌘</strong>) — правый нижний. Ниже — четыре семисегментных
+        индикатора координат (перетаскивание и колесо как у крутилки) на те же узлы. Файл: <a href="../knobs.png">knobs.png</a>, демо UI:
+        <a href="synth-kit-demo.html">synth-kit-demo.html</a>. Состояние сетки — в <code>localStorage</code>
+        (<code>knobs-atlas-showcase-grid-v1</code>).
       </p>
+      <div class="kas-grid" id="kas-grid"></div>
 
-      <div class="kas-grid">
-        <figure class="kas-card">
-          <div class="kas-tile-wrap">
-            <span class="synth-atlas-tile synth-atlas-tile--knob" role="img" aria-label="Ручка"></span>
-          </div>
-          <figcaption class="kas-title">Ручка</figcaption>
-          <p class="kas-id">synth-atlas-tile--knob</p>
-        </figure>
+      <section class="kas-export" aria-label="Экспорт координат подрезки">
+        <h2 class="kas-export__title">Строка для захардкоживания в коде</h2>
+        <p class="kas-export__hint">
+          Одна строка JSON: <code>xs</code>, <code>ys</code> и объект <code>slices</code> с прямоугольниками по ключам
+          (порядок ключей фиксирован). Обновляется при любом изменении сетки. Скопируйте и вставьте в чат — по ней
+          можно обновить константы в репозитории.
+        </p>
+        <pre id="kas-crops-export-line" class="kas-export__line"></pre>
+        <button type="button" class="kas-export__btn" id="kas-crops-copy">Копировать в буфер</button>
+      </section>
 
-        <figure class="kas-card">
-          <div class="kas-tile-wrap">
-            <span class="synth-atlas-tile synth-atlas-tile--fader_v" role="img" aria-label="Вертикальный фейдер"></span>
-          </div>
-          <figcaption class="kas-title">Вертикальный фейдер</figcaption>
-          <p class="kas-id">synth-atlas-tile--fader_v</p>
-        </figure>
-
-        <figure class="kas-card">
-          <div class="kas-tile-wrap">
-            <span class="synth-atlas-tile synth-atlas-tile--btn_red" role="img" aria-label="Красная кнопка"></span>
-          </div>
-          <figcaption class="kas-title">Красная кнопка</figcaption>
-          <p class="kas-id">synth-atlas-tile--btn_red</p>
-        </figure>
-
-        <figure class="kas-card">
-          <div class="kas-tile-wrap">
-            <span class="synth-atlas-tile synth-atlas-tile--power_toggle" role="img" aria-label="ON OFF и тумблер"></span>
-          </div>
-          <figcaption class="kas-title">ON / OFF и тумблер</figcaption>
-          <p class="kas-id">synth-atlas-tile--power_toggle</p>
-        </figure>
-
-        <figure class="kas-card">
-          <div class="kas-tile-wrap">
-            <span class="synth-atlas-tile synth-atlas-tile--btn_grid_4" role="img" aria-label="Четыре кнопки"></span>
-          </div>
-          <figcaption class="kas-title">Четыре кнопки 2×2</figcaption>
-          <p class="kas-id">synth-atlas-tile--btn_grid_4</p>
-        </figure>
-
-        <figure class="kas-card">
-          <div class="kas-tile-wrap">
-            <span class="synth-atlas-tile synth-atlas-tile--frame_display" role="img" aria-label="Рамка дисплей"></span>
-          </div>
-          <figcaption class="kas-title">Рамка-дисплей</figcaption>
-          <p class="kas-id">synth-atlas-tile--frame_display</p>
-        </figure>
-
-        <figure class="kas-card">
-          <div class="kas-tile-wrap">
-            <span class="synth-atlas-tile synth-atlas-tile--wave_icons" role="img" aria-label="Иконки волн"></span>
-          </div>
-          <figcaption class="kas-title">Иконки волн</figcaption>
-          <p class="kas-id">synth-atlas-tile--wave_icons</p>
-        </figure>
-
-        <figure class="kas-card">
-          <div class="kas-tile-wrap">
-            <span class="synth-atlas-tile synth-atlas-tile--checkbox" role="img" aria-label="Чекбокс"></span>
-          </div>
-          <figcaption class="kas-title">Чекбокс</figcaption>
-          <p class="kas-id">synth-atlas-tile--checkbox</p>
-        </figure>
-
-        <figure class="kas-card">
-          <div class="kas-tile-wrap">
-            <span class="synth-atlas-tile synth-atlas-tile--frame_wide" role="img" aria-label="Широкая рамка"></span>
-          </div>
-          <figcaption class="kas-title">Широкая рамка</figcaption>
-          <p class="kas-id">synth-atlas-tile--frame_wide</p>
-        </figure>
-
-        <figure class="kas-card">
-          <div class="kas-tile-wrap">
-            <span class="synth-atlas-tile synth-atlas-tile--arrows_ud" role="img" aria-label="Стрелки вверх вниз"></span>
-          </div>
-          <figcaption class="kas-title">Стрелки вверх / вниз</figcaption>
-          <p class="kas-id">synth-atlas-tile--arrows_ud</p>
-        </figure>
-
-        <figure class="kas-card">
-          <div class="kas-tile-wrap">
-            <span class="synth-atlas-tile synth-atlas-tile--jack" role="img" aria-label="Разъём"></span>
-          </div>
-          <figcaption class="kas-title">Разъём</figcaption>
-          <p class="kas-id">synth-atlas-tile--jack</p>
-        </figure>
-
-        <figure class="kas-card">
-          <div class="kas-tile-wrap">
-            <span class="synth-atlas-tile synth-atlas-tile--slider_mini" role="img" aria-label="Мини-слайдер"></span>
-          </div>
-          <figcaption class="kas-title">Мини-слайдер</figcaption>
-          <p class="kas-id">synth-atlas-tile--slider_mini</p>
-        </figure>
-
-        <figure class="kas-card">
-          <div class="kas-tile-wrap">
-            <span class="synth-atlas-tile synth-atlas-tile--tile_blank_a" role="img" aria-label="Пустая плитка A"></span>
-          </div>
-          <figcaption class="kas-title">Плитка (пустая A)</figcaption>
-          <p class="kas-id">synth-atlas-tile--tile_blank_a</p>
-        </figure>
-
-        <figure class="kas-card">
-          <div class="kas-tile-wrap">
-            <span class="synth-atlas-tile synth-atlas-tile--tile_blank_b" role="img" aria-label="Пустая плитка B"></span>
-          </div>
-          <figcaption class="kas-title">Плитка (пустая B)</figcaption>
-          <p class="kas-id">synth-atlas-tile--tile_blank_b</p>
-        </figure>
-
-        <figure class="kas-card kas-card--wide">
-          <div class="kas-tile-wrap">
-            <span class="synth-atlas-tile synth-atlas-tile--brand_interface" role="img" aria-label="INTERFACE"></span>
-          </div>
-          <figcaption class="kas-title">Подпись INTERFACE (две колонки)</figcaption>
-          <p class="kas-id">synth-atlas-tile--brand_interface</p>
-        </figure>
-      </div>
+      <section class="kas-pattern" id="kas-pattern-section" aria-label="Тестовая сетка 8×8">
+        <h2 class="kas-pattern__title">Тестовая сетка 8×8</h2>
+        <p class="kas-pattern__lead">
+          64 ячейки по данным <code>knobs-atlas-showcase-grid-pattern.json</code> (рядами по четыре одинаковых в
+          квадрантах 2×2; нижний ряд — плитки, подпись INTERFACE и повтор ручки). Кропы берутся из той же сетки
+          <code>xs</code>/<code>ys</code>, что и карточки выше.
+        </p>
+        <div class="kas-pattern__grid" id="kas-pattern-mount"></div>
+      </section>
     </div>
+    <script type="module" src="knobs-atlas-showcase-page.mjs"></script>
+    <script type="module">
+      import { mountSiteNav } from '../site-nav.mjs';
+      mountSiteNav();
+    </script>
   </body>
 </html>
