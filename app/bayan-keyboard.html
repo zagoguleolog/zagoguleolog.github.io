@@ -3,16 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Баян — раскладка B-system (горизонтально)</title>
+  <title>Баян — B-system и четырёхрядная сетка (горизонтально)</title>
   <link rel="stylesheet" href="bayan-keyboard.css" />
   <link rel="stylesheet" href="../site-nav.css" />
 </head>
 <body>
-  <h1>Клавиатура баяна — B-system</h1>
+  <h1>Клавиатура баяна — B-system и четырёхрядная хроматическая сетка</h1>
   <p class="byk-lead">
-    Горизонтальное представление трёх рядов (как «лежа на боку» относительно типичной вертикальной схемы).
-    Теория и формулы — <a href="../docs/bayan-b-system.md">docs/bayan-b-system.md</a>;
-    генерация координат — <span class="byk-mono">lib/bayan-b-system.js</span>.
+    Горизонтальное представление рядов (как «лежа на боку» относительно типичной вертикальной схемы): <strong>3 ряда</strong> — учебниковая <strong>B-system</strong> (шаг <strong>м3</strong> вдоль ряда); <strong>4 ряда</strong> — отдельная хроматическая сетка по <strong>мод 4</strong> (шаг <strong>б3</strong> вдоль ряда), не то же самое, что B-system — см. <a href="../docs/bayan-b-system.md">docs/bayan-b-system.md</a>.
+    Генерация координат — <span class="byk-mono">lib/bayan-b-system.js</span>.
     Откройте через <span class="byk-mono">npm run serve</span> в каталоге <span class="byk-mono">music</span> (ES-модули).
   </p>
 
@@ -20,6 +19,17 @@
 
   <section class="byk-panel" aria-label="Параметры поля">
     <h2>Диапазон и шаг вёрстки</h2>
+    <fieldset class="byk-row-mode-fieldset">
+      <legend class="byk-label">Режим рядов</legend>
+      <label class="byk-field byk-field--inline">
+        <input type="radio" name="byk-row-mode" value="3" checked />
+        <span>3 ряда (B-system)</span>
+      </label>
+      <label class="byk-field byk-field--inline">
+        <input type="radio" name="byk-row-mode" value="4" />
+        <span>4 ряда (хроматическая сетка)</span>
+      </label>
+    </fieldset>
     <div class="byk-grid">
       <label class="byk-field">
         <span class="byk-label">MIDI с</span>
@@ -51,8 +61,8 @@
       </label>
     </div>
     <p class="byk-row-hint">
-      Сверху вниз: <strong>3-й</strong>, <strong>2-й</strong>, <strong>1-й</strong> ряд.
-      Вдоль ряда — шаг <strong>м3</strong> (3 полутона); хроматика — по диагонали между рядами.
+      Для <strong>3 рядов</strong> (B-system): сверху вниз <strong>3-й</strong>, <strong>2-й</strong>, <strong>1-й</strong> ряд; вдоль ряда — <strong>м3</strong>; хроматика по диагонали.
+      Для <strong>4 рядов</strong>: сверху вниз <strong>4-й</strong>…<strong>1-й</strong>; вдоль ряда — <strong>б3</strong> (4 полутона); типичная доля диагонали в поле ввода — <strong>0,25</strong>.
     </p>
   </section>
 

@@ -255,7 +255,7 @@ f(m) = f_{\text{ref}} \cdot 2^{(m - m_{\text{ref}}) / 12}
 
 ## Клавиатура баяна (B-system)
 
-Хроматическая **кнопочная** раскладка **B-system**: три ряда с шагом **м3** вдоль ряда и **хроматикой** по диагонали. Теория в горизонтальной ориентации, формулы для генерации координат и соглашения о подписях — в **[bayan-b-system.md](bayan-b-system.md)**; код — [`lib/bayan-b-system.js`](../lib/bayan-b-system.js), страница — [`app/bayan-keyboard.html`](../app/bayan-keyboard.html).
+Хроматическая **кнопочная** раскладка **B-system**: три ряда с шагом **м3** вдоль ряда и **хроматикой** по диагонали. Теория в горизонтальной ориентации, формулы для генерации координат и соглашения о подписях — в **[bayan-b-system.md](bayan-b-system.md)**; код — [`lib/bayan-b-system.js`](../lib/bayan-b-system.js), страница — [`app/bayan-keyboard.html`](../app/bayan-keyboard.html). Отдельно там же и на [`app/circle-scales.html`](../app/circle-scales.html) — **четырёхрядная хроматическая сетка** (мод 4, шаг **б3** вдоль ряда), см. [bayan-b-system.md](bayan-b-system.md).
 
 ## Программная модель (JS)
 

@@ -415,12 +415,18 @@
   touch-action: pan-x manipulation;
 }
 
-.cts-bayan-wrap {
+.cts-bayan-wrap,
+.cts-bayan4-wrap {
   overflow: visible;
   min-height: 11rem;
 }
 
-.cts-bayan-wrap svg {
+.cts-bayan4-wrap {
+  min-height: 14rem;
+}
+
+.cts-bayan-wrap svg,
+.cts-bayan4-wrap svg {
   display: block;
   min-width: 560px;
   height: auto;
@@ -428,7 +434,8 @@
 }
 
 /* Подсветка активной ноты (круг / клавиатура) — SVG-кружки */
-.cts-bayan-wrap svg circle.cts-byan-key.ntg-key-active {
+.cts-bayan-wrap svg circle.cts-byan-key.ntg-key-active,
+.cts-bayan4-wrap svg circle.cts-byan-key.ntg-key-active {
   filter: drop-shadow(0 0 6px rgba(94, 234, 212, 0.9));
   stroke: var(--ntg-accent, #5eead4) !important;
   stroke-width: 4px !important;
@@ -763,12 +770,14 @@ body:has(> .cof-page.cts-wide-page) .cts-kbd-placeholder {
   color: var(--cof-muted);
 }
 
-body:has(> .cof-page.cts-wide-page) .cts-bayan-wrap .cts-bayan-frame {
+body:has(> .cof-page.cts-wide-page) .cts-bayan-wrap .cts-bayan-frame,
+body:has(> .cof-page.cts-wide-page) .cts-bayan4-wrap .cts-bayan-frame {
   fill: var(--ntg-surface);
   stroke: var(--ntg-border);
 }
 
-body:has(> .cof-page.cts-wide-page) .cts-bayan-wrap .cts-bayan-row-label {
+body:has(> .cof-page.cts-wide-page) .cts-bayan-wrap .cts-bayan-row-label,
+body:has(> .cof-page.cts-wide-page) .cts-bayan4-wrap .cts-bayan-row-label {
   fill: var(--cof-muted);
 }
 

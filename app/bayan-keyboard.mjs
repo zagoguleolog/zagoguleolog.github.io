@@ -1,10 +1,11 @@
 /**
- * Рендер SVG поля B-system; данные из lib/bayan-b-system.js.
+ * Рендер SVG поля баяна (B-system или четырёхрядная хроматическая сетка); данные из lib/bayan-b-system.js.
  */
 import { buildBayanButtonModels, B_SYSTEM_ROW_COUNT } from '../lib/bayan-b-system.js';
 import { CANONICAL_TONIC_BY_PC } from '../lib/music-theory.js';
 
-const ROW_LABELS = ['3-й ряд', '2-й ряд', '1-й ряд'];
+const ROW_LABELS_3 = ['3-й ряд', '2-й ряд', '1-й ряд'];
+const ROW_LABELS_4 = ['4-й ряд', '3-й ряд', '2-й ряд', '1-й ряд'];
 
 /**
  * @param {SVGCircleElement} circle
@@ -27,7 +28,7 @@ function styleButton(circle, textEl, btn) {
 
 /**
  * @param {HTMLElement} container
- * @param {{ midiMin: number, midiMax: number, cellWidth: number, buttonRadius: number, rowGap: number, staggerFraction: number, brickHalfSteps: number, interactive?: boolean, compact?: boolean }} opts
+ * @param {{ midiMin: number, midiMax: number, cellWidth: number, buttonRadius: number, rowGap: number, staggerFraction: number, brickHalfSteps: number, rowCount?: number, interactive?: boolean, compact?: boolean }} opts
  */
 export function renderBayanKeyboard(container, opts) {
   const {
@@ -38,6 +39,7 @@ export function renderBayanKeyboard(container, opts) {
     rowGap,
     staggerFraction,
     brickHalfSteps,
+    rowCount = B_SYSTEM_ROW_COUNT,
     interactive = false,
     compact = false,
   } = opts;
@@ -49,13 +51,14 @@ export function renderBayanKeyboard(container, opts) {
     midiMin,
     midiMax,
     staggerFraction,
+    rowCount,
   });
 
   const rowPitch = 2 * buttonRadius + rowGap;
   const brickDx = brickHalfSteps * buttonRadius;
 
   function brickShiftRow(rowTopDown) {
-    return (B_SYSTEM_ROW_COUNT - 1 - rowTopDown) * brickDx;
+    return (rowCount - 1 - rowTopDown) * brickDx;
   }
 
   let maxCx = 0;
@@ -72,13 +75,17 @@ export function renderBayanKeyboard(container, opts) {
   }
 
   const width = Math.max(maxCx + pad, labelColW + 200);
-  const height = B_SYSTEM_ROW_COUNT * rowPitch + pad * 2;
+  const height = rowCount * rowPitch + pad * 2;
+
+  const rowLabels = rowCount === 4 ? ROW_LABELS_4 : ROW_LABELS_3;
+  const ariaKeyboard =
+    rowCount === 4 ? 'Четырёхрядная хроматическая сетка (баян)' : 'Клавиатура баяна B-system';
 
   const svgNS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(svgNS, 'svg');
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
   svg.setAttribute('width', String(Math.min(width, compact ? 960 : 1400)));
-  svg.setAttribute('aria-label', 'Клавиатура баяна B-system');
+  svg.setAttribute('aria-label', ariaKeyboard);
   if (interactive) {
     svg.classList.add('cts-bayan-svg');
   }
@@ -96,7 +103,7 @@ export function renderBayanKeyboard(container, opts) {
   svg.appendChild(frame);
 
   const rowLabelFs = compact ? '10' : '13';
-  for (let r = 0; r < B_SYSTEM_ROW_COUNT; r++) {
+  for (let r = 0; r < rowCount; r++) {
     const ty = pad + r * rowPitch + rowPitch / 2;
     const t = document.createElementNS(svgNS, 'text');
     t.setAttribute('x', String(4));
@@ -104,7 +111,7 @@ export function renderBayanKeyboard(container, opts) {
     t.setAttribute('font-size', rowLabelFs);
     t.setAttribute('fill', '#333');
     t.classList.add('cts-bayan-row-label');
-    t.textContent = ROW_LABELS[r];
+    t.textContent = rowLabels[r];
     svg.appendChild(t);
   }
 

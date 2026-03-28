@@ -33,7 +33,7 @@ initToneGenTheory({
 
 const CTS_PREFIX = 'cts-ntg-';
 
-/** @type {'linear' | 'piano' | 'bayiano'} */
+/** @type {'linear' | 'piano' | 'bayiano' | 'bayiano4'} */
 let keyboardLayout = 'linear';
 
 /** @type {ToneGen | null} */
@@ -266,17 +266,18 @@ function getKeyboardStage() {
   return document.getElementById('cts-keyboard-stage');
 }
 
-/** Корневой узел активной раскладки для подсветки (linear / piano / bayiano). */
+/** Корневой узел активной раскладки для подсветки (linear / piano / bayiano / bayiano4). */
 function getActiveKeyHighlightScope() {
   if (keyboardLayout === 'linear') return document.getElementById('cts-keys-linear');
   if (keyboardLayout === 'piano') return document.getElementById('cts-keys-piano');
   if (keyboardLayout === 'bayiano') return document.getElementById('cts-bayan-wrap');
+  if (keyboardLayout === 'bayiano4') return document.getElementById('cts-bayan4-wrap');
   return null;
 }
 
 /** Слой B: pitch class ступеней гаммы выбранной тональности на видимой клавиатуре. */
 function syncKeyboardTheoryHighlight() {
-  for (const id of ['cts-keys-linear', 'cts-keys-piano', 'cts-bayan-wrap']) {
+  for (const id of ['cts-keys-linear', 'cts-keys-piano', 'cts-bayan-wrap', 'cts-bayan4-wrap']) {
     const el = document.getElementById(id);
     if (el) clearTheoryHighlight(el);
   }
@@ -291,18 +292,20 @@ function syncKeyboardTheoryHighlight() {
 }
 
 /**
- * @param {'linear' | 'piano' | 'bayiano'} mode
+ * @param {'linear' | 'piano' | 'bayiano' | 'bayiano4'} mode
  */
 function setKeyboardLayout(mode) {
-  if (mode !== 'linear' && mode !== 'piano' && mode !== 'bayiano') return;
+  if (mode !== 'linear' && mode !== 'piano' && mode !== 'bayiano' && mode !== 'bayiano4') return;
   keyboardLayout = mode;
   const linear = document.getElementById('cts-keys-linear');
   const piano = document.getElementById('cts-keys-piano');
   const bay = document.getElementById('cts-keys-bayiano');
+  const bay4 = document.getElementById('cts-keys-bayiano4');
   const group = document.getElementById('cts-kbd-mode-group');
   if (linear) linear.hidden = mode !== 'linear';
   if (piano) piano.hidden = mode !== 'piano';
   if (bay) bay.hidden = mode !== 'bayiano';
+  if (bay4) bay4.hidden = mode !== 'bayiano4';
   if (group) {
     for (const btn of group.querySelectorAll('[data-cts-kbd-mode]')) {
       btn.setAttribute('aria-pressed', btn.dataset.ctsKbdMode === mode ? 'true' : 'false');
@@ -384,6 +387,7 @@ function rebuildBayanKeyboardLayout() {
       rowGap: 6,
       staggerFraction: 1 / 3,
       brickHalfSteps: 1,
+      rowCount: 3,
       interactive: true,
       compact: false,
     });
@@ -397,10 +401,47 @@ function rebuildBayanKeyboardLayout() {
   }
 }
 
+function rebuildBayan4KeyboardLayout() {
+  const wrap = document.getElementById('cts-bayan4-wrap');
+  if (!wrap) return;
+  let octaveMin;
+  let octaveMax;
+  try {
+    ({ octaveMin, octaveMax } = readOctaveRange(CTS_PREFIX));
+  } catch {
+    octaveMin = 3;
+    octaveMax = 6;
+  }
+  const midiMin = midiNoteFromPcOctave(0, octaveMin);
+  const midiMax = midiNoteFromPcOctave(11, octaveMax);
+  try {
+    renderBayanKeyboard(wrap, {
+      midiMin,
+      midiMax,
+      cellWidth: 32,
+      buttonRadius: 16,
+      rowGap: 5,
+      staggerFraction: 1 / 4,
+      brickHalfSteps: 1,
+      rowCount: 4,
+      interactive: true,
+      compact: false,
+    });
+  } catch (e) {
+    console.error(e);
+    wrap.replaceChildren();
+    const p = document.createElement('p');
+    p.className = 'cts-kbd-placeholder';
+    p.textContent = 'Не удалось построить четырёхрядную раскладку.';
+    wrap.appendChild(p);
+  }
+}
+
 function rebuildAllKeyboards() {
   rebuildLinearKeyRows();
   rebuildPianoKeyboardLayout();
   rebuildBayanKeyboardLayout();
+  rebuildBayan4KeyboardLayout();
   kbdController?.bindKeys();
   kbdController?.syncExecutionHighlight();
   syncKeyboardTheoryHighlight();
@@ -596,13 +637,14 @@ function wireToneRail() {
       }
     },
     getBayanCodeMap: () => {
+      const rc = keyboardLayout === 'bayiano4' ? 4 : 3;
       try {
         const { octaveMin, octaveMax } = readOctaveRange(CTS_PREFIX);
         const midiMin = midiNoteFromPcOctave(0, octaveMin);
         const midiMax = midiNoteFromPcOctave(11, octaveMax);
-        return createBayanCodeMap(midiMin, midiMax);
+        return createBayanCodeMap(midiMin, midiMax, { rowCount: rc });
       } catch {
-        return createBayanCodeMap(midiNoteFromPcOctave(0, 3), midiNoteFromPcOctave(11, 6));
+        return createBayanCodeMap(midiNoteFromPcOctave(0, 3), midiNoteFromPcOctave(11, 6), { rowCount: rc });
       }
     },
   });
@@ -683,7 +725,7 @@ function wireToneRail() {
     kbdGroup.addEventListener('click', (e) => {
       const b = e.target.closest('[data-cts-kbd-mode]');
       if (!b) return;
-      const mode = /** @type {'linear' | 'piano' | 'bayiano'} */ (b.dataset.ctsKbdMode);
+      const mode = /** @type {'linear' | 'piano' | 'bayiano' | 'bayiano4'} */ (b.dataset.ctsKbdMode);
       setKeyboardLayout(mode);
     });
   }

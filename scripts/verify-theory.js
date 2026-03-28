@@ -19,6 +19,7 @@ import {
   isSectorTonalityHighlightOn,
 } from '../lib/music-theory.js';
 import {
+  BAYAN_CHROMATIC_4_ROW_COUNT,
   rowIndexTopDownFromMidi,
   chromaticColumnFromMidi,
   layoutXUnitsFromMidi,
@@ -130,6 +131,19 @@ console.assert(bayanButtonLabelFromMidi(60) === 'C4', 'bayan label C4');
 const bayanSlice = buildBayanButtonModels({ midiMin: 60, midiMax: 62, staggerFraction: 1 / 3 });
 console.assert(bayanSlice.length === 3, 'bayan 3 buttons');
 console.assert(bayanSlice[0].xUnits0 === 0 && bayanSlice[2].xUnits0 > bayanSlice[0].xUnits0, 'bayan xUnits0 normalized');
+
+const rc4 = BAYAN_CHROMATIC_4_ROW_COUNT;
+console.assert(
+  rowIndexTopDownFromMidi(60, rc4) === 3 &&
+    rowIndexTopDownFromMidi(61, rc4) === 2 &&
+    rowIndexTopDownFromMidi(62, rc4) === 1 &&
+    rowIndexTopDownFromMidi(63, rc4) === 0,
+  'chromatic-4 row from MIDI C4–D#4',
+);
+console.assert(chromaticColumnFromMidi(60, rc4) === 15 && chromaticColumnFromMidi(64, rc4) === 16, 'chromatic-4 columns C4 / E4');
+console.assert(Math.abs(layoutXUnitsFromMidi(60, 1 / 4, rc4) - 15) < 1e-9, 'chromatic-4 x-units C4');
+const bayan4Slice = buildBayanButtonModels({ midiMin: 60, midiMax: 63, staggerFraction: 1 / 4, rowCount: rc4 });
+console.assert(bayan4Slice.length === 4, 'bayan 4 buttons C4–D#4');
 
 const g = getMusicTheoryGraph();
 console.assert(g.nodes.size > 0, 'graph nodes');

@@ -1,3 +1,7 @@
+#055 | 2026-03-29 — DONE | Баян **4 ряда** (четырёхрядная хроматическая сетка): `rowCount` в `lib/bayan-b-system.js`, `renderBayanKeyboard` / `bayan-keyboard.html`, `createBayanCodeMap(..., { rowCount })` + `ROW0`…`ROW3`; **bayiano4** на `circle-scales`; документация `bayan-b-system.md`, `domain.md`, `overview.md`, `synth-structure.md`, `music-theory.md`; `npm run verify` OK
+
+#054 | 2026-03-29 — DONE | **bayiano** ПК: стартовые ряды **S / E / 4** — `BAYAN_PC_ROW_1`…`BAYAN_PC_ROW_3` в `createBayanCodeMap` (`[BAYAN_PC_ROW_3, BAYAN_PC_ROW_2, BAYAN_PC_ROW_1]` по `rowTopDown`); JSDoc; `docs/synth-structure.md`, `overview.md`; `node --check`, `npm run verify`, smoke KeyS/KeyE/Digit4 OK
+
 #053 | 2026-03-29 — DONE | **bayiano** + ПК: `createBayanCodeMap` — ряды `ROW2`/`ROW1`/`ROW0` ↔ ряды (баян) 1-й…3-й, порядок по `rowIndexTopDownFromMidi` / `chromaticColumnFromMidi`, усечение слева при избытке кнопок; `getBayanCodeMap` в `keyboard-synth-controller.mjs`, `circle-scales.mjs`; `docs/synth-structure.md`, `overview.md`; `node --check`, `npm run verify`, smoke `createBayanCodeMap` OK
 
 #052 | 2026-03-29 — DONE | **Linear** ПК: октава UI = целый физический ряд (`1234567890-=`, `qwertyuiop[]`, `asdfghjkl;'`+`Backslash`, `zxcvbnm,./`+`Backquote`+`Space`); `linearComputerCodesForOctaveRange`; `docs/synth-structure.md`, `overview.md`; `node --check`, `npm run verify` OK

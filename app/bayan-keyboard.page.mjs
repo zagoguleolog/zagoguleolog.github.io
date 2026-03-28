@@ -3,6 +3,8 @@
  */
 import { renderBayanKeyboard } from './bayan-keyboard.mjs';
 
+import { BAYAN_CHROMATIC_4_ROW_COUNT, B_SYSTEM_ROW_COUNT } from '../lib/bayan-b-system.js';
+
 const wrap = document.getElementById('byk-svg-wrap');
 const warn = document.getElementById('byk-warning');
 
@@ -30,6 +32,8 @@ function redraw() {
   const rowGap = readNum('byk-rowgap');
   const staggerFraction = readNum('byk-stagger');
   const brickHalfSteps = readNum('byk-brick');
+  const rowMode = document.querySelector('input[name="byk-row-mode"]:checked')?.value;
+  const rowCount = rowMode === '4' ? BAYAN_CHROMATIC_4_ROW_COUNT : B_SYSTEM_ROW_COUNT;
 
   warn.hidden = true;
   if (
@@ -61,6 +65,7 @@ function redraw() {
       rowGap,
       staggerFraction,
       brickHalfSteps,
+      rowCount,
     });
   } catch (e) {
     warn.textContent = e instanceof Error ? e.message : String(e);
@@ -71,6 +76,10 @@ function redraw() {
 for (const id of ids) {
   document.getElementById(id)?.addEventListener('input', redraw);
   document.getElementById(id)?.addEventListener('change', redraw);
+}
+
+for (const el of document.querySelectorAll('input[name="byk-row-mode"]')) {
+  el.addEventListener('change', redraw);
 }
 
 redraw();

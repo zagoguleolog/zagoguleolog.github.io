@@ -23,9 +23,9 @@ import { parseVoiceKey, voiceKey } from './tone-gen-engine.mjs';
 
 /**
  * @typedef {object} ComputerKeyboardBindOptions
- * @property {() => 'linear' | 'piano' | 'bayiano'} getLayout вид клавиатуры под кругом
+ * @property {() => 'linear' | 'piano' | 'bayiano' | 'bayiano4'} getLayout вид клавиатуры под кругом
  * @property {() => Map<string, { name: string, octave: number }>} getPianoCodeMap карта `event.code` для режима piano (кламп по MIDI)
- * @property {() => Map<string, { name: string, octave: number }>} [getBayanCodeMap] карта для режима bayiano (`createBayanCodeMap`); без колбэка — запасной путь `SEQUENTIAL_ROW_CODES` + порядок DOM
+ * @property {() => Map<string, { name: string, octave: number }>} [getBayanCodeMap] карта для режимов bayiano / bayiano4 (`createBayanCodeMap`, в т.ч. `options.rowCount`); без колбэка — запасной путь `SEQUENTIAL_ROW_CODES` + порядок DOM
  * @property {() => readonly string[]} [getLinearComputerCodes] порядок `event.code` для режима linear (длина = число кнопок линейной сетки); без колбэка ввод с ПК в linear не обрабатывается
  */
 
@@ -201,7 +201,7 @@ export function createKeyboardSynthController(opts) {
         if (!name || !Number.isFinite(octave)) return null;
         return { name, octave };
       }
-      if (layout === 'bayiano' && getBayanCodeMap) {
+      if ((layout === 'bayiano' || layout === 'bayiano4') && getBayanCodeMap) {
         const hit = getBayanCodeMap().get(code);
         return hit ? { name: hit.name, octave: hit.octave } : null;
       }

@@ -2,7 +2,12 @@
  * Физическая клавиатура ПК (`event.code`, US QWERTY): индекс в общем ряду, карты для piano и bayiano.
  * Термины — см. docs/domain.md (октава, класс высоты тона, номер ноты MIDI, ряд (баян)).
  */
-import { chromaticColumnFromMidi, rowIndexTopDownFromMidi } from '../lib/bayan-b-system.js';
+import {
+  BAYAN_CHROMATIC_4_ROW_COUNT,
+  B_SYSTEM_ROW_COUNT,
+  chromaticColumnFromMidi,
+  rowIndexTopDownFromMidi,
+} from '../lib/bayan-b-system.js';
 import { CANONICAL_TONIC_BY_PC, midiNoteFromPcOctave } from '../lib/music-theory.js';
 
 /** Четыре ряда клавиш: сверху вниз, слева направо (как на US QWERTY). */
@@ -23,6 +28,32 @@ const ROW1 = [
 const ROW2 = [...'ASDFGHJKL'.split('').map((ch) => `Key${ch}`), 'Semicolon', 'Quote'];
 
 const ROW3 = [...'ZXCVBNM'.split('').map((ch) => `Key${ch}`), 'Comma', 'Period', 'Slash'];
+
+/**
+ * Четыре физических ряда US QWERTY сверху вниз — для четырёхрядной хроматической сетки (`rowCount === 4`):
+ * 4-й ряд (баян) ↔ `Backquote`…`Equal`, 3-й ↔ `KeyQ`…`Backslash`, 2-й ↔ `KeyA`…`Quote`, 1-й ↔ `KeyZ`…`Slash`.
+ * Индекс совпадает с `rowTopDown` в `rowIndexTopDownFromMidi(m, 4)` (0 = верх экрана).
+ */
+const BAYAN_CHROMATIC_4_PC_ROWS_FROM_TOP = [ROW0, ROW1, ROW2, ROW3];
+
+/** Ряд ПК для bayiano: 1-й ряд (баян) ↔ `asdf…` без `KeyA`: от `KeyS` до `Quote` (10 кодов). */
+const BAYAN_PC_ROW_1 = [...'SDFGHJKL'.split('').map((ch) => `Key${ch}`), 'Semicolon', 'Quote'];
+
+/** Ряд ПК для bayiano: 2-й ряд ↔ `qwer…` без `KeyQ`, `KeyW`: от `KeyE` до `Backslash` (11 кодов). */
+const BAYAN_PC_ROW_2 = [...'ERTYUIOP'.split('').map((ch) => `Key${ch}`), 'BracketLeft', 'BracketRight', 'Backslash'];
+
+/** Ряд ПК для bayiano: 3-й ряд ↔ ряд цифр без `Backquote` и `Digit1`…`Digit3`: от `Digit4` до `Equal` (9 кодов). */
+const BAYAN_PC_ROW_3 = [
+  'Digit4',
+  'Digit5',
+  'Digit6',
+  'Digit7',
+  'Digit8',
+  'Digit9',
+  'Digit0',
+  'Minus',
+  'Equal',
+];
 
 /** Объединённый список кодов для режима linear (добор октав) и устаревшей привязки bayiano без `createBayanCodeMap`. */
 export const SEQUENTIAL_ROW_CODES = [...ROW0, ...ROW1, ...ROW2, ...ROW3];
@@ -190,34 +221,41 @@ export function linearBayianoIndexFromCode(code) {
 }
 
 /**
- * Карта `event.code` → { name, octave } для режима bayiano: три ряда ПК снизу вверх соответствуют рядам (баян) 1-й…3-й
- * (индекс ряда сверху вниз в `rowIndexTopDownFromMidi`: 2 → 1-й ряд → `ROW2`, 1 → 2-й → `ROW1`, 0 → 3-й → `ROW0`).
- * Внутри ряда ноты слева направо по `chromaticColumnFromMidi`; при избытке кнопок относительно ряда ПК — усечение слева
- * (крайние левые кнопки ряда без клавиш, игра мышью). Ряд `ROW3` не используется. Границы MIDI — как у переданного диапазона.
+ * Карта `event.code` → { name, octave } для режима bayiano / bayiano4.
+ * **B-system (`rowCount` 3):** три ряда ПК снизу вверх соответствуют рядам (баян) 1-й…3-й
+ * (индекс ряда сверху вниз в `rowIndexTopDownFromMidi`: 2 → 1-й ряд → `BAYAN_PC_ROW_1` от `KeyS`, 1 → 2-й → `BAYAN_PC_ROW_2` от `KeyE`, 0 → 3-й → `BAYAN_PC_ROW_3` от `Digit4`).
+ * **Четырёхрядная сетка (`rowCount` 4):** четыре ряда ПК сверху вниз — `Backquote`…`Equal`, `KeyQ`…`Backslash`, `KeyA`…`Quote`, `KeyZ`…`Slash` ↔ ряды (баян) 4-й…1-й.
+ * У левого края схемы первых клавиш в рядах нет (смещение относительно полных рядов); при избытке кнопок относительно ряда ПК — усечение слева
+ * (крайние левые кнопки ряда без клавиш, игра мышью). В режиме 3 рядов ряд `zxcv…` не используется. Границы MIDI — как у переданного диапазона.
  * @param {number} midiMin
  * @param {number} midiMax
+ * @param {{ rowCount?: number }} [options]
  * @returns {Map<string, { name: string, octave: number }>}
  */
-export function createBayanCodeMap(midiMin, midiMax) {
+export function createBayanCodeMap(midiMin, midiMax, options) {
+  const rowCount = options?.rowCount ?? B_SYSTEM_ROW_COUNT;
   const lo = Math.round(Number(midiMin));
   const hi = Math.round(Number(midiMax));
   if (!Number.isInteger(lo) || !Number.isInteger(hi) || lo > hi) {
     throw new Error(`createBayanCodeMap: invalid MIDI range ${midiMin}…${midiMax}`);
   }
   /** @type {number[][]} */
-  const buckets = [[], [], []];
+  const buckets = Array.from({ length: rowCount }, () => []);
   for (let m = lo; m <= hi; m++) {
     if (m < 0 || m > 127) continue;
-    buckets[rowIndexTopDownFromMidi(m)].push(m);
+    buckets[rowIndexTopDownFromMidi(m, rowCount)].push(m);
   }
-  /** Индекс = rowTopDown: 0 → 3-й ряд (баян), 1 → 2-й, 2 → 1-й. */
-  const pcRows = [ROW0, ROW1, ROW2];
+  /** Индекс = rowTopDown: для 3 рядов — 0 → 3-й ряд (баян), 1 → 2-й, 2 → 1-й. */
+  const pcRows =
+    rowCount === BAYAN_CHROMATIC_4_ROW_COUNT
+      ? BAYAN_CHROMATIC_4_PC_ROWS_FROM_TOP
+      : [BAYAN_PC_ROW_3, BAYAN_PC_ROW_2, BAYAN_PC_ROW_1];
   /** @type {Map<string, { name: string, octave: number }>} */
   const map = new Map();
 
-  for (let rowTopDown = 0; rowTopDown < 3; rowTopDown++) {
+  for (let rowTopDown = 0; rowTopDown < rowCount; rowTopDown++) {
     const midis = buckets[rowTopDown].sort((a, b) => {
-      const d = chromaticColumnFromMidi(a) - chromaticColumnFromMidi(b);
+      const d = chromaticColumnFromMidi(a, rowCount) - chromaticColumnFromMidi(b, rowCount);
       return d !== 0 ? d : a - b;
     });
     const codes = pcRows[rowTopDown];

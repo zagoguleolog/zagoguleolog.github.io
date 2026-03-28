@@ -2,6 +2,12 @@
 
 ## 2026-03-29
 
+- Четырёхрядная хроматическая сетка (баян): параметр `rowCount` и `BAYAN_CHROMATIC_4_ROW_COUNT` в [`lib/bayan-b-system.js`](lib/bayan-b-system.js); [`app/bayan-keyboard.html`](app/bayan-keyboard.html) — переключатель 3/4 ряда; [`app/computer-keyboard-music.mjs`](app/computer-keyboard-music.mjs) — `createBayanCodeMap` с четырьмя рядами ПК (`ROW0`…`ROW3`); [`app/circle-scales.html`](app/circle-scales.html) — вид **bayiano4**; документация [`docs/bayan-b-system.md`](docs/bayan-b-system.md), [`docs/domain.md`](docs/domain.md), [`docs/overview.md`](docs/overview.md), [`docs/synth-structure.md`](docs/synth-structure.md), [`docs/music-theory.md`](docs/music-theory.md). Проверка: `npm run verify`.
+
+- **bayiano** ПК: стартовые клавиши рядов **S / E / `Digit4`** (`BAYAN_PC_ROW_1`…`BAYAN_PC_ROW_3`) в [`app/computer-keyboard-music.mjs`](app/computer-keyboard-music.mjs), `createBayanCodeMap`; документация [`docs/synth-structure.md`](docs/synth-structure.md), [`docs/overview.md`](docs/overview.md). Проверка: `node --check`, `npm run verify`, smoke `KeyS` / `KeyE` / `Digit4`.
+
+- **bayiano** + ПК: `createBayanCodeMap` в [`app/computer-keyboard-music.mjs`](app/computer-keyboard-music.mjs) — три ряда клавиш (`asdf…` / `qwer…` / цифры) ↔ ряды (баян) 1-й…3-й по [`lib/bayan-b-system.js`](lib/bayan-b-system.js); усечение слева, если в ряду кнопок больше, чем клавиш; `bindComputerKeyboard.getBayanCodeMap` в [`app/circle-scales.mjs`](app/circle-scales.mjs). Документация: [`docs/synth-structure.md`](docs/synth-structure.md), [`docs/overview.md`](docs/overview.md). Проверка: `node --check`, `npm run verify`.
+
 - **Linear** + ПК: каждая октава в диапазоне — **один ряд** клавиш (`1234567890-=`, `qwertyuiop[]`, третий ряд + `Backslash`, четвёртый + `Backquote` и `Space`); первая клавиша ряда = до (C) октавы на экране. [`app/computer-keyboard-music.mjs`](app/computer-keyboard-music.mjs), [`docs/synth-structure.md`](docs/synth-structure.md), [`docs/overview.md`](docs/overview.md). Проверка: `node --check`, `npm run verify`, 48 уникальных кодов для октав 3–6.
 
 - Линейная клавиатура: верстка снова **одна сетка на октаву** (`buildLinearKeys`); привязка ПК по-прежнему `linearComputerCodesForOctaveRange` (начала рядов `Digit1` / `KeyQ` / `KeyA` / `KeyZ`). Удалены стили `.ntg-linear-oct` / `.ntg-linear-row`. Документация: `docs/synth-structure.md`, `docs/overview.md`. Проверка: `node --check`, `npm run verify`.
