@@ -4,10 +4,11 @@
 
 1. `docs/overview.md`
 2. `docs/domain.md`
-3. `docs/music-theory.md` (теория музыки, интервалы, триады, гаммы — при любой работе с музыкальной логикой); раскладка баяна B-system — `docs/bayan-b-system.md`
+3. `docs/music-theory.md` (теория музыки, интервалы, триады, гаммы — при любой работе с музыкальной логикой); раскладка баяна B-system — `docs/bayan-b-system.md`. Клавиатуры linear/piano и связка с синтом — `app/keyboard-layouts.mjs`, `app/keyboard-synth-controller.mjs`, при подсветке ступеней лада на круге — `app/keyboard-theory-highlight.mjs`
 4. `docs/architecture.md`
-5. `docs/AI_RULES.md`
-6. `docs/system/*`
+5. UI синтеза (блоки, крутилка, фейдер, матрица): `docs/synth-ui.md`, каталог `app/synth-kit/`; спрайт `knobs.png` — `app/synth-kit/knobs-atlas.css`
+6. `docs/AI_RULES.md`
+7. `docs/system/*`
 
 `docs/system/*` — Source of Truth для правил процесса и качества.
 

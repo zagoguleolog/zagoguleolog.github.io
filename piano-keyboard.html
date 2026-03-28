@@ -4,222 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Клавиатура фортепиано — раскладка</title>
-  <style>
-    :root {
-      font-family: "Segoe UI", system-ui, sans-serif;
-      line-height: 1.45;
-      color: #1a1a1a;
-      background: #f4f2ef;
-      --key-white: #fdfcfa;
-      --key-white-border: #2a2a2a;
-      --key-black: #141414;
-      --key-black-border: #000;
-      --key-hi: #e8f4ff;
-    }
-    body {
-      margin: 0 auto;
-      max-width: 1100px;
-      padding: 1.25rem 1rem 3rem;
-    }
-    h1 {
-      font-size: 1.35rem;
-      font-weight: 600;
-      margin: 0 0 0.5rem;
-    }
-    .hint {
-      font-size: 0.88rem;
-      color: #555;
-      margin-bottom: 1.25rem;
-      max-width: 52rem;
-    }
-    .block {
-      background: #fff;
-      border: 1px solid #dcd8d3;
-      border-radius: 8px;
-      padding: 1rem 1.1rem 1.25rem;
-      margin-bottom: 1.25rem;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-    }
-    .block h2 {
-      font-size: 1.05rem;
-      margin: 0 0 0.75rem;
-      font-weight: 600;
-    }
-    .mono {
-      font-family: ui-monospace, "Cascadia Code", monospace;
-      font-size: 0.82rem;
-    }
-    .scroll-x {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 0.35rem;
-    }
-
-    /* Одна октава: 7 белых клавиш, 5 чёрных (паттерн 2 + 3) */
-    .keyboard {
-      display: flex;
-      flex-wrap: nowrap;
-      align-items: flex-end;
-      min-width: min(100%, 720px);
-      margin: 0 auto;
-      user-select: none;
-    }
-    .octave {
-      position: relative;
-      flex: 1 1 0;
-      min-width: 200px;
-      height: 11rem;
-    }
-    .octave-label {
-      position: absolute;
-      bottom: -1.35rem;
-      left: 0;
-      font-size: 0.75rem;
-      color: #666;
-      white-space: nowrap;
-    }
-    .white-keys {
-      display: flex;
-      height: 100%;
-      width: 100%;
-    }
-    .white-key {
-      flex: 1 1 0;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      padding-bottom: 0.45rem;
-      background: linear-gradient(180deg, var(--key-white) 0%, #e8e6e2 100%);
-      border: 1px solid var(--key-white-border);
-      border-right: none;
-      border-radius: 0 0 5px 5px;
-      box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
-      font-size: 0.72rem;
-      font-weight: 600;
-      color: #333;
-    }
-    .white-key:last-child {
-      border-right: 1px solid var(--key-white-border);
-    }
-    .white-key:hover {
-      background: linear-gradient(180deg, var(--key-hi) 0%, #dce8f2 100%);
-    }
-    .black-keys {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 58%;
-      pointer-events: none;
-    }
-    .black-key {
-      pointer-events: auto;
-      position: absolute;
-      width: calc(100% / 7 * 0.58);
-      height: 100%;
-      background: linear-gradient(180deg, #2c2c2c 0%, var(--key-black) 40%, #000 100%);
-      border: 1px solid var(--key-black-border);
-      border-radius: 0 0 4px 4px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.35), inset 0 -2px 0 rgba(255, 255, 255, 0.06);
-      z-index: 2;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding-bottom: 0.2rem;
-      font-size: 0.58rem;
-      font-weight: 600;
-      color: #bbb;
-    }
-    .black-key:hover {
-      background: linear-gradient(180deg, #3a3a3a 0%, #222 45%, #0a0a0a 100%);
-      color: #e0e0e0;
-    }
-    /* Центры чёрных клавиш между белыми: индекс 1,2,4,5,6 (доли ширины октавы) */
-    .black-key[data-n="1"] { left: calc(100% / 7 * 1 - 100% / 7 * 0.58 / 2); }
-    .black-key[data-n="2"] { left: calc(100% / 7 * 2 - 100% / 7 * 0.58 / 2); }
-    .black-key[data-n="4"] { left: calc(100% / 7 * 4 - 100% / 7 * 0.58 / 2); }
-    .black-key[data-n="5"] { left: calc(100% / 7 * 5 - 100% / 7 * 0.58 / 2); }
-    .black-key[data-n="6"] { left: calc(100% / 7 * 6 - 100% / 7 * 0.58 / 2); }
-
-    .legend {
-      margin-top: 2rem;
-      font-size: 0.88rem;
-      color: #444;
-    }
-    .legend ul {
-      margin: 0.35rem 0 0;
-      padding-left: 1.2rem;
-    }
-    .legend li {
-      margin: 0.25rem 0;
-    }
-  </style>
+  <link rel="stylesheet" href="app/keyboard-piano.css" />
 </head>
-<body>
+<body class="pkb-page">
   <h1>Раскладка клавиш фортепиано</h1>
-  <p class="hint">
-    Схематичная клавиатура: семь белых клавиш на октаву (буквы <span class="mono">c d e f g a b</span>),
-    пять чёрных — диезы к ступеням кроме <span class="mono">e</span> и <span class="mono">b</span> (паттерн «двойка + тройка»).
-    Подписи — пример в <strong>научной нотации</strong> (средняя до — <span class="mono">C4</span>).
-    См. <a href="docs/music-theory.md">docs/music-theory.md</a> — класс высоты тона (PC) и MIDI.
+  <p class="pkb-hint">
+    Схематичная клавиатура: семь белых клавиш на октаву (натуральные ступени), пять чёрных — между ними
+    (паттерн «двойка + тройка»). Подписи — канонические имена и октава в научной нотации.
+    Откройте эту страницу через <span class="mono">npm run serve</span> (ES-модули).
+    См. <a href="docs/music-theory.md">docs/music-theory.md</a> — pitch class и номер ноты MIDI.
   </p>
 
-  <div class="block">
-    <h2>Две октавы (C4–B5)</h2>
-    <div class="scroll-x">
+  <div class="cts-piano-panel">
+    <h2 class="pkb-block-title">Две октавы (C4–B5)</h2>
+    <div class="cts-scroll-x">
       <div
-        class="keyboard"
+        id="pkb-piano"
+        class="cts-piano-keyboard"
         role="group"
         aria-label="Схема клавиш: от C4 до B5, белые и чёрные клавиши"
-      >
-        <!-- Октава C4–B4 -->
-        <div class="octave" data-octave="4">
-          <span class="octave-label">октава 4 (от C4)</span>
-          <div class="white-keys">
-            <div class="white-key" title="C4, PC 0">C</div>
-            <div class="white-key" title="D4, PC 2">D</div>
-            <div class="white-key" title="E4, PC 4">E</div>
-            <div class="white-key" title="F4, PC 5">F</div>
-            <div class="white-key" title="G4, PC 7">G</div>
-            <div class="white-key" title="A4, PC 9">A</div>
-            <div class="white-key" title="B4, PC 11">B</div>
-          </div>
-          <div class="black-keys" aria-hidden="true">
-            <div class="black-key" data-n="1" title="C#4 / Db4, PC 1">C#</div>
-            <div class="black-key" data-n="2" title="D#4 / Eb4, PC 3">D#</div>
-            <div class="black-key" data-n="4" title="F#4 / Gb4, PC 6">F#</div>
-            <div class="black-key" data-n="5" title="G#4 / Ab4, PC 8">G#</div>
-            <div class="black-key" data-n="6" title="A#4 / Bb4, PC 10">A#</div>
-          </div>
-        </div>
-        <!-- Октава C5–B5 -->
-        <div class="octave" data-octave="5">
-          <span class="octave-label">октава 5</span>
-          <div class="white-keys">
-            <div class="white-key" title="C5, PC 0">C</div>
-            <div class="white-key" title="D5, PC 2">D</div>
-            <div class="white-key" title="E5, PC 4">E</div>
-            <div class="white-key" title="F5, PC 5">F</div>
-            <div class="white-key" title="G5, PC 7">G</div>
-            <div class="white-key" title="A5, PC 9">A</div>
-            <div class="white-key" title="B5, PC 11">B</div>
-          </div>
-          <div class="black-keys" aria-hidden="true">
-            <div class="black-key" data-n="1" title="C#5 / Db5">C#</div>
-            <div class="black-key" data-n="2" title="D#5 / Eb5">D#</div>
-            <div class="black-key" data-n="4" title="F#5 / Gb5">F#</div>
-            <div class="black-key" data-n="5" title="G#5 / Ab5">G#</div>
-            <div class="black-key" data-n="6" title="A#5 / Bb5">A#</div>
-          </div>
-        </div>
-      </div>
+      ></div>
     </div>
-    <p class="legend">
-      Белые клавиши — натуральные ступени; чёрные — альтерации к соседним белым (в подсказке — энгармонические пары).
-      Один оборот по белым от <span class="mono">C</span> до следующей <span class="mono">C</span> — октава, 12 полутонов по клавиатуре.
+    <p class="pkb-legend">
+      Белые клавиши — натуральные ступени; чёрные — альтерации к соседним белым. Один оборот по белым от
+      <span class="mono">C</span> до следующей <span class="mono">C</span> — октава, 12 полутонов по клавиатуре.
     </p>
   </div>
+
+  <script type="module" src="app/piano-keyboard-static.mjs"></script>
 </body>
 </html>

@@ -5,11 +5,12 @@ import {
   HARMONIC_END,
   HARMONIC_START,
   initToneGenTheory,
-  NOTE_NAMES,
   parseVoiceKey,
   ToneGen,
   voiceKey,
 } from './tone-gen-engine.mjs';
+import { buildLinearKeys } from './keyboard-layouts.mjs';
+import { createKeyboardSynthController } from './keyboard-synth-controller.mjs';
 import { buildBaseParams, buildPlayPayload, readOctaveRange, readToneGenParams } from './tone-gen-ui-shared.mjs';
 
 const PREFIX = 'ntg-';
@@ -89,159 +90,31 @@ async function main() {
     engine.setOutputLinear(p.volume);
   }
 
-  function clearKeyActive() {
-    for (const b of keysWrap.querySelectorAll('.ntg-key')) b.classList.remove('ntg-key-active');
-  }
-
-  function syncPolyKeyHighlight() {
-    clearKeyActive();
-    if (engine.mode !== 'latchPoly') return;
-    for (const key of engine.polyVoices.keys()) {
-      const { name, octave } = parseVoiceKey(key);
-      const b = keysWrap.querySelector(
-        `.ntg-key[data-note="${CSS.escape(name)}"][data-octave="${octave}"]`,
-      );
-      if (b) b.classList.add('ntg-key-active');
-    }
-  }
-
-  function setMonoKeyActive(name, octave) {
-    clearKeyActive();
-    const b = keysWrap.querySelector(
-      `.ntg-key[data-note="${CSS.escape(name)}"][data-octave="${String(octave)}"]`,
-    );
-    if (b) b.classList.add('ntg-key-active');
-  }
-
-  function startMono(name, octave) {
-    engine.startMono(buildPlayPayload(PREFIX, name, octave));
-    engine.setLatchedKeyForMono(voiceKey(name, octave));
-    const p = readParams();
-    const hz = engine.getFreq(name, octave, p.a4Hz);
-    setStatus(fmtPlaying(name, octave, hz));
-    setMonoKeyActive(name, octave);
-  }
-
-  function formatReleaseLabel(ms) {
-    const m = Number(ms);
-    if (!Number.isFinite(m)) return '—';
-    if (m >= 1000) return `${(m / 1000).toFixed(m % 1000 === 0 ? 0 : 1)} с`;
-    return `${Math.round(m)} мс`;
-  }
+  const kbd = createKeyboardSynthController({
+    getPointerRoot: () => keysWrap,
+    getClearRoot: () => keysWrap,
+    getHighlightRoot: () => keysWrap,
+    keySelector: '.ntg-key',
+    engine,
+    buildPlayPayload: (name, octave) => buildPlayPayload(PREFIX, name, octave),
+    onChange: refreshStatus,
+  });
 
   function updateIfPlaying() {
     engine.updateAllPlaying(buildBaseParams(PREFIX));
     refreshStatus();
-    syncPolyKeyHighlight();
+    kbd.syncExecutionHighlight();
   }
 
   function rebuildKeyRows() {
-    keysWrap.replaceChildren();
     const { octaveMin, octaveMax } = readOctaveRange(PREFIX);
-    for (let o = octaveMin; o <= octaveMax; o++) {
-      const row = document.createElement('div');
-      row.className = 'ntg-key-row';
-      const lab = document.createElement('div');
-      lab.className = 'ntg-oct-label';
-      lab.textContent = String(o);
-      const grid = document.createElement('div');
-      grid.className = 'ntg-keys';
-      grid.setAttribute('role', 'group');
-      grid.setAttribute('aria-label', `Октава ${o}`);
-      for (const name of NOTE_NAMES) {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'ntg-key';
-        btn.textContent = `${name}${o}`;
-        btn.dataset.note = name;
-        btn.dataset.octave = String(o);
-        grid.appendChild(btn);
-      }
-      row.appendChild(lab);
-      row.appendChild(grid);
-      keysWrap.appendChild(row);
-    }
-    bindKeyHandlers();
-    syncPolyKeyHighlight();
-  }
-
-  function bindKeyHandlers() {
-    for (const btn of keysWrap.querySelectorAll('.ntg-key')) {
-      btn.addEventListener('pointerdown', onKeyPointerDown);
-      btn.addEventListener('pointerup', onKeyPointerUp);
-      btn.addEventListener('pointercancel', onKeyPointerCancel);
-      btn.addEventListener('pointerleave', onKeyPointerLeave);
-    }
-  }
-
-  function onKeyPointerDown(ev) {
-    const btn = /** @type {HTMLButtonElement} */ (ev.currentTarget);
-    const name = btn.dataset.note;
-    const octave = Number(btn.dataset.octave);
-    if (!name || !Number.isFinite(octave)) return;
-
-    void engine.ensureCtx();
-
-    if (engine.mode === 'latchPoly') {
-      engine.startOrTogglePoly(buildPlayPayload(PREFIX, name, octave));
-      refreshStatus();
-      syncPolyKeyHighlight();
-      return;
-    }
-
-    if (engine.mode === 'latch') {
-      const key = voiceKey(name, octave);
-      if (engine.latchedKey === key && engine.monoVoice) {
-        engine.stopMonoSmooth();
-        engine.setLatchedKeyForMono(null);
-        clearKeyActive();
-        setStatus('Тишина');
-      } else {
-        engine.setLatchedKeyForMono(key);
-        startMono(name, octave);
-      }
-      return;
-    }
-
-    btn.classList.add('ntg-key-down');
-    btn.setPointerCapture(ev.pointerId);
-    engine.setLatchedKeyForMono(voiceKey(name, octave));
-    startMono(name, octave);
-  }
-
-  function onKeyPointerUp(ev) {
-    const btn = /** @type {HTMLButtonElement} */ (ev.currentTarget);
-    btn.classList.remove('ntg-key-down');
-    if (engine.mode !== 'hold') return;
-    try {
-      btn.releasePointerCapture(ev.pointerId);
-    } catch {
-      /* */
-    }
-    engine.stopMonoSmooth();
-    engine.setLatchedKeyForMono(null);
-    clearKeyActive();
-    setStatus('Тишина');
-  }
-
-  function onKeyPointerCancel(ev) {
-    const btn = /** @type {HTMLButtonElement} */ (ev.currentTarget);
-    btn.classList.remove('ntg-key-down');
-    if (engine.mode !== 'hold') return;
-    engine.stopMonoSmooth();
-    engine.setLatchedKeyForMono(null);
-    clearKeyActive();
-    setStatus('Тишина');
-  }
-
-  function onKeyPointerLeave(ev) {
-    const btn = /** @type {HTMLButtonElement} */ (ev.currentTarget);
-    if (engine.mode !== 'hold' || !btn.classList.contains('ntg-key-down')) return;
-    btn.classList.remove('ntg-key-down');
-    engine.stopMonoSmooth();
-    engine.setLatchedKeyForMono(null);
-    clearKeyActive();
-    setStatus('Тишина');
+    buildLinearKeys(keysWrap, {
+      octaveMin,
+      octaveMax,
+      keyButtonClass: 'ntg-key',
+    });
+    kbd.bindKeys();
+    kbd.syncExecutionHighlight();
   }
 
   $('ntg-volume').addEventListener('input', () => {
@@ -297,7 +170,7 @@ async function main() {
     engine.latchedKey = null;
     engine.stopMonoSmooth();
     engine.stopAllPolySmooth();
-    clearKeyActive();
+    kbd.syncExecutionHighlight();
     setStatus('Тишина');
   }
 
@@ -309,9 +182,16 @@ async function main() {
     engine.stopMonoSmooth();
     engine.stopAllPolySmooth();
     engine.latchedKey = null;
-    clearKeyActive();
+    kbd.syncExecutionHighlight();
     setStatus('Тишина');
   });
+
+  function formatReleaseLabel(ms) {
+    const m = Number(ms);
+    if (!Number.isFinite(m)) return '—';
+    if (m >= 1000) return `${(m / 1000).toFixed(m % 1000 === 0 ? 0 : 1)} с`;
+    return `${Math.round(m)} мс`;
+  }
 
   rebuildKeyRows();
   applyVolumeFromUi();

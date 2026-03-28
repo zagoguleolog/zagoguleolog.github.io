@@ -1,0 +1,86 @@
+/**
+ * Атлас knobs.png: 1024×1024, сетка 4×4, тайл 256×256 (логические координаты).
+ * Файл кладут в корень пакета music как knobs.png (путь относительно этой таблицы стилей — ../../knobs.png).
+ */
+
+.synth-kit-root {
+  --knobs-cell: var(--synth-cell);
+  --synth-knobs-atlas-url: url("../../knobs.png");
+}
+
+/* --- Крутилка: спрайт + вращение всего элемента (см. knob.mjs, useKnobsAtlas) --- */
+.synth-knob.synth-knob--knobs-atlas {
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+  background-image: var(--synth-knobs-atlas-url);
+  background-repeat: no-repeat;
+  background-size: calc(4 * var(--knobs-cell));
+  background-position: 0 0;
+}
+
+.synth-knob.synth-knob--knobs-atlas .synth-knob__hand {
+  display: none;
+}
+
+/* --- Превью фрагментов атласа (декор / вёрстка панелей): базовый тайл --- */
+.synth-atlas-tile {
+  display: inline-block;
+  box-sizing: border-box;
+  width: var(--knobs-cell);
+  height: var(--knobs-cell);
+  background-image: var(--synth-knobs-atlas-url);
+  background-repeat: no-repeat;
+  background-size: calc(4 * var(--knobs-cell));
+  vertical-align: middle;
+}
+
+.synth-atlas-tile--knob {
+  background-position: 0 0;
+}
+.synth-atlas-tile--fader_v {
+  background-position: calc(-1 * var(--knobs-cell)) 0;
+}
+.synth-atlas-tile--btn_red {
+  background-position: calc(-2 * var(--knobs-cell)) 0;
+}
+.synth-atlas-tile--power_toggle {
+  background-position: calc(-3 * var(--knobs-cell)) 0;
+}
+.synth-atlas-tile--btn_grid_4 {
+  background-position: 0 calc(-1 * var(--knobs-cell));
+}
+.synth-atlas-tile--frame_display {
+  background-position: calc(-1 * var(--knobs-cell)) calc(-1 * var(--knobs-cell));
+}
+.synth-atlas-tile--wave_icons {
+  background-position: calc(-2 * var(--knobs-cell)) calc(-1 * var(--knobs-cell));
+}
+.synth-atlas-tile--checkbox {
+  background-position: calc(-3 * var(--knobs-cell)) calc(-1 * var(--knobs-cell));
+}
+.synth-atlas-tile--frame_wide {
+  background-position: 0 calc(-2 * var(--knobs-cell));
+}
+.synth-atlas-tile--arrows_ud {
+  background-position: calc(-1 * var(--knobs-cell)) calc(-2 * var(--knobs-cell));
+}
+.synth-atlas-tile--jack {
+  background-position: calc(-2 * var(--knobs-cell)) calc(-2 * var(--knobs-cell));
+}
+.synth-atlas-tile--slider_mini {
+  background-position: calc(-3 * var(--knobs-cell)) calc(-2 * var(--knobs-cell));
+}
+.synth-atlas-tile--tile_blank_a {
+  background-position: 0 calc(-3 * var(--knobs-cell));
+}
+.synth-atlas-tile--tile_blank_b {
+  background-position: calc(-1 * var(--knobs-cell)) calc(-3 * var(--knobs-cell));
+}
+
+/* Два тайла по ширине: колонки C–D, ряд 4 */
+.synth-atlas-tile--brand_interface {
+  width: calc(2 * var(--knobs-cell));
+  height: var(--knobs-cell);
+  background-position: calc(-2 * var(--knobs-cell)) calc(-3 * var(--knobs-cell));
+}

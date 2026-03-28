@@ -323,6 +323,207 @@
   background: #fafaf8;
 }
 
+.cts-kbd-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.75rem;
+  margin-bottom: 0.45rem;
+}
+
+.cts-kbd-toolbar-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--cof-muted, #666);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cts-kbd-seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.cts-kbd-btn {
+  font: inherit;
+  font-size: 0.72rem;
+  padding: 0.28rem 0.5rem;
+  border: 1px solid var(--ntg-border, #2d3a47);
+  border-radius: 6px;
+  background: var(--ntg-bg, #0f1419);
+  color: var(--ntg-ink, #e8eef4);
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.cts-kbd-btn:hover {
+  border-color: var(--ntg-muted, #8b9bab);
+}
+
+.cts-kbd-btn[aria-pressed='true'] {
+  border-color: var(--ntg-accent, #5eead4);
+  background: var(--ntg-accent-dim, #2dd4bf44);
+  color: var(--ntg-accent, #5eead4);
+}
+
+.cts-kbd-btn:focus-visible {
+  outline: 2px solid var(--ntg-focus, #38bdf8);
+  outline-offset: 2px;
+}
+
+.cts-keyboard-stage {
+  min-width: 0;
+}
+
+.cts-bayan-scroll {
+  padding: 0.2rem 0 0.35rem;
+  max-width: 100%;
+  touch-action: pan-x manipulation;
+}
+
+.cts-bayan-wrap {
+  overflow: visible;
+  min-height: 11rem;
+}
+
+.cts-bayan-wrap svg {
+  display: block;
+  min-width: 560px;
+  height: auto;
+  max-width: 100%;
+}
+
+/* Подсветка активной ноты (круг / клавиатура) — SVG-кружки */
+.cts-bayan-wrap svg circle.cts-byan-key.ntg-key-active {
+  filter: drop-shadow(0 0 6px rgba(94, 234, 212, 0.9));
+  stroke: var(--ntg-accent, #5eead4) !important;
+  stroke-width: 4px !important;
+}
+
+.cts-kbd-placeholder {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--cof-muted, #666);
+  font-style: italic;
+}
+
+/* Горизонтальная прокрутка для пиано */
+.cts-scroll-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.25rem;
+}
+
+/* Компактная раскладка пиано (меньше, чем piano-keyboard.html) */
+.cts-piano-keyboard {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  gap: 0.2rem;
+  min-width: min(100%, 52rem);
+  padding-bottom: 0.9rem;
+  user-select: none;
+}
+
+.cts-piano-panel .cts-octave {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 7.5rem;
+  height: 5.25rem;
+  margin-bottom: 0.15rem;
+}
+
+.cts-white-keys {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+.cts-piano-panel .cts-pkey--white {
+  flex: 1 1 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 0.2rem;
+  border: 1px solid #2a2a2a;
+  border-right: none;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(180deg, #fdfcfa 0%, #e4e2de 100%);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.cts-piano-panel .cts-pkey--white:last-child {
+  border-right: 1px solid #2a2a2a;
+}
+
+.cts-piano-panel .cts-pkey--white:hover {
+  background: linear-gradient(180deg, #e8f4ff 0%, #dce8f2 100%);
+}
+
+.cts-black-keys {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 58%;
+  pointer-events: none;
+}
+
+.cts-piano-panel .cts-pkey--black {
+  pointer-events: auto;
+  position: absolute;
+  width: calc(100% / 7 * 0.55);
+  height: 100%;
+  padding-bottom: 0.12rem;
+  border: 1px solid #000;
+  border-radius: 0 0 3px 3px;
+  background: linear-gradient(180deg, #2c2c2c 0%, #141414 40%, #000 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  font-size: 0.52rem;
+  font-weight: 600;
+  color: #bbb;
+}
+
+.cts-piano-panel .cts-pkey--black:hover {
+  background: linear-gradient(180deg, #3a3a3a 0%, #222 45%, #0a0a0a 100%);
+  color: #e8e8e8;
+}
+
+.cts-piano-panel .cts-pkey--black[data-n='1'] {
+  left: calc(100% / 7 * 1 - 100% / 7 * 0.55 / 2);
+}
+.cts-piano-panel .cts-pkey--black[data-n='2'] {
+  left: calc(100% / 7 * 2 - 100% / 7 * 0.55 / 2);
+}
+.cts-piano-panel .cts-pkey--black[data-n='4'] {
+  left: calc(100% / 7 * 4 - 100% / 7 * 0.55 / 2);
+}
+.cts-piano-panel .cts-pkey--black[data-n='5'] {
+  left: calc(100% / 7 * 5 - 100% / 7 * 0.55 / 2);
+}
+.cts-piano-panel .cts-pkey--black[data-n='6'] {
+  left: calc(100% / 7 * 6 - 100% / 7 * 0.55 / 2);
+}
+
+.cts-piano-oct-label {
+  position: absolute;
+  bottom: -1rem;
+  left: 0;
+  font-size: 0.62rem;
+  color: var(--cof-muted, #666);
+  white-space: nowrap;
+}
+
 .cts-piano-panel .ntg-keys-wrap {
   display: flex;
   flex-direction: column;
@@ -385,6 +586,16 @@
 
 .cts-piano-panel .ntg-key.ntg-key-down {
   transform: scale(0.97);
+}
+
+/* Слой B: ступени гаммы тональности (не смешивается с ntg-key-active) */
+.cts-keyboard-stage .cts-play-key.ntg-key-hint {
+  outline: 2px dashed rgba(56, 189, 248, 0.75);
+  outline-offset: 2px;
+}
+
+.cts-piano-panel .cts-pkey.ntg-key-hint {
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.55);
 }
 
 /* Тёмная тема всей страницы (как панель синтеза): только circle-scales.html (.cts-wide-page) */
@@ -497,6 +708,41 @@ body:has(> .cof-page.cts-wide-page) .cts-piano-panel {
   border-color: var(--ntg-border);
   background: var(--ntg-surface);
   box-shadow: 0 2px 14px rgba(0, 0, 0, 0.2);
+}
+
+body:has(> .cof-page.cts-wide-page) .cts-kbd-toolbar-label {
+  color: var(--cof-muted);
+}
+
+body:has(> .cof-page.cts-wide-page) .cts-piano-panel .cts-pkey--white {
+  border-color: #3d4d5c;
+  background: linear-gradient(180deg, #e8eaee 0%, #c8ccd4 100%);
+  color: #1e293b;
+}
+
+body:has(> .cof-page.cts-wide-page) .cts-piano-panel .cts-pkey--white:hover {
+  background: linear-gradient(180deg, #d4e8f8 0%, #b8c8d8 100%);
+}
+
+body:has(> .cof-page.cts-wide-page) .cts-piano-panel .cts-pkey--black {
+  border-color: #0a0a0a;
+}
+
+body:has(> .cof-page.cts-wide-page) .cts-piano-oct-label {
+  color: var(--cof-muted);
+}
+
+body:has(> .cof-page.cts-wide-page) .cts-kbd-placeholder {
+  color: var(--cof-muted);
+}
+
+body:has(> .cof-page.cts-wide-page) .cts-bayan-wrap .cts-bayan-frame {
+  fill: var(--ntg-surface);
+  stroke: var(--ntg-border);
+}
+
+body:has(> .cof-page.cts-wide-page) .cts-bayan-wrap .cts-bayan-row-label {
+  fill: var(--cof-muted);
 }
 
 body:has(> .cof-page.cts-wide-page) .cts-chord-line--warn {

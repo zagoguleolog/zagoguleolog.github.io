@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Synth UI kit — демо</title>
+    <link rel="stylesheet" href="synth-kit/synth-kit.css" />
+    <link rel="stylesheet" href="synth-kit/knobs-atlas.css" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: radial-gradient(1200px 600px at 20% 0%, #1a2836 0%, var(--synth-bg) 55%);
+      }
+      .demo-page {
+        max-width: 56rem;
+        margin: 0 auto;
+        padding: 1.25rem 1rem 2rem;
+      }
+      .demo-page h1 {
+        font-size: 1.35rem;
+        font-weight: 600;
+        margin: 0 0 0.35rem;
+        letter-spacing: -0.02em;
+      }
+      .demo-lead {
+        font-size: 0.88rem;
+        color: var(--synth-muted);
+        margin: 0 0 1rem;
+        line-height: 1.5;
+      }
+      .demo-panel {
+        padding: 1rem 1.05rem;
+        background: var(--synth-surface);
+        border: 1px solid var(--synth-border);
+        border-radius: 10px;
+        margin-bottom: 1rem;
+      }
+      .demo-panel h2 {
+        font-size: 0.92rem;
+        margin: 0 0 0.65rem;
+        font-weight: 600;
+        color: var(--synth-ink);
+      }
+      .demo-controls label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--synth-muted);
+        margin-bottom: 0.45rem;
+      }
+      .demo-controls input[type='range'] {
+        flex: 1;
+        max-width: 16rem;
+      }
+      .demo-readout {
+        font-family: ui-monospace, monospace;
+        font-size: 0.8rem;
+        color: var(--synth-accent);
+      }
+      .demo-widgets {
+        align-items: end;
+      }
+    </style>
+  </head>
+  <body class="synth-kit-root">
+    <div class="demo-page" id="demo-root">
+      <h1>Synth UI kit</h1>
+      <p class="demo-lead">
+        Единый набор блоков: крутилка, вертикальный фейдер, семисегментный индикатор, тоггл, пара кнопок,
+        матрица чекбоксов. Запуск: <span class="demo-readout">npm run serve</span> →
+        <span class="demo-readout">http://127.0.0.1:4173/app/synth-kit-demo.html</span>
+      </p>
+
+      <section class="demo-panel">
+        <h2>Масштаб и чувствительность</h2>
+        <div class="demo-controls">
+          <label>
+            <span>—synth-scale</span>
+            <input id="demo-scale" type="range" min="0.5" max="2" step="0.05" value="1" />
+            <span class="demo-readout" id="demo-scale-val">1</span>
+          </label>
+          <label>
+            <span>pixelsPerFullRange (крутилка + фейдер)</span>
+            <input id="demo-px" type="range" min="40" max="400" step="10" value="200" />
+            <span class="demo-readout" id="demo-px-val">200</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="demo-panel">
+        <h2>Виджеты</h2>
+        <div class="synth-grid demo-widgets" id="demo-grid" style="grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr))"></div>
+      </section>
+    </div>
+
+    <script type="module">
+      import { createKnob } from './synth-kit/knob.mjs';
+      import { createFader } from './synth-kit/fader.mjs';
+      import { createSegmentDisplay } from './synth-kit/segment-display.mjs';
+      import { createToggle } from './synth-kit/toggle.mjs';
+      import { createPairButtons } from './synth-kit/pair-buttons.mjs';
+      import { createCheckboxMatrix } from './synth-kit/checkbox-matrix.mjs';
+
+      const grid = document.getElementById('demo-grid');
+      const root = document.getElementById('demo-root');
+      const scaleEl = document.getElementById('demo-scale');
+      const scaleVal = document.getElementById('demo-scale-val');
+      const pxEl = document.getElementById('demo-px');
+      const pxVal = document.getElementById('demo-px-val');
+
+      const knob = createKnob({
+        mount: grid,
+        label: 'Крутилка',
+        min: 0,
+        max: 100,
+        value: 42,
+        step: 0.5,
+        pixelsPerFullRange: Number(pxEl.value),
+      });
+
+      const knobAtlas = createKnob({
+        mount: grid,
+        label: 'Крутилка (атлас)',
+        min: 0,
+        max: 100,
+        value: 42,
+        step: 0.5,
+        pixelsPerFullRange: Number(pxEl.value),
+        useKnobsAtlas: true,
+      });
+
+      const fader = createFader({
+        mount: grid,
+        label: 'Фейдер',
+        min: 0,
+        max: 1,
+        value: 0.65,
+        step: 0.001,
+        pixelsPerFullRange: Number(pxEl.value),
+      });
+
+      const seg = createSegmentDisplay({
+        mount: grid,
+        value: 3.14,
+        decimals: 2,
+        width: 6,
+        padZeros: false,
+      });
+
+      const toggle = createToggle({ mount: grid, label: 'Тоггл' });
+
+      const pair = createPairButtons({
+        mount: grid,
+        leftLabel: 'A',
+        rightLabel: 'B',
+        onLeft: () => {
+          seg.setValue(seg.getValue() - 0.1);
+        },
+        onRight: () => {
+          seg.setValue(seg.getValue() + 0.1);
+        },
+      });
+
+      const matrix = createCheckboxMatrix({
+        mount: grid,
+        rows: 3,
+        cols: 4,
+        initial: [
+          [true, false, false, true],
+          [false, true, true, false],
+          [false, false, true, true],
+        ],
+      });
+
+      knob.onChange((v) => {
+        seg.setValue(v / 10);
+      });
+
+      function applyScale() {
+        const s = Number(scaleEl.value);
+        root.style.setProperty('--synth-scale', String(s));
+        scaleVal.textContent = s.toFixed(2);
+      }
+
+      function applyPx() {
+        const px = Number(pxEl.value);
+        pxVal.textContent = String(px);
+        knob.setPixelsPerFullRange(px);
+        knobAtlas.setPixelsPerFullRange(px);
+        fader.setPixelsPerFullRange(px);
+      }
+
+      scaleEl.addEventListener('input', applyScale);
+      pxEl.addEventListener('input', applyPx);
+      applyScale();
+      applyPx();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Страницы (site map) — music</title>
+  <style>
+    :root {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      line-height: 1.45;
+      color: #1a1a1a;
+      background: #f4f2ef;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 980px;
+      padding: 1.25rem 1rem 3rem;
+    }
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 650;
+      margin: 0 0 0.75rem;
+    }
+    .hint {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 1.25rem;
+    }
+    .block {
+      background: #fff;
+      border: 1px solid #dcd8d3;
+      border-radius: 10px;
+      padding: 1rem 1.1rem 1.15rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+    .block h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin: 0 0 0.6rem;
+    }
+    ul {
+      margin: 0;
+      padding-left: 1.2rem;
+    }
+    li {
+      margin: 0.35rem 0;
+    }
+    a { color: #0b5bd3; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code {
+      font-family: ui-monospace, "Cascadia Code", monospace;
+      font-size: 0.86em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Страницы (site map)</h1>
+  <p class="hint">
+    Список всех “страничек” (HTML) и основных доков (MD) внутри каталога <code>music/</code>.
+    Для корректной загрузки ES-модулей используйте <code>npm run serve</code> в <code>music</code>.
+  </p>
+
+  <section class="block" aria-label="HTML страницы">
+    <h2>HTML-страницы</h2>
+    <ul>
+      <li><a href="index.html">`web/index.html` (таблицы из теории)</a></li>
+      <li><a href="../theory-tables.html">`theory-tables.html` (корень music)</a></li>
+      <li><a href="../piano-keyboard.html">`piano-keyboard.html` (клавиатура)</a></li>
+      <li><a href="../app/bayan-keyboard.html">`app/bayan-keyboard.html` (B-system)</a></li>
+      <li><a href="../app/note-tone-gen.html">`app/note-tone-gen.html` (генератор тона)</a></li>
+      <li><a href="../app/circle-of-fifths.html">`app/circle-of-fifths.html` (круг)</a></li>
+      <li><a href="../app/circle-scales.html">`app/circle-scales.html` (круг + тональность)</a></li>
+      <li><a href="../app/synth-kit-demo.html">`app/synth-kit-demo.html` (демо UI-синта)</a></li>
+      <li><a href="../app/knobs-atlas-showcase.html">`app/knobs-atlas-showcase.html` (галерея фрагментов knobs.png)</a></li>
+    </ul>
+  </section>
+
+  <section class="block" aria-label="Документация">
+    <h2>Документация (MD)</h2>
+    <ul>
+      <li><a href="../docs/overview.md">`docs/overview.md`</a></li>
+      <li><a href="../docs/domain.md">`docs/domain.md`</a></li>
+      <li><a href="../docs/music-theory.md">`docs/music-theory.md`</a></li>
+      <li><a href="../docs/bayan-b-system.md">`docs/bayan-b-system.md`</a></li>
+      <li><a href="../docs/AI_RULES.md">`docs/AI_RULES.md`</a></li>
+      <li><a href="../docs/architecture.md">`docs/architecture.md`</a></li>
+      <li><a href="../docs/testing.md">`docs/testing.md`</a></li>
+      <li><a href="../docs/errors.md">`docs/errors.md`</a></li>
+      <li><a href="../docs/dev-cheatsheet.md">`docs/dev-cheatsheet.md`</a></li>
+      <li><a href="../docs/dev-pipeline.md">`docs/dev-pipeline.md`</a></li>
+      <li><a href="../docs/system/review-checklist.md">`docs/system/review-checklist.md`</a></li>
+      <li><a href="../docs/system/versioning.md">`docs/system/versioning.md`</a></li>
+      <li><a href="../docs/system/commenting-standard.md">`docs/system/commenting-standard.md`</a></li>
+      <li><a href="../docs/system/quality-gates.md">`docs/system/quality-gates.md`</a></li>
+      <li><a href="../docs/system/quality-standard.md">`docs/system/quality-standard.md`</a></li>
+      <li><a href="../docs/system/development-regulation.md">`docs/system/development-regulation.md`</a></li>
+      <li><a href="../docs/system/pipeline.md">`docs/system/pipeline.md`</a></li>
+    </ul>
+  </section>
+</body>
+</html>
+

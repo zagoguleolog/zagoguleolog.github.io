@@ -176,13 +176,13 @@
               role="group"
               aria-labelledby="cts-kbd-toolbar-label"
             >
-              <button type="button" class="cts-kbd-btn" data-cts-kbd="linear" aria-pressed="true">
+              <button type="button" class="cts-kbd-btn" data-cts-kbd-mode="linear" aria-pressed="true">
                 linear
               </button>
-              <button type="button" class="cts-kbd-btn" data-cts-kbd="piano" aria-pressed="false">
+              <button type="button" class="cts-kbd-btn" data-cts-kbd-mode="piano" aria-pressed="false">
                 piano
               </button>
-              <button type="button" class="cts-kbd-btn" data-cts-kbd="bayiano" aria-pressed="false">
+              <button type="button" class="cts-kbd-btn" data-cts-kbd-mode="bayiano" aria-pressed="false">
                 bayiano
               </button>
             </div>
@@ -200,8 +200,10 @@
                 ></div>
               </div>
             </div>
-            <div id="cts-keys-bayiano" class="cts-kbd-view cts-kbd-view--bayiano" hidden>
-              <p class="cts-kbd-placeholder">Скоро</p>
+            <div id="cts-keys-bayiano" class="cts-kbd-view" hidden>
+              <div class="cts-scroll-x cts-bayan-scroll">
+                <div id="cts-bayan-wrap" class="cts-bayan-wrap" aria-label="Баян B-system"></div>
+              </div>
             </div>
           </div>
         </section>

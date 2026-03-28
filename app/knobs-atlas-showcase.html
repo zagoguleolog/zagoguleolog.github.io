@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Атлас knobs.png — фрагменты</title>
+    <link rel="stylesheet" href="synth-kit/synth-kit.css" />
+    <link rel="stylesheet" href="synth-kit/knobs-atlas.css" />
+    <style>
+      body.synth-kit-root {
+        margin: 0;
+        min-height: 100vh;
+        --synth-scale: 1;
+        --synth-u: min(26vw, 10.5rem);
+        background: radial-gradient(1200px 600px at 20% 0%, #1a2836 0%, var(--synth-bg) 55%);
+      }
+
+      .kas-page {
+        max-width: 70rem;
+        margin: 0 auto;
+        padding: 1.35rem 1rem 2.5rem;
+      }
+
+      .kas-page h1 {
+        font-size: 1.35rem;
+        font-weight: 600;
+        margin: 0 0 0.35rem;
+        letter-spacing: -0.02em;
+        color: var(--synth-ink);
+      }
+
+      .kas-lead {
+        font-size: 0.88rem;
+        color: var(--synth-muted);
+        margin: 0 0 1.35rem;
+        line-height: 1.5;
+        max-width: 42rem;
+      }
+
+      .kas-lead a {
+        color: var(--synth-accent);
+      }
+
+      .kas-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem 1rem;
+        align-items: end;
+      }
+
+      @media (max-width: 960px) {
+        .kas-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 520px) {
+        .kas-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .kas-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.85rem 0.65rem 1rem;
+        background: var(--synth-surface);
+        border: 1px solid var(--synth-border);
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .kas-card--wide {
+        grid-column: 3 / -1;
+      }
+
+      @media (max-width: 960px) {
+        .kas-card--wide {
+          grid-column: 1 / -1;
+        }
+      }
+
+      .kas-tile-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(var(--knobs-cell) + 4px);
+      }
+
+      .kas-card--wide .kas-tile-wrap {
+        width: 100%;
+      }
+
+      .kas-title {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--synth-ink);
+        margin: 0;
+        line-height: 1.25;
+      }
+
+      .kas-id {
+        font-family: ui-monospace, monospace;
+        font-size: 0.68rem;
+        color: var(--synth-muted);
+        margin: 0;
+        word-break: break-all;
+      }
+    </style>
+  </head>
+  <body class="synth-kit-root">
+    <div class="kas-page">
+      <h1>Атлас knobs.png — нарезка по ячейкам</h1>
+      <p class="kas-lead">
+        Каждый блок — отдельный элемент с классом <code>synth-atlas-tile--…</code> из
+        <a href="synth-kit/knobs-atlas.css">knobs-atlas.css</a>. Исходный файл —
+        <a href="../knobs.png">knobs.png</a> (1024×1024). Демо виджетов:
+        <a href="synth-kit-demo.html">synth-kit-demo.html</a>.
+      </p>
+
+      <div class="kas-grid">
+        <figure class="kas-card">
+          <div class="kas-tile-wrap">
+            <span class="synth-atlas-tile synth-atlas-tile--knob" role="img" aria-label="Ручка"></span>
+          </div>
+          <figcaption class="kas-title">Ручка</figcaption>
+          <p class="kas-id">synth-atlas-tile--knob</p>
+        </figure>
+
+        <figure class="kas-card">
+          <div class="kas-tile-wrap">
+            <span class="synth-atlas-tile synth-atlas-tile--fader_v" role="img" aria-label="Вертикальный фейдер"></span>
+          </div>
+          <figcaption class="kas-title">Вертикальный фейдер</figcaption>
+          <p class="kas-id">synth-atlas-tile--fader_v</p>
+        </figure>
+
+        <figure class="kas-card">
+          <div class="kas-tile-wrap">
+            <span class="synth-atlas-tile synth-atlas-tile--btn_red" role="img" aria-label="Красная кнопка"></span>
+          </div>
+          <figcaption class="kas-title">Красная кнопка</figcaption>
+          <p class="kas-id">synth-atlas-tile--btn_red</p>
+        </figure>
+
+        <figure class="kas-card">
+          <div class="kas-tile-wrap">
+            <span class="synth-atlas-tile synth-atlas-tile--power_toggle" role="img" aria-label="ON OFF и тумблер"></span>
+          </div>
+          <figcaption class="kas-title">ON / OFF и тумблер</figcaption>
+          <p class="kas-id">synth-atlas-tile--power_toggle</p>
+        </figure>
+
+        <figure class="kas-card">
+          <div class="kas-tile-wrap">
+            <span class="synth-atlas-tile synth-atlas-tile--btn_grid_4" role="img" aria-label="Четыре кнопки"></span>
+          </div>
+          <figcaption class="kas-title">Четыре кнопки 2×2</figcaption>
+          <p class="kas-id">synth-atlas-tile--btn_grid_4</p>
+        </figure>
+
+        <figure class="kas-card">
+          <div class="kas-tile-wrap">
+            <span class="synth-atlas-tile synth-atlas-tile--frame_display" role="img" aria-label="Рамка дисплей"></span>
+          </div>
+          <figcaption class="kas-title">Рамка-дисплей</figcaption>
+          <p class="kas-id">synth-atlas-tile--frame_display</p>
+        </figure>
+
+        <figure class="kas-card">
+          <div class="kas-tile-wrap">
+            <span class="synth-atlas-tile synth-atlas-tile--wave_icons" role="img" aria-label="Иконки волн"></span>
+          </div>
+          <figcaption class="kas-title">Иконки волн</figcaption>
+          <p class="kas-id">synth-atlas-tile--wave_icons</p>
+        </figure>
+
+        <figure class="kas-card">
+          <div class="kas-tile-wrap">
+            <span class="synth-atlas-tile synth-atlas-tile--checkbox" role="img" aria-label="Чекбокс"></span>
+          </div>
+          <figcaption class="kas-title">Чекбокс</figcaption>
+          <p class="kas-id">synth-atlas-tile--checkbox</p>
+        </figure>
+
+        <figure class="kas-card">
+          <div class="kas-tile-wrap">
+            <span class="synth-atlas-tile synth-atlas-tile--frame_wide" role="img" aria-label="Широкая рамка"></span>
+          </div>
+          <figcaption class="kas-title">Широкая рамка</figcaption>
+          <p class="kas-id">synth-atlas-tile--frame_wide</p>
+        </figure>
+
+        <figure class="kas-card">
+          <div class="kas-tile-wrap">
+            <span class="synth-atlas-tile synth-atlas-tile--arrows_ud" role="img" aria-label="Стрелки вверх вниз"></span>
+          </div>
+          <figcaption class="kas-title">Стрелки вверх / вниз</figcaption>
+          <p class="kas-id">synth-atlas-tile--arrows_ud</p>
+        </figure>
+
+        <figure class="kas-card">
+          <div class="kas-tile-wrap">
+            <span class="synth-atlas-tile synth-atlas-tile--jack" role="img" aria-label="Разъём"></span>
+          </div>
+          <figcaption class="kas-title">Разъём</figcaption>
+          <p class="kas-id">synth-atlas-tile--jack</p>
+        </figure>
+
+        <figure class="kas-card">
+          <div class="kas-tile-wrap">
+            <span class="synth-atlas-tile synth-atlas-tile--slider_mini" role="img" aria-label="Мини-слайдер"></span>
+          </div>
+          <figcaption class="kas-title">Мини-слайдер</figcaption>
+          <p class="kas-id">synth-atlas-tile--slider_mini</p>
+        </figure>
+
+        <figure class="kas-card">
+          <div class="kas-tile-wrap">
+            <span class="synth-atlas-tile synth-atlas-tile--tile_blank_a" role="img" aria-label="Пустая плитка A"></span>
+          </div>
+          <figcaption class="kas-title">Плитка (пустая A)</figcaption>
+          <p class="kas-id">synth-atlas-tile--tile_blank_a</p>
+        </figure>
+
+        <figure class="kas-card">
+          <div class="kas-tile-wrap">
+            <span class="synth-atlas-tile synth-atlas-tile--tile_blank_b" role="img" aria-label="Пустая плитка B"></span>
+          </div>
+          <figcaption class="kas-title">Плитка (пустая B)</figcaption>
+          <p class="kas-id">synth-atlas-tile--tile_blank_b</p>
+        </figure>
+
+        <figure class="kas-card kas-card--wide">
+          <div class="kas-tile-wrap">
+            <span class="synth-atlas-tile synth-atlas-tile--brand_interface" role="img" aria-label="INTERFACE"></span>
+          </div>
+          <figcaption class="kas-title">Подпись INTERFACE (две колонки)</figcaption>
+          <p class="kas-id">synth-atlas-tile--brand_interface</p>
+        </figure>
+      </div>
+    </div>
+  </body>
+</html>

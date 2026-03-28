@@ -1,8 +1,28 @@
+#029 | 2026-03-29 — DONE | Фейдер: центр ручки — убраны инлайн `left`/`transform` в `fader.mjs` (оставлено центрирование из `synth-kit.css`); снята отладочная инструментация ingest
+
+#029 | 2026-03-29 — DONE | `knobs.png` в корне music; страница `app/knobs-atlas-showcase.html` (галерея фрагментов атласа); `docs/synth-ui.md`, `overview.md`, `README.md`; `npm run verify` OK
+
+#028 | 2026-03-29 — DONE | Атлас knobs.png: `app/synth-kit/knobs-atlas.css`, опция `useKnobsAtlas` в `knob.mjs`, демо в `synth-kit-demo.html`; `docs/synth-ui.md`, `overview.md`, `README.md`, `documentation-map.mdc`; `node --check`, `npm run verify` OK
+
+#027 | 2026-03-29 — DONE | Synth UI kit: `app/synth-kit/` (knob, fader, segment-display, toggle, pair-buttons, checkbox-matrix, `synth-kit.css`), `app/synth-kit-demo.html`; `docs/synth-ui.md`, `domain.md`, `overview.md`, `architecture.md`, `README.md`, `documentation-map.mdc`; шрифт DSEG с jsDelivr; `node --check`, `npm run verify` OK
+
+#026 | 2026-03-28 — DONE | Документация: сверка с рефакторингом клавиатур — дополнены `docs/overview.md`, `docs/music-theory.md`, `docs/architecture.md`, `.cursor/rules/documentation-map.mdc` (модули keyboard-* и `ntg-key-hint`)
+
+#025 | 2026-03-28 — DONE | Единый слой клавиатур: `app/keyboard-layouts.mjs`, `keyboard-synth-controller.mjs`, `keyboard-theory-highlight.mjs`; JSDoc `ToneSynthEngine` в `tone-gen-engine.mjs`; рефакторинг `note-tone-gen.mjs`, `circle-scales.mjs`; подсветка лада (слой B) на клавиатуре круга; `piano-keyboard.html` + `piano-keyboard-static.mjs` + `keyboard-piano.css`; docs overview/README/music-theory; `node --check`, `npm run verify` OK
+
+#024 | 2026-03-26 — DONE | Страницы: добавлена карта `web/stranichki.html` со всеми ссылками на HTML-страницы и основные MD-доки; `npm run verify:http` OK
+
 #022 | 2026-03-25 — DONE | Баян B-system: `docs/bayan-b-system.md` (теория + формулы), `lib/bayan-b-system.js`, `app/bayan-keyboard.html|css|mjs|page.mjs`; `music-theory.md`, `domain.md`, `overview.md`, `README.md`, `documentation-map.mdc`, `static-server.js`, `verify-theory.js`; эталон `Расположение_нот_на_баяне.jpg`; `npm run verify` OK
 
 #022 | 2026-03-25 — DONE | Git в `music/`: init, `.gitignore`, коммит `7a36197` (начальный снимок проекта)
 
 #021 | 2026-03-25 — DONE | `piano-keyboard.html`: схема белых/чёрных клавиш (октавы 4–5); `music-theory.md` (раскладка клавиш), `overview.md`, `README.md`; `npm run verify` OK
+
+#023 | 2026-03-25 — DONE | circle-scales: баян под кругом — удвоены `cellWidth`/`buttonRadius`/`rowGap` (32/18/6), `compact: false`; CSS min-height/min-width и обводка активной клавиши
+
+#022 | 2026-03-25 — DONE | circle-scales: режим **bayiano** — интерактивный SVG B-system (`renderBayanKeyboard` + `interactive`/`compact` в `bayan-keyboard.mjs`, `CANONICAL_TONIC_BY_PC`, `#cts-bayan-wrap`); те же `cts-play-key`, подсветка и синтез; стили `circle-scales.css`; overview, README; `npm run verify` OK
+
+#021 | 2026-03-25 — DONE | circle-scales: переключатель вида клавиатуры linear / piano / bayiano (заготовка); пиано-раскладка компактнее piano-keyboard.html; общие `cts-play-key`, подсветка и звук как у линейной; `circle-scales.html|css|mjs`; overview, README; `npm run verify` OK
 
 #020 | 2026-03-25 — DONE | circle-scales: убраны заголовок и текст над клавиатурой; уменьшены отступы панели от круга (`circle-scales.html`, `circle-scales.css`)
 

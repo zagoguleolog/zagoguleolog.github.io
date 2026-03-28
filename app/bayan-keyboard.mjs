@@ -2,6 +2,7 @@
  * Рендер SVG поля B-system; данные из lib/bayan-b-system.js.
  */
 import { buildBayanButtonModels, B_SYSTEM_ROW_COUNT } from '../lib/bayan-b-system.js';
+import { CANONICAL_TONIC_BY_PC } from '../lib/music-theory.js';
 
 const ROW_LABELS = ['3-й ряд', '2-й ряд', '1-й ряд'];
 
@@ -26,7 +27,7 @@ function styleButton(circle, textEl, btn) {
 
 /**
  * @param {HTMLElement} container
- * @param {{ midiMin: number, midiMax: number, cellWidth: number, buttonRadius: number, rowGap: number, staggerFraction: number, brickHalfSteps: number }} opts
+ * @param {{ midiMin: number, midiMax: number, cellWidth: number, buttonRadius: number, rowGap: number, staggerFraction: number, brickHalfSteps: number, interactive?: boolean, compact?: boolean }} opts
  */
 export function renderBayanKeyboard(container, opts) {
   const {
@@ -37,7 +38,12 @@ export function renderBayanKeyboard(container, opts) {
     rowGap,
     staggerFraction,
     brickHalfSteps,
+    interactive = false,
+    compact = false,
   } = opts;
+
+  const labelColW = compact ? 50 : 72;
+  const pad = compact ? 8 : 14;
 
   const buttons = buildBayanButtonModels({
     midiMin,
@@ -46,8 +52,6 @@ export function renderBayanKeyboard(container, opts) {
   });
 
   const rowPitch = 2 * buttonRadius + rowGap;
-  const labelColW = 72;
-  const pad = 14;
   const brickDx = brickHalfSteps * buttonRadius;
 
   function brickShiftRow(rowTopDown) {
@@ -73,8 +77,11 @@ export function renderBayanKeyboard(container, opts) {
   const svgNS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(svgNS, 'svg');
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-  svg.setAttribute('width', String(Math.min(width, 1400)));
+  svg.setAttribute('width', String(Math.min(width, compact ? 960 : 1400)));
   svg.setAttribute('aria-label', 'Клавиатура баяна B-system');
+  if (interactive) {
+    svg.classList.add('cts-bayan-svg');
+  }
 
   const frame = document.createElementNS(svgNS, 'rect');
   frame.setAttribute('x', '2');
@@ -85,15 +92,18 @@ export function renderBayanKeyboard(container, opts) {
   frame.setAttribute('fill', '#ffffff');
   frame.setAttribute('stroke', '#c4bcb2');
   frame.setAttribute('stroke-width', '1');
+  frame.classList.add('cts-bayan-frame');
   svg.appendChild(frame);
 
+  const rowLabelFs = compact ? '10' : '13';
   for (let r = 0; r < B_SYSTEM_ROW_COUNT; r++) {
     const ty = pad + r * rowPitch + rowPitch / 2;
     const t = document.createElementNS(svgNS, 'text');
-    t.setAttribute('x', String(8));
-    t.setAttribute('y', String(ty + 5));
-    t.setAttribute('font-size', '13');
+    t.setAttribute('x', String(4));
+    t.setAttribute('y', String(ty + 4));
+    t.setAttribute('font-size', rowLabelFs);
     t.setAttribute('fill', '#333');
+    t.classList.add('cts-bayan-row-label');
     t.textContent = ROW_LABELS[r];
     svg.appendChild(t);
   }
@@ -112,11 +122,27 @@ export function renderBayanKeyboard(container, opts) {
     textEl.setAttribute('x', String(cx));
     textEl.setAttribute('y', String(cy + 5));
     textEl.setAttribute('text-anchor', 'middle');
-    textEl.setAttribute('font-size', String(Math.max(11, Math.floor(buttonRadius * 0.42))));
+    textEl.setAttribute(
+      'font-size',
+      String(Math.max(compact ? 8 : 11, Math.floor(buttonRadius * (compact ? 0.38 : 0.42)))),
+    );
     textEl.setAttribute('font-weight', '600');
     textEl.textContent = b.label;
 
     styleButton(circle, textEl, b);
+
+    if (interactive) {
+      const name = CANONICAL_TONIC_BY_PC[b.pc];
+      const octave = b.octave;
+      circle.setAttribute('data-note', name);
+      circle.setAttribute('data-octave', String(octave));
+      circle.classList.add('cts-play-key', 'cts-byan-key', 'ntg-key');
+      circle.setAttribute('role', 'button');
+      textEl.textContent = `${name}${octave}`;
+      textEl.setAttribute('pointer-events', 'none');
+      circle.style.cursor = 'pointer';
+    }
+
     svg.appendChild(circle);
     svg.appendChild(textEl);
   }

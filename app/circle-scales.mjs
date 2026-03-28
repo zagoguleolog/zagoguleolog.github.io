@@ -18,12 +18,14 @@ import {
   HARMONIC_END,
   HARMONIC_START,
   initToneGenTheory,
-  NOTE_NAMES,
   parseVoiceKey,
   ToneGen,
-  voiceKey,
 } from './tone-gen-engine.mjs';
 import { buildBaseParams, buildPlayPayload, readOctaveRange, readToneGenParams } from './tone-gen-ui-shared.mjs';
+import { renderBayanKeyboard } from './bayan-keyboard.mjs';
+import { buildLinearKeys, buildPianoKeys } from './keyboard-layouts.mjs';
+import { createKeyboardSynthController } from './keyboard-synth-controller.mjs';
+import { clearTheoryHighlight, setTheoryPcsHighlight } from './keyboard-theory-highlight.mjs';
 
 initToneGenTheory({
   frequencyFromNoteNameOctave,
@@ -32,22 +34,13 @@ initToneGenTheory({
 
 const CTS_PREFIX = 'cts-ntg-';
 
-/** Натуральные ступени в порядке белых клавиш (PC). */
-const PIANO_WHITE_PCS = [0, 2, 4, 5, 7, 9, 11];
-/** Чёрные клавиши: позиция data-n (как в piano-keyboard.html) и PC. */
-const PIANO_BLACK_KEYS = [
-  { n: 1, pc: 1 },
-  { n: 2, pc: 3 },
-  { n: 4, pc: 6 },
-  { n: 5, pc: 8 },
-  { n: 6, pc: 10 },
-];
-
 /** @type {'linear' | 'piano' | 'bayiano'} */
 let keyboardLayout = 'linear';
 
 /** @type {ToneGen | null} */
 let toneEngine = null;
+/** @type {ReturnType<typeof createKeyboardSynthController> | null} */
+let kbdController = null;
 /** @type {Set<string>} */
 let prevChordVoiceKeys = new Set();
 /** После «Стоп» триады круга не возобновляются, пока пользователь не изменит выбор секторов. */
@@ -241,6 +234,7 @@ function applyTonalityHighlight(svg) {
     });
     g.classList.toggle('is-in-scale', on);
   }
+  syncKeyboardTheoryHighlight();
 }
 
 function setExclusivePressed(container, activeEl) {
@@ -288,11 +282,28 @@ function getKeyboardStage() {
   return document.getElementById('cts-keyboard-stage');
 }
 
-/** Корневой узел активной раскладки для подсветки (linear / piano); при bayiano — null. */
+/** Корневой узел активной раскладки для подсветки (linear / piano / bayiano). */
 function getActiveKeyHighlightScope() {
   if (keyboardLayout === 'linear') return document.getElementById('cts-keys-linear');
   if (keyboardLayout === 'piano') return document.getElementById('cts-keys-piano');
+  if (keyboardLayout === 'bayiano') return document.getElementById('cts-bayan-wrap');
   return null;
+}
+
+/** Слой B: pitch class ступеней гаммы выбранной тональности на видимой клавиатуре. */
+function syncKeyboardTheoryHighlight() {
+  for (const id of ['cts-keys-linear', 'cts-keys-piano', 'cts-bayan-wrap']) {
+    const el = document.getElementById(id);
+    if (el) clearTheoryHighlight(el);
+  }
+  const scope = getActiveKeyHighlightScope();
+  if (!scope) return;
+  try {
+    const pcs = diatonicTriadRootPcsInKey(state.tonicName, state.keyMode);
+    setTheoryPcsHighlight(scope, pcs);
+  } catch {
+    /* */
+  }
 }
 
 /**
@@ -309,12 +320,13 @@ function setKeyboardLayout(mode) {
   if (piano) piano.hidden = mode !== 'piano';
   if (bay) bay.hidden = mode !== 'bayiano';
   if (group) {
-    for (const btn of group.querySelectorAll('[data-cts-kbd]')) {
-      btn.setAttribute('aria-pressed', btn.dataset.ctsKbd === mode ? 'true' : 'false');
+    for (const btn of group.querySelectorAll('[data-cts-kbd-mode]')) {
+      btn.setAttribute('aria-pressed', btn.dataset.ctsKbdMode === mode ? 'true' : 'false');
     }
   }
   clearPianoPointerVisual();
-  syncPianoKeyHighlight();
+  kbdController?.syncExecutionHighlight();
+  syncKeyboardTheoryHighlight();
 }
 
 /** Голоса клавиатуры: не с префиксом `cts:` (триады круга). */
@@ -334,148 +346,9 @@ function stopNonCirclePolyAndMonoForPianoResync() {
   }
 }
 
-function syncPianoKeyHighlight() {
-  const stage = getKeyboardStage();
-  if (!stage) return;
-  for (const b of stage.querySelectorAll('.cts-play-key')) {
-    b.classList.remove('ntg-key-active');
-  }
-  const scope = getActiveKeyHighlightScope();
-  if (!toneEngine || !scope) return;
-  for (const key of toneEngine.polyVoices.keys()) {
-    try {
-      const { name, octave } = parseVoiceKey(key);
-      const btn = scope.querySelector(
-        `.cts-play-key[data-note="${CSS.escape(name)}"][data-octave="${String(octave)}"]`,
-      );
-      if (btn) btn.classList.add('ntg-key-active');
-    } catch {
-      /* */
-    }
-  }
-  if (toneEngine.monoVoice && toneEngine.latchedKey) {
-    try {
-      const { name, octave } = parseVoiceKey(toneEngine.latchedKey);
-      const btn = scope.querySelector(
-        `.cts-play-key[data-note="${CSS.escape(name)}"][data-octave="${String(octave)}"]`,
-      );
-      if (btn) btn.classList.add('ntg-key-active');
-    } catch {
-      /* */
-    }
-  }
-}
-
-function bindPianoKeyHandlers() {
-  const stage = getKeyboardStage();
-  if (!stage || !toneEngine) return;
-  for (const btn of stage.querySelectorAll('.cts-play-key')) {
-    btn.addEventListener('pointerdown', onPianoKeyPointerDown);
-    btn.addEventListener('pointerup', onPianoKeyPointerUp);
-    btn.addEventListener('pointercancel', onPianoKeyPointerCancel);
-    btn.addEventListener('pointerleave', onPianoKeyPointerLeave);
-  }
-}
-
-/**
- * @param {PointerEvent} ev
- */
-function onPianoKeyPointerDown(ev) {
-  if (!toneEngine || keyboardLayout === 'bayiano') return;
-  const btn = /** @type {HTMLButtonElement} */ (ev.currentTarget);
-  const name = btn.dataset.note;
-  const octave = Number(btn.dataset.octave);
-  if (!name || !Number.isFinite(octave)) return;
-
-  void toneEngine.ensureCtx();
-
-  if (toneEngine.mode === 'latchPoly') {
-    toneEngine.startOrTogglePoly(buildPlayPayload(CTS_PREFIX, name, octave));
-    refreshToneRailStatus();
-    return;
-  }
-
-  if (toneEngine.mode === 'latch') {
-    const key = voiceKey(name, octave);
-    if (toneEngine.latchedKey === key && toneEngine.monoVoice) {
-      toneEngine.stopMonoSmooth();
-      toneEngine.setLatchedKeyForMono(null);
-      syncPianoKeyHighlight();
-      refreshToneRailStatus();
-    } else {
-      toneEngine.setLatchedKeyForMono(key);
-      toneEngine.startMono(buildPlayPayload(CTS_PREFIX, name, octave));
-      const p = readToneGenParams(CTS_PREFIX);
-      const hz = toneEngine.getFreq(name, octave, p.a4Hz);
-      const status = document.getElementById('cts-ntg-status');
-      if (status) status.textContent = `${name}${octave} — ${hz.toFixed(2)} Гц`;
-      syncPianoKeyHighlight();
-    }
-    return;
-  }
-
-  btn.classList.add('ntg-key-down');
-  btn.setPointerCapture(ev.pointerId);
-  toneEngine.setLatchedKeyForMono(voiceKey(name, octave));
-  toneEngine.startMono(buildPlayPayload(CTS_PREFIX, name, octave));
-  const p = readToneGenParams(CTS_PREFIX);
-  const hz = toneEngine.getFreq(name, octave, p.a4Hz);
-  const status = document.getElementById('cts-ntg-status');
-  if (status) status.textContent = `${name}${octave} — ${hz.toFixed(2)} Гц`;
-  syncPianoKeyHighlight();
-}
-
-/**
- * @param {PointerEvent} ev
- */
-function onPianoKeyPointerUp(ev) {
-  if (!toneEngine) return;
-  const btn = /** @type {HTMLButtonElement} */ (ev.currentTarget);
-  btn.classList.remove('ntg-key-down');
-  if (toneEngine.mode !== 'hold') return;
-  try {
-    btn.releasePointerCapture(ev.pointerId);
-  } catch {
-    /* */
-  }
-  toneEngine.stopMonoSmooth();
-  toneEngine.setLatchedKeyForMono(null);
-  syncPianoKeyHighlight();
-  refreshToneRailStatus();
-}
-
-/**
- * @param {PointerEvent} ev
- */
-function onPianoKeyPointerCancel(ev) {
-  if (!toneEngine) return;
-  const btn = /** @type {HTMLButtonElement} */ (ev.currentTarget);
-  btn.classList.remove('ntg-key-down');
-  if (toneEngine.mode !== 'hold') return;
-  toneEngine.stopMonoSmooth();
-  toneEngine.setLatchedKeyForMono(null);
-  syncPianoKeyHighlight();
-  refreshToneRailStatus();
-}
-
-/**
- * @param {PointerEvent} ev
- */
-function onPianoKeyPointerLeave(ev) {
-  if (!toneEngine) return;
-  const btn = /** @type {HTMLButtonElement} */ (ev.currentTarget);
-  if (toneEngine.mode !== 'hold' || !btn.classList.contains('ntg-key-down')) return;
-  btn.classList.remove('ntg-key-down');
-  toneEngine.stopMonoSmooth();
-  toneEngine.setLatchedKeyForMono(null);
-  syncPianoKeyHighlight();
-  refreshToneRailStatus();
-}
-
 function rebuildLinearKeyRows() {
   const keysWrap = document.querySelector('#cts-keys-linear .ntg-keys-wrap');
   if (!keysWrap) return;
-  keysWrap.replaceChildren();
   let octaveMin;
   let octaveMax;
   try {
@@ -484,86 +357,16 @@ function rebuildLinearKeyRows() {
     octaveMin = 3;
     octaveMax = 6;
   }
-  for (let o = octaveMin; o <= octaveMax; o++) {
-    const row = document.createElement('div');
-    row.className = 'ntg-key-row';
-    const lab = document.createElement('div');
-    lab.className = 'ntg-oct-label';
-    lab.textContent = String(o);
-    const grid = document.createElement('div');
-    grid.className = 'ntg-keys';
-    grid.setAttribute('role', 'group');
-    grid.setAttribute('aria-label', `Октава ${o}`);
-    for (const name of NOTE_NAMES) {
-      const keyBtn = document.createElement('button');
-      keyBtn.type = 'button';
-      keyBtn.className = 'ntg-key cts-play-key';
-      keyBtn.textContent = `${name}${o}`;
-      keyBtn.dataset.note = name;
-      keyBtn.dataset.octave = String(o);
-      grid.appendChild(keyBtn);
-    }
-    row.appendChild(lab);
-    row.appendChild(grid);
-    keysWrap.appendChild(row);
-  }
-}
-
-/**
- * Одна октава пиано: белые + чёрные (имена нот — канонические, как в движке).
- * @param {number} o
- */
-function buildPianoOctaveElement(o) {
-  const wrap = document.createElement('div');
-  wrap.className = 'cts-octave';
-  wrap.dataset.octave = String(o);
-
-  const whiteRow = document.createElement('div');
-  whiteRow.className = 'cts-white-keys';
-
-  const blackRow = document.createElement('div');
-  blackRow.className = 'cts-black-keys';
-  blackRow.setAttribute('aria-hidden', 'true');
-
-  for (const pc of PIANO_WHITE_PCS) {
-    const name = CANONICAL_TONIC_BY_PC[pc];
-    const keyBtn = document.createElement('button');
-    keyBtn.type = 'button';
-    keyBtn.className = 'cts-pkey cts-pkey--white ntg-key cts-play-key';
-    keyBtn.dataset.note = name;
-    keyBtn.dataset.octave = String(o);
-    keyBtn.textContent = name;
-    keyBtn.title = `${name}${o}`;
-    whiteRow.appendChild(keyBtn);
-  }
-
-  for (const { n, pc } of PIANO_BLACK_KEYS) {
-    const name = CANONICAL_TONIC_BY_PC[pc];
-    const keyBtn = document.createElement('button');
-    keyBtn.type = 'button';
-    keyBtn.className = 'cts-pkey cts-pkey--black ntg-key cts-play-key';
-    keyBtn.dataset.n = String(n);
-    keyBtn.dataset.note = name;
-    keyBtn.dataset.octave = String(o);
-    keyBtn.textContent = name;
-    keyBtn.title = `${name}${o}`;
-    blackRow.appendChild(keyBtn);
-  }
-
-  const lab = document.createElement('span');
-  lab.className = 'cts-piano-oct-label';
-  lab.textContent = String(o);
-
-  wrap.appendChild(whiteRow);
-  wrap.appendChild(blackRow);
-  wrap.appendChild(lab);
-  return wrap;
+  buildLinearKeys(keysWrap, {
+    octaveMin,
+    octaveMax,
+    keyButtonClass: 'ntg-key cts-play-key',
+  });
 }
 
 function rebuildPianoKeyboardLayout() {
   const kb = document.querySelector('#cts-keys-piano .cts-piano-keyboard');
   if (!kb) return;
-  kb.replaceChildren();
   let octaveMin;
   let octaveMax;
   try {
@@ -572,16 +375,51 @@ function rebuildPianoKeyboardLayout() {
     octaveMin = 3;
     octaveMax = 6;
   }
-  for (let o = octaveMin; o <= octaveMax; o++) {
-    kb.appendChild(buildPianoOctaveElement(o));
+  buildPianoKeys(kb, { octaveMin, octaveMax });
+}
+
+function rebuildBayanKeyboardLayout() {
+  const wrap = document.getElementById('cts-bayan-wrap');
+  if (!wrap) return;
+  let octaveMin;
+  let octaveMax;
+  try {
+    ({ octaveMin, octaveMax } = readOctaveRange(CTS_PREFIX));
+  } catch {
+    octaveMin = 3;
+    octaveMax = 6;
+  }
+  const midiMin = midiNoteFromPcOctave(0, octaveMin);
+  const midiMax = midiNoteFromPcOctave(11, octaveMax);
+  try {
+    renderBayanKeyboard(wrap, {
+      midiMin,
+      midiMax,
+      cellWidth: 32,
+      buttonRadius: 18,
+      rowGap: 6,
+      staggerFraction: 1 / 3,
+      brickHalfSteps: 1,
+      interactive: true,
+      compact: false,
+    });
+  } catch (e) {
+    console.error(e);
+    wrap.replaceChildren();
+    const p = document.createElement('p');
+    p.className = 'cts-kbd-placeholder';
+    p.textContent = 'Не удалось построить раскладку баяна.';
+    wrap.appendChild(p);
   }
 }
 
 function rebuildAllKeyboards() {
   rebuildLinearKeyRows();
   rebuildPianoKeyboardLayout();
-  bindPianoKeyHandlers();
-  syncPianoKeyHighlight();
+  rebuildBayanKeyboardLayout();
+  kbdController?.bindKeys();
+  kbdController?.syncExecutionHighlight();
+  syncKeyboardTheoryHighlight();
 }
 
 /**
@@ -678,12 +516,9 @@ function syncChordAudioAndList(svg) {
   refreshToneRailStatus();
 }
 
-function refreshToneRailStatus() {
+function updateToneRailStatusText() {
   const status = document.getElementById('cts-ntg-status');
-  if (!status || !toneEngine) {
-    syncPianoKeyHighlight();
-    return;
-  }
+  if (!status || !toneEngine) return;
   try {
     const p = readToneGenParams(CTS_PREFIX);
     const n = toneEngine.polyVoiceCount();
@@ -705,7 +540,16 @@ function refreshToneRailStatus() {
   } catch {
     status.textContent = '—';
   }
-  syncPianoKeyHighlight();
+}
+
+function refreshToneRailStatus() {
+  const status = document.getElementById('cts-ntg-status');
+  if (!status || !toneEngine) {
+    kbdController?.syncExecutionHighlight();
+    return;
+  }
+  updateToneRailStatusText();
+  kbdController?.syncExecutionHighlight();
 }
 
 function wireToneRail() {
@@ -728,6 +572,16 @@ function wireToneRail() {
 
   toneEngine = new ToneGen();
   toneEngine.mode = 'latchPoly';
+
+  kbdController = createKeyboardSynthController({
+    getPointerRoot: getKeyboardStage,
+    getClearRoot: getKeyboardStage,
+    getHighlightRoot: getActiveKeyHighlightScope,
+    keySelector: '.cts-play-key',
+    engine: toneEngine,
+    buildPlayPayload: (name, octave) => buildPlayPayload(CTS_PREFIX, name, octave),
+    onChange: updateToneRailStatusText,
+  });
 
   const $ = (suffix) => {
     const id = `${CTS_PREFIX}${suffix}`;
@@ -865,17 +719,17 @@ function wireToneRail() {
   if (kbdGroup && !kbdGroup.dataset.ctsWired) {
     kbdGroup.dataset.ctsWired = '1';
     kbdGroup.addEventListener('click', (e) => {
-      const b = e.target.closest('[data-cts-kbd]');
+      const b = e.target.closest('[data-cts-kbd-mode]');
       if (!b) return;
-      const mode = /** @type {'linear' | 'piano' | 'bayiano'} */ (b.dataset.ctsKbd);
+      const mode = /** @type {'linear' | 'piano' | 'bayiano'} */ (b.dataset.ctsKbdMode);
       setKeyboardLayout(mode);
     });
   }
-  setKeyboardLayout('linear');
 
   clampChordRootOctaveInput();
   applyVolumeFromUi();
   rebuildAllKeyboards();
+  setKeyboardLayout('linear');
   updateIfPlaying();
   wireCircleHoldPointers();
   refreshToneRailStatus();

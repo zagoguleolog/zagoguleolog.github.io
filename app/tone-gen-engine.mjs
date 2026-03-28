@@ -431,3 +431,19 @@ export class ToneGen {
     return this.polyVoices.size;
   }
 }
+
+/**
+ * Контракт движка звука для клавиатуры (полифония, моно, удержание / фиксация).
+ * Реализация — класс ToneGen выше.
+ *
+ * @typedef {object} ToneSynthEngine
+ * @property {() => AudioContext} ensureCtx
+ * @property {'hold' | 'latch' | 'latchPoly'} mode
+ * @property {Map<string, unknown>} polyVoices
+ * @property {unknown | null} monoVoice
+ * @property {string | null} latchedKey
+ * @property {(p: object) => void} startMono
+ * @property {() => void} stopMonoSmooth
+ * @property {(p: object) => void} startOrTogglePoly
+ * @property {(key: string | null) => void} setLatchedKeyForMono
+ */

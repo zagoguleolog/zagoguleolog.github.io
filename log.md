@@ -1,5 +1,21 @@
 # Журнал
 
+## 2026-03-29
+
+- Файл `knobs.png` в корне `music/`; страница [`app/knobs-atlas-showcase.html`](app/knobs-atlas-showcase.html) — сетка карточек с каждым фрагментом спрайта (`synth-atlas-tile--…`). Обновлены `docs/synth-ui.md`, `docs/overview.md`, `README.md`, `web/stranichki.html`. Проверка: `npm run verify`.
+
+- Фейдер synth-kit: исправлено горизонтальное смещение ручки (двойное центрирование CSS + JS); удалена отладочная отправка логов из `app/synth-kit/fader.mjs`.
+
+- Атлас UI `knobs.png` (1024×1024, сетка 4×4): стили `app/synth-kit/knobs-atlas.css`, крутилка с `useKnobsAtlas` в `knob.mjs`, второй экземпляр в `app/synth-kit-demo.html`; документация `docs/synth-ui.md`, ссылки в `overview.md`, `README.md`, `.cursor/rules/documentation-map.mdc`. Проверка: `node --check app/synth-kit/knob.mjs`, `npm run verify`.
+
+- Synth UI kit по плану: каталог `app/synth-kit/` — крутилка (`knob.mjs`), вертикальный фейдер (`fader.mjs`), семисегментный индикатор (`segment-display.mjs`, шрифт DSEG в `synth-kit.css`), тоггл, две кнопки в ячейке (`pair-buttons.mjs`), матрица чекбоксов (`checkbox-matrix.mjs`); демо `app/synth-kit-demo.html`; документация `docs/synth-ui.md`, термины в `docs/domain.md`, разделы в `docs/overview.md` и `docs/architecture.md`, `README.md`, `.cursor/rules/documentation-map.mdc`. Проверка: `node --check` на модулях kit, `npm run verify`.
+
+## 2026-03-28
+
+- Сверка документации с изменениями клавиатур: уточнены `docs/overview.md`, `docs/music-theory.md`, `docs/architecture.md`, `.cursor/rules/documentation-map.mdc`.
+
+- Единый слой клавиатур и синта: модули `app/keyboard-layouts.mjs` (linear + piano), `keyboard-synth-controller.mjs` (pointer и классы воспроизведения), `keyboard-theory-highlight.mjs` (слой B, `ntg-key-hint`); контракт `ToneSynthEngine` в `tone-gen-engine.mjs`; рефакторинг `note-tone-gen.mjs` и `circle-scales.mjs`; на circle-scales подсветка pitch class ступеней гаммы выбранной тональности на видимой клавиатуре; `piano-keyboard.html` переведена на `buildPianoKeys` и `app/piano-keyboard-static.mjs`, стили `app/keyboard-piano.css`; обновлены `docs/overview.md`, `README.md`, `docs/music-theory.md`; `circle-scales.css` — стили подсказки. Проверка: `node --check` на затронутых `.mjs`, `npm run verify`.
+
 ## 2026-03-22
 
 - Теория: разделы в `music-theory.md` — относительные/параллельные тональности (relative / parallel keys), диатонические триады, тройка IV–I–V на кварто-квинтовом круге; термины в `domain.md`. Функция `diatonicTriadRootPcsInKey` в `lib/music-theory.js`; проверка в `verify-theory.js`.
@@ -9,6 +25,12 @@
 - circle-scales: убран выбор паттерна гаммы; подсветка только спица выбранной тоники (корни на внешнем кольце); внутреннее кольцо по умолчанию — минорные трезвучия (`Am` … `Dm`); клик по «Am» задаёт тонику A; обновлены `overview.md`, `README.md`; `DEFAULT_MINOR_LINE` в `circle-of-fifths.js`.
 
 ## 2026-03-25
+
+- circle-scales: баянная клавиатура (bayiano) **в 2 раза крупнее**: параметры рендера 32/18/6, без `compact`; правки `circle-scales.mjs`, `circle-scales.css`.
+
+- circle-scales: режим **bayiano** — раскладка баяна B-system под кругом (`lib/bayan-b-system.js`, `app/bayan-keyboard.mjs`: `interactive`, `compact`, подписи в канонической энгармонике); общий `ToneGen` и подсветка с круга. `circle-scales.html`, `circle-scales.mjs`, `circle-scales.css`; `docs/overview.md`, `README.md`. `node --check`, `npm run verify`.
+
+- circle-scales: переключатель вида клавиатуры **linear** / **piano** / **bayiano** (заглушка «Скоро»); раскладка piano компактнее `piano-keyboard.html`; общие `cts-play-key`, звук и подсветка с круга. `app/circle-scales.html`, `circle-scales.mjs`, `circle-scales.css`; `docs/overview.md`, `README.md`. `node --check app/circle-scales.mjs`, `npm run verify`.
 
 - Репозиторий Git в каталоге `music/`: `git init`, `.gitignore` (node_modules, .env, секреты), первый коммит `7a36197` — «Начальный коммит: music (теория, круг, синтез, схема клавиш фортепиано)».
 
@@ -61,3 +83,7 @@
 - note-tone-gen: галочка n=1 (основной тон); выключение — только обертоны; `docs/overview.md`.
 
 - note-tone-gen: по умолчанию октавы 3–6 (на одну октаву больше рядов кнопок).
+
+## 2026-03-26
+
+- 23:46:06 — Страницы: добавлена карта `web/stranichki.html` со всеми ссылками на HTML-страницы и основные MD-доки; проверка: `npm run verify:http` OK.
