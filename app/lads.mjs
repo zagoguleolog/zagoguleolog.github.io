@@ -54,7 +54,9 @@ let sequencer = null;
 
 /** Текущая шкала (buildScale). */
 let currentScale = null;
-/** Массив шагов для секвенсора: { name, pc, octave }. */
+/** Базовый линейный набор ступеней по всем октавам: { name, pc, octave }. */
+let baseSeqNotes = [];
+/** Массив шагов для секвенсора с учётом выбранной секвенции. */
 let currentSeqNotes = [];
 /** Имя текущей ноты арпеджио для подсветки. */
 let currentSeqKey = null;
@@ -68,6 +70,12 @@ let currentTonicName = 'C';
 let keyboardLayout = 'linear';
 /** Режим «grey»: ступени лада подсвечены, остальные клавиши серые. */
 let greyKeyboardMode = false;
+/** Направление секвенции арпеджио. */
+/** @type {'up' | 'down' | 'zigzag'} */
+let arpDirection = 'up';
+/** Тип секвенции арпеджио. */
+/** @type {'linear' | 'seq3' | 'seq4' | 'seq5'} */
+let arpSequenceMode = 'linear';
 
 function $(id) {
   const el = document.getElementById(id);
@@ -293,9 +301,29 @@ function handleTonicFromKeyboard(noteName) {
   rebuildScale();
 }
 
-function setModeButtons(activeId) {
-  const ids = ['lads-arp-off', 'lads-arp-up-loop', 'lads-arp-up-down'];
-  for (const id of ids) {
+function setDirectionButtons(dir) {
+  const map = {
+    up: 'lads-arp-dir-up',
+    down: 'lads-arp-dir-down',
+    zigzag: 'lads-arp-dir-zigzag',
+  };
+  const activeId = map[dir] ?? map.up;
+  for (const id of Object.values(map)) {
+    const btn = document.getElementById(id);
+    if (!btn) continue;
+    btn.setAttribute('aria-pressed', id === activeId ? 'true' : 'false');
+  }
+}
+
+function setSequenceButtons(mode) {
+  const map = {
+    linear: 'lads-arp-seq-linear',
+    seq3: 'lads-arp-seq-3',
+    seq4: 'lads-arp-seq-4',
+    seq5: 'lads-arp-seq-5',
+  };
+  const activeId = map[mode] ?? map.linear;
+  for (const id of Object.values(map)) {
     const btn = document.getElementById(id);
     if (!btn) continue;
     btn.setAttribute('aria-pressed', id === activeId ? 'true' : 'false');
@@ -379,9 +407,7 @@ function rebuildScale() {
   buildSeqNotesFromScale();
   clearCurrentNoteHighlight();
   applyScaleHighlight();
-  if (sequencer) {
-    sequencer.setNotes(currentSeqNotes);
-  }
+  rebuildArpSequence();
 }
 
 function wireKeyboardLayoutSwitcher() {
@@ -408,7 +434,7 @@ function wireKeyboardLayoutSwitcher() {
 }
 
 function buildSeqNotesFromScale() {
-  currentSeqNotes = [];
+  baseSeqNotes = [];
   if (!currentScale) return;
   let octaveMin;
   let octaveMax;
@@ -425,8 +451,94 @@ function buildSeqNotesFromScale() {
     for (const deg of inst.degrees) {
       const pc = deg.pc;
       const name = deg.name;
-      currentSeqNotes.push({ pc, name, octave, key: `${name}|${octave}` });
+      baseSeqNotes.push({ pc, name, octave, key: `${name}|${octave}` });
     }
+  }
+}
+
+/**
+ * Построение последовательности нот арпеджио с учётом типа секвенции и направления.
+ * @param {'linear' | 'seq3' | 'seq4' | 'seq5'} sequenceMode
+ * @param {'up' | 'down' | 'zigzag'} directionMode
+ * @returns {Array<{ name: string, pc: number, octave: number, key: string }>}
+ */
+function buildArpNoteSequenceFromMode(sequenceMode, directionMode) {
+  if (!currentScale || !baseSeqNotes.length) return [];
+  const total = baseSeqNotes.length;
+
+  if (sequenceMode === 'linear') {
+    /** @type {Array<{ name: string, pc: number, octave: number, key: string }>} */
+    const linear = [];
+    if (directionMode === 'down') {
+      for (let i = total - 1; i >= 0; i--) {
+        linear.push(baseSeqNotes[i]);
+      }
+    } else {
+      // Для up и zigzag линейная последовательность одинакова;
+      // zigzag реализуется на уровне режима секвенсора (up-down).
+      linear.push(...baseSeqNotes);
+    }
+    return linear;
+  }
+
+  /** @type {number} */
+  let windowLen = 3;
+  if (sequenceMode === 'seq4') windowLen = 4;
+  else if (sequenceMode === 'seq5') windowLen = 5;
+
+  if (total < windowLen) {
+    return [];
+  }
+
+  /** Восходящие окна скользящим окном по всему диапазону. */
+  function buildUp() {
+    /** @type {Array<{ name: string, pc: number, octave: number, key: string }>} */
+    const seq = [];
+    for (let start = 0; start <= total - windowLen; start++) {
+      for (let j = 0; j < windowLen; j++) {
+        seq.push(baseSeqNotes[start + j]);
+      }
+    }
+    return seq;
+  }
+
+  /** Нисходящие окна скользящим окном по всему диапазону. */
+  function buildDown() {
+    /** @type {Array<{ name: string, pc: number, octave: number, key: string }>} */
+    const seq = [];
+    for (let start = total - 1; start >= windowLen - 1; start--) {
+      for (let j = 0; j < windowLen; j++) {
+        seq.push(baseSeqNotes[start - j]);
+      }
+    }
+    return seq;
+  }
+
+  if (directionMode === 'up') {
+    return buildUp();
+  }
+  if (directionMode === 'down') {
+    return buildDown();
+  }
+
+  // zigzag для seq3/4/5: проход вверх окнами, затем вниз окнами
+  // без двойного звучания крайней ноты на развороте.
+  const upSeq = buildUp();
+  const downSeq = buildDown();
+  while (
+    downSeq.length &&
+    upSeq.length &&
+    downSeq[0].key === upSeq[upSeq.length - 1].key
+  ) {
+    downSeq.shift();
+  }
+  return upSeq.concat(downSeq);
+}
+
+function rebuildArpSequence() {
+  currentSeqNotes = buildArpNoteSequenceFromMode(arpSequenceMode, arpDirection);
+  if (sequencer) {
+    sequencer.setNotes(currentSeqNotes);
   }
 }
 
@@ -568,7 +680,8 @@ function initSynth() {
       engine.setLatchedKeyForMono(null);
     }
     // Полная остановка: арпеджио в режим "Выкл" и очистка подсветки.
-    setModeButtons('lads-arp-off');
+    const offBtn = document.getElementById('lads-arp-off');
+    if (offBtn) offBtn.setAttribute('aria-pressed', 'true');
     if (sequencer) {
       sequencer.setMode('off');
       stopSequencerVoices();
@@ -618,23 +731,71 @@ function initArpControls() {
   }
 
   $('lads-arp-off').addEventListener('click', () => {
-    setModeButtons('lads-arp-off');
+    const offBtn = document.getElementById('lads-arp-off');
+    if (offBtn) offBtn.setAttribute('aria-pressed', 'true');
     if (sequencer) sequencer.setMode('off');
     stopSequencerVoices();
     clearCurrentNoteHighlight();
     refreshStatus();
   });
-  $('lads-arp-up-loop').addEventListener('click', () => {
-    setModeButtons('lads-arp-up-loop');
+
+  function applyArpModeFromState() {
     if (!sequencer) return;
-    sequencer.setMode('up-loop');
-    sequencer.start();
+    const isLinear = arpSequenceMode === 'linear';
+    // Для линейной секвенции режим zigzag реализуется на уровне секвенсора (up-down).
+    // Для seq3/4/5 zigzag реализован в самой последовательности (up-loop).
+    const useZigzagMode = isLinear && arpDirection === 'zigzag';
+    const mode = useZigzagMode ? 'up-down' : 'up-loop';
+    sequencer.setMode(mode);
+    if (mode !== 'off' && currentSeqNotes.length) {
+      sequencer.start();
+    }
+  }
+
+  function updateArpSequenceAndMode() {
+    rebuildArpSequence();
+    applyArpModeFromState();
+    const offBtn = document.getElementById('lads-arp-off');
+    if (offBtn) offBtn.setAttribute('aria-pressed', 'false');
+  }
+
+  // Направление
+  document.getElementById('lads-arp-dir-up')?.addEventListener('click', () => {
+    arpDirection = 'up';
+    setDirectionButtons(arpDirection);
+    updateArpSequenceAndMode();
   });
-  $('lads-arp-up-down').addEventListener('click', () => {
-    setModeButtons('lads-arp-up-down');
-    if (!sequencer) return;
-    sequencer.setMode('up-down');
-    sequencer.start();
+  document.getElementById('lads-arp-dir-down')?.addEventListener('click', () => {
+    arpDirection = 'down';
+    setDirectionButtons(arpDirection);
+    updateArpSequenceAndMode();
+  });
+  document.getElementById('lads-arp-dir-zigzag')?.addEventListener('click', () => {
+    arpDirection = 'zigzag';
+    setDirectionButtons(arpDirection);
+    updateArpSequenceAndMode();
+  });
+
+  // Тип секвенции
+  document.getElementById('lads-arp-seq-linear')?.addEventListener('click', () => {
+    arpSequenceMode = 'linear';
+    setSequenceButtons(arpSequenceMode);
+    updateArpSequenceAndMode();
+  });
+  document.getElementById('lads-arp-seq-3')?.addEventListener('click', () => {
+    arpSequenceMode = 'seq3';
+    setSequenceButtons(arpSequenceMode);
+    updateArpSequenceAndMode();
+  });
+  document.getElementById('lads-arp-seq-4')?.addEventListener('click', () => {
+    arpSequenceMode = 'seq4';
+    setSequenceButtons(arpSequenceMode);
+    updateArpSequenceAndMode();
+  });
+  document.getElementById('lads-arp-seq-5')?.addEventListener('click', () => {
+    arpSequenceMode = 'seq5';
+    setSequenceButtons(arpSequenceMode);
+    updateArpSequenceAndMode();
   });
 
   $('lads-step-quarter').addEventListener('click', () => {

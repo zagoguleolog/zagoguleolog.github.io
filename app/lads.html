@@ -12,6 +12,11 @@
   <link rel="stylesheet" href="note-tone-gen.css" />
   <link rel="stylesheet" href="../site-nav.css" />
   <style>
+    html,
+    body {
+      background: #0f1419;
+      color: #e8eef4;
+    }
     .lads-scale-table {
       width: 100%;
       border-collapse: collapse;
@@ -207,16 +212,85 @@
         </p>
 
         <div class="lads-arp-row">
-          <span class="lads-arp-label">Режим арпеджио</span>
-          <div class="ntg-seg lads-arp-seg" role="group" aria-label="Режим арпеджио">
-            <button type="button" class="ntg-seg-btn" id="lads-arp-off" data-arp-mode="off" aria-pressed="true">
+          <span class="lads-arp-label">Арпеджио</span>
+          <div class="ntg-seg lads-arp-seg" role="group" aria-label="Включение арпеджио">
+            <button type="button" class="ntg-seg-btn" id="lads-arp-off" aria-pressed="true">
               Выкл
             </button>
-            <button type="button" class="ntg-seg-btn" id="lads-arp-up-loop" data-arp-mode="up-loop" aria-pressed="false">
-              По кругу (0→N-1→0…)
+          </div>
+        </div>
+
+        <div class="lads-arp-row">
+          <span class="lads-arp-label">Направление</span>
+          <div class="ntg-seg lads-arp-seg" role="group" aria-label="Направление секвенции арпеджио">
+            <button
+              type="button"
+              class="ntg-seg-btn"
+              id="lads-arp-dir-up"
+              data-arp-dir="up"
+              aria-pressed="true"
+            >
+              Up
             </button>
-            <button type="button" class="ntg-seg-btn" id="lads-arp-up-down" data-arp-mode="up-down" aria-pressed="false">
-              Вверх-вниз (0→N-1→1→0…)
+            <button
+              type="button"
+              class="ntg-seg-btn"
+              id="lads-arp-dir-down"
+              data-arp-dir="down"
+              aria-pressed="false"
+            >
+              Down
+            </button>
+            <button
+              type="button"
+              class="ntg-seg-btn"
+              id="lads-arp-dir-zigzag"
+              data-arp-dir="zigzag"
+              aria-pressed="false"
+            >
+              Zigzag
+            </button>
+          </div>
+        </div>
+
+        <div class="lads-arp-row">
+          <span class="lads-arp-label">Тип секвенции</span>
+          <div class="ntg-seg lads-arp-seg" role="group" aria-label="Тип секвенции арпеджио">
+            <button
+              type="button"
+              class="ntg-seg-btn"
+              id="lads-arp-seq-linear"
+              data-arp-seq="linear"
+              aria-pressed="true"
+            >
+              Линейно
+            </button>
+            <button
+              type="button"
+              class="ntg-seg-btn"
+              id="lads-arp-seq-3"
+              data-arp-seq="seq3"
+              aria-pressed="false"
+            >
+              По 3
+            </button>
+            <button
+              type="button"
+              class="ntg-seg-btn"
+              id="lads-arp-seq-4"
+              data-arp-seq="seq4"
+              aria-pressed="false"
+            >
+              По 4
+            </button>
+            <button
+              type="button"
+              class="ntg-seg-btn"
+              id="lads-arp-seq-5"
+              data-arp-seq="seq5"
+              aria-pressed="false"
+            >
+              По 5
             </button>
           </div>
         </div>
