@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ru" data-site-nav-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Септаккорды: таблица и клавиатура</title>
+  <link rel="stylesheet" href="circle-of-fifths.css" />
+  <link rel="stylesheet" href="circle-scales.css" />
+  <link rel="stylesheet" href="template-synth.css" />
+  <link rel="stylesheet" href="keyboard-piano.css" />
+  <link rel="stylesheet" href="bayan-keyboard.css" />
+  <link rel="stylesheet" href="../site-nav.css" />
+  <style>
+    .sc7-chords-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .sc7-chords-table th,
+    .sc7-chords-table td {
+      padding: 0.35rem 0.6rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+      text-align: left;
+    }
+    .sc7-chords-table tbody tr {
+      cursor: pointer;
+    }
+    .sc7-chords-table tbody tr.sc7-chord-selected {
+      background: rgba(56, 189, 248, 0.12);
+    }
+    .sc7-chords-table tbody tr.sc7-chord-selected td {
+      font-weight: 600;
+    }
+    .sc7-note {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--cof-muted, #8b9bab);
+    }
+    .sc7-chord-target {
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.9);
+    }
+    .cts-piano-panel .cts-pkey.sc7-chord-target {
+      box-shadow:
+        0 0 0 2px rgba(56, 189, 248, 0.9),
+        0 0 0 4px rgba(56, 189, 248, 0.45);
+      border-color: rgba(56, 189, 248, 0.9);
+    }
+    .cts-bayan-wrap svg circle.cts-byan-key.sc7-chord-target,
+    .cts-bayan4-wrap svg circle.cts-byan-key.sc7-chord-target {
+      filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.9));
+      stroke: rgba(56, 189, 248, 0.95) !important;
+      stroke-width: 4px !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="cof-page cts-wide-page">
+    <div class="cts-layout">
+      <aside class="cts-tone-rail" aria-label="Синтез: камертон и тембр">
+        <section class="tpl-panel cts-ntg-panel" aria-label="Камертон и октавы">
+          <h2 class="cts-rail-h2">Камертон и октавы</h2>
+          <div class="tpl-grid-tuning cts-rail-tuning">
+            <label class="tpl-field">
+              <span class="tpl-label">A4 (Гц)</span>
+              <input type="number" id="sc7-ntg-a4" min="1" max="2000" step="0.1" value="440" />
+            </label>
+            <label class="tpl-field">
+              <span class="tpl-label">Октава с</span>
+              <input type="number" id="sc7-ntg-octave-min" min="0" max="8" step="1" value="3" />
+            </label>
+            <label class="tpl-field">
+              <span class="tpl-label">Октава по</span>
+              <input type="number" id="sc7-ntg-octave-max" min="0" max="8" step="1" value="6" />
+            </label>
+          </div>
+        </section>
+
+        <section class="tpl-panel synth-kit-root cts-synth-root cts-ntg-panel" aria-label="Громкость и тембр">
+          <h2 class="cts-rail-h2">Громкость и тембр</h2>
+
+          <input type="range" id="sc7-ntg-volume" class="tpl-sr-only" min="0" max="100" value="25" tabindex="-1" aria-hidden="true" />
+          <input type="range" id="sc7-ntg-detune" class="tpl-sr-only" min="-50" max="50" value="0" tabindex="-1" aria-hidden="true" />
+          <input type="range" id="sc7-ntg-harm-mix" class="tpl-sr-only" min="0" max="100" value="40" tabindex="-1" aria-hidden="true" />
+          <input type="range" id="sc7-ntg-harm-rolloff" class="tpl-sr-only" min="0.3" max="2.5" value="1" step="0.05" tabindex="-1" aria-hidden="true" />
+          <input type="range" id="sc7-ntg-release-ms" class="tpl-sr-only" min="20" max="5000" value="120" step="10" tabindex="-1" aria-hidden="true" />
+
+          <div class="tpl-wave-row">
+            <label class="tpl-field tpl-kit-cell--wave">
+              <span class="tpl-label">Форма колебания</span>
+              <select id="sc7-ntg-waveform" aria-label="Форма колебания">
+                <option value="sine" selected>Синусоида</option>
+                <option value="triangle">Треугольник</option>
+                <option value="square">Квадрат</option>
+                <option value="sawtooth">Пила</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="cts-synth-kit-row">
+            <div class="tpl-kit-cell cts-synth-kit-slot">
+              <div id="sc7-ntg-mount-volume"></div>
+              <div id="sc7-ntg-seg-volume"></div>
+            </div>
+            <div class="tpl-harmonics-wrap cts-synth-kit-slot">
+              <span class="tpl-label">Обертоны n=1…16</span>
+              <div id="sc7-ntg-harmonics" role="group" aria-label="Обертоны n=1…16"></div>
+            </div>
+            <div class="tpl-kit-cell cts-synth-kit-slot">
+              <div id="sc7-ntg-mount-detune"></div>
+              <div id="sc7-ntg-seg-detune"></div>
+            </div>
+            <div class="tpl-kit-cell cts-synth-kit-slot">
+              <div id="sc7-ntg-mount-harm-rolloff"></div>
+              <div id="sc7-ntg-seg-harm-rolloff"></div>
+            </div>
+            <div class="tpl-kit-cell cts-synth-kit-slot">
+              <div id="sc7-ntg-mount-harm-mix"></div>
+              <div id="sc7-ntg-seg-harm-mix"></div>
+            </div>
+            <div class="tpl-kit-cell tpl-kit-cell--fader cts-synth-kit-slot">
+              <div id="sc7-ntg-mount-release"></div>
+              <p class="tpl-release-label">Угасание: <strong id="sc7-ntg-release-ms-val">120 мс</strong></p>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <div class="cts-main-column">
+        <h1>Септаккорды: таблица и клавиатура</h1>
+        <p class="cof-hint">
+          Таблица описывает базовые типы септаккордов из
+          <a href="../docs/music-theory.md">music-theory.md</a>. Выберите строку, затем сыграйте ноту
+          на клавиатуре: от выбранной ноты строится соответствующий септаккорд (1–3–5–7 ступени),
+          все четыре ноты подсвечиваются и звучат вместе.
+        </p>
+
+        <section class="cts-theory-panel" aria-label="Типы септаккордов">
+          <h2>Типы септаккордов</h2>
+          <div class="sc7-chords-wrap">
+            <table class="sc7-chords-table">
+              <thead>
+                <tr>
+                  <th scope="col">Рус. кратко</th>
+                  <th scope="col">Код</th>
+                  <th scope="col">Интервалы от основания</th>
+                  <th scope="col">Полутона от основания</th>
+                  <th scope="col">Качество 3 ступени</th>
+                  <th scope="col">Качество 7 ступени</th>
+                  <th scope="col">Название</th>
+                </tr>
+              </thead>
+              <tbody id="sc7-chords-body">
+                <!-- Строки заполняются из lib/music-theory.js (getSeventhChordCatalog) -->
+              </tbody>
+            </table>
+            <p class="sc7-note">
+              Выбор ведёт себя как переключатель (radio): в каждый момент активен один тип септаккорда.
+              При смене типа уже зажатые ноты не перестраиваются — новый тип применяется к следующим
+              нажатиям.
+            </p>
+          </div>
+        </section>
+
+        <section class="cts-piano-panel" aria-label="Клавиатура нот и режимы ввода">
+          <div class="cts-kbd-toolbar">
+            <span class="cts-kbd-toolbar-label" id="sc7-kbd-toolbar-label">Вид клавиатуры</span>
+            <div
+              id="sc7-kbd-mode-group"
+              class="cts-kbd-seg"
+              role="group"
+              aria-labelledby="sc7-kbd-toolbar-label"
+            >
+              <button type="button" class="cts-kbd-btn" data-sc7-kbd-mode="linear" aria-pressed="true">
+                linear
+              </button>
+              <button type="button" class="cts-kbd-btn" data-sc7-kbd-mode="piano" aria-pressed="false">
+                piano
+              </button>
+              <button type="button" class="cts-kbd-btn" data-sc7-kbd-mode="bayiano" aria-pressed="false">
+                bayiano
+              </button>
+              <button
+                type="button"
+                class="cts-kbd-btn"
+                data-sc7-kbd-mode="bayiano4"
+                aria-pressed="false"
+                title="Четыре ряда (хроматическая сетка мод 4), не B-system"
+              >
+                bayiano4
+              </button>
+            </div>
+          </div>
+
+          <div class="cts-kbd-mode-row cts-kbd-synth-row" aria-label="Режим клавиатуры">
+            <span class="cts-kbd-synth-label">Клавиатура</span>
+            <div class="cts-kbd-synth-stack">
+              <div class="cts-kbd-polyphony-row" role="group" aria-label="Голоса клавиатуры">
+                <span class="cts-kbd-sub-label">Голоса</span>
+                <div class="ntg-seg ntg-seg-modes cts-kbd-polyphony-seg" role="group">
+                  <button
+                    type="button"
+                    class="ntg-seg-btn"
+                    id="sc7-kbd-polyphony-mono"
+                    aria-pressed="false"
+                  >
+                    Монофония
+                  </button>
+                  <button
+                    type="button"
+                    class="ntg-seg-btn"
+                    id="sc7-kbd-polyphony-poly"
+                    aria-pressed="true"
+                  >
+                    Полифония
+                  </button>
+                </div>
+              </div>
+              <div class="cts-kbd-articulation-row">
+                <span class="cts-kbd-sub-label" id="sc7-kbd-articulation-label">Артикуляция</span>
+                <div
+                  id="sc7-kbd-articulation-mono"
+                  class="ntg-seg ntg-seg-modes cts-kbd-synth-modes"
+                  role="group"
+                  aria-labelledby="sc7-kbd-articulation-label"
+                  hidden
+                >
+                  <button
+                    type="button"
+                    class="ntg-seg-btn"
+                    id="sc7-kbd-mode-hold"
+                    aria-pressed="true"
+                  >
+                    Удержание
+                  </button>
+                  <button
+                    type="button"
+                    class="ntg-seg-btn"
+                    id="sc7-kbd-mode-latch"
+                    aria-pressed="false"
+                  >
+                    Фиксация
+                  </button>
+                </div>
+                <div
+                  id="sc7-kbd-articulation-poly"
+                  class="ntg-seg ntg-seg-modes cts-kbd-synth-modes"
+                  role="group"
+                  aria-labelledby="sc7-kbd-articulation-label"
+                >
+                  <button
+                    type="button"
+                    class="ntg-seg-btn"
+                    id="sc7-kbd-mode-hold-poly"
+                    aria-pressed="true"
+                  >
+                    Удержание
+                  </button>
+                  <button
+                    type="button"
+                    class="ntg-seg-btn"
+                    id="sc7-kbd-mode-latch-poly"
+                    aria-pressed="false"
+                  >
+                    Переключение
+                  </button>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="ntg-stop cts-kbd-stop" id="sc7-ntg-stop">Стоп</button>
+          </div>
+
+          <div id="sc7-keyboard-stage" class="cts-keyboard-stage">
+            <div id="sc7-keys-linear" class="cts-kbd-view">
+              <div class="ntg-keys-wrap" aria-label="Ноты по октавам (линейная раскладка)"></div>
+            </div>
+            <div id="sc7-keys-piano" class="cts-kbd-view" hidden>
+              <div class="cts-scroll-x">
+                <div
+                  class="cts-piano-keyboard"
+                  role="group"
+                  aria-label="Ноты по октавам (раскладка пиано)"
+                ></div>
+              </div>
+            </div>
+            <div id="sc7-keys-bayiano" class="cts-kbd-view" hidden>
+              <div class="cts-scroll-x cts-bayan-scroll">
+                <div
+                  id="sc7-bayan-wrap"
+                  class="cts-bayan-wrap"
+                  aria-label="Баян B-system"
+                ></div>
+              </div>
+            </div>
+            <div id="sc7-keys-bayiano4" class="cts-kbd-view" hidden>
+              <div class="cts-scroll-x cts-bayan-scroll">
+                <div
+                  id="sc7-bayan4-wrap"
+                  class="cts-bayan-wrap cts-bayan4-wrap"
+                  aria-label="Четырёхрядная хроматическая сетка (баян)"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script defer src="circle-of-fifths.js"></script>
+  <script defer src="circle-scales-core.js"></script>
+  <script type="module" src="seventh-chords.mjs"></script>
+  <script type="module">
+    import { mountSiteNav } from '../site-nav.mjs';
+    mountSiteNav();
+  </script>
+</body>
+</html>
+

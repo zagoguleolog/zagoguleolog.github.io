@@ -9,9 +9,12 @@ export const SITE_NAV_LINKS = [
   { href: '/piano-keyboard.html', label: 'piano-keyboard.html (клавиатура)' },
   { href: '/app/bayan-keyboard.html', label: 'app/bayan-keyboard.html (B-system)' },
   { href: '/app/note-tone-gen.html', label: 'app/note-tone-gen.html (генератор тона)' },
+  { href: '/app/sequencer-demo.html', label: 'app/sequencer-demo.html (мини-сквенсор / арпеджио)' },
+  { href: '/app/lads.html', label: 'app/lads.html (лады + арпеджио по ступеням)' },
   { href: '/app/template-synth.html', label: 'app/template-synth.html (темплейт-синт, synth-kit)' },
   { href: '/app/circle-of-fifths.html', label: 'app/circle-of-fifths.html (круг)' },
   { href: '/app/circle-scales.html', label: 'app/circle-scales.html (круг + тональность)' },
+  { href: '/app/intervals-demo.html', label: 'app/intervals-demo.html (интервалы + клавиатура)' },
   { href: '/app/synth-kit-demo.html', label: 'app/synth-kit-demo.html (демо UI-синта)' },
   { href: '/app/knobs-atlas-showcase.html', label: 'app/knobs-atlas-showcase.html (галерея фрагментов knobs.png)' },
 ];

@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="circle-of-fifths.css" />
   <link rel="stylesheet" href="circle-scales.css" />
   <link rel="stylesheet" href="template-synth.css" />
+  <link rel="stylesheet" href="keyboard-piano.css" />
+  <link rel="stylesheet" href="bayan-keyboard.css" />
   <link rel="stylesheet" href="../site-nav.css" />
 </head>
 <body>
@@ -98,7 +100,7 @@
         </p>
         <p class="cof-hint">
           На кольцах — аккорды (внешнее: мажорные центры, внутреннее: относительные миноры). Зелёная подсветка по умолчанию — <strong>три спицы</strong> кластера IV–I–V опорного мажора (шесть аккордов, по два кольца на спице); опционально галочка «седьмая триада» добавляет vii° / ii° на остальной окружности. У <strong>относительных тональностей</strong> (например <strong>C мажор</strong> и <strong>A нат. минор</strong>) кластер на круге тот же геометрически, см. <a href="../docs/music-theory.md">music-theory.md</a>.
-          Синий/голубой выделенный сектор: в режимах <strong>удержание</strong> и <strong>полифония</strong> клик по сектору по-прежнему вкл/выкл выделение; в режиме <strong>фиксация</strong> на круге всегда не больше одного синего сектора — клик <strong>переключает</strong> на новый аккорд (повторный клик по тому же сектору не глушит звук). <strong>Удержание</strong> — звук пока нажата кнопка мыши/пера; <strong>фиксация</strong> — одна триада у выбранного сектора; <strong>полифония</strong> — несколько выделенных секторов и триад. Режимы круга — блок <strong>Круг</strong> слева под SVG; режимы клавиатуры — над клавиатурой. <strong>Стоп</strong> (над клавиатурой) глушит круг и клавиатуру до следующего действия.
+          Синий/голубой выделенный сектор: в режимах <strong>удержание</strong> и <strong>полифония</strong> клик по сектору по-прежнему вкл/выкл выделение; в режиме <strong>фиксация</strong> на круге всегда не больше одного синего сектора — клик <strong>переключает</strong> на новый аккорд (повторный клик по тому же сектору не глушит звук). <strong>Удержание</strong> — звук пока нажата кнопка мыши/пера; <strong>фиксация</strong> — одна триада у выбранного сектора; <strong>полифония</strong> — несколько выделенных секторов и триад. Режимы круга — блок <strong>Круг</strong> слева под SVG; под клавиатурой — <strong>голоса</strong> (моно/поли) и <strong>артикуляция</strong>: в полифонии «удержание» — несколько нот с ПК и с экрана одновременно (отпускание глушит только свой голос; см. <span class="mono">docs/synth-structure.md</span> про rollover клавиатуры). <strong>Стоп</strong> глушит круг и клавиатуру до следующего действия.
           Базовая страница без теории: <a href="circle-of-fifths.html">circle-of-fifths.html</a>.
         </p>
 
@@ -195,14 +197,53 @@
                 bayiano4
               </button>
             </div>
+            <button
+              type="button"
+              id="cts-kbd-grey-toggle"
+              class="cts-kbd-btn cts-kbd-btn-grey"
+              aria-pressed="false"
+              title="Сделать ноты вне выбранной тональности серыми"
+            >
+              grey
+            </button>
           </div>
 
           <div class="cts-kbd-mode-row cts-kbd-synth-row" aria-label="Режим клавиатуры">
             <span class="cts-kbd-synth-label">Клавиатура</span>
-            <div class="ntg-seg ntg-seg-modes cts-kbd-synth-modes" role="group" aria-label="Режим клавиатуры">
-              <button type="button" class="ntg-seg-btn" id="cts-kbd-mode-hold" aria-pressed="false">Удержание</button>
-              <button type="button" class="ntg-seg-btn" id="cts-kbd-mode-latch" aria-pressed="false">Фиксация</button>
-              <button type="button" class="ntg-seg-btn" id="cts-kbd-mode-latch-poly" aria-pressed="true">Полифония</button>
+            <div class="cts-kbd-synth-stack">
+              <div class="cts-kbd-polyphony-row" role="group" aria-label="Голоса клавиатуры">
+                <span class="cts-kbd-sub-label">Голоса</span>
+                <div class="ntg-seg ntg-seg-modes cts-kbd-polyphony-seg" role="group">
+                  <button type="button" class="ntg-seg-btn" id="cts-kbd-polyphony-mono" aria-pressed="false">
+                    Монофония
+                  </button>
+                  <button type="button" class="ntg-seg-btn" id="cts-kbd-polyphony-poly" aria-pressed="true">
+                    Полифония
+                  </button>
+                </div>
+              </div>
+              <div class="cts-kbd-articulation-row">
+                <span class="cts-kbd-sub-label" id="cts-kbd-articulation-label">Артикуляция</span>
+                <div
+                  id="cts-kbd-articulation-mono"
+                  class="ntg-seg ntg-seg-modes cts-kbd-synth-modes"
+                  role="group"
+                  aria-labelledby="cts-kbd-articulation-label"
+                  hidden
+                >
+                  <button type="button" class="ntg-seg-btn" id="cts-kbd-mode-hold" aria-pressed="true">Удержание</button>
+                  <button type="button" class="ntg-seg-btn" id="cts-kbd-mode-latch" aria-pressed="false">Фиксация</button>
+                </div>
+                <div
+                  id="cts-kbd-articulation-poly"
+                  class="ntg-seg ntg-seg-modes cts-kbd-synth-modes"
+                  role="group"
+                  aria-labelledby="cts-kbd-articulation-label"
+                >
+                  <button type="button" class="ntg-seg-btn" id="cts-kbd-mode-hold-poly" aria-pressed="true">Удержание</button>
+                  <button type="button" class="ntg-seg-btn" id="cts-kbd-mode-latch-poly" aria-pressed="false">Переключение</button>
+                </div>
+              </div>
             </div>
             <button type="button" class="ntg-stop cts-kbd-stop" id="cts-ntg-stop">Стоп</button>
           </div>

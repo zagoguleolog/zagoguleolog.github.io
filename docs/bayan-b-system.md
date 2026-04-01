@@ -93,7 +93,7 @@ k = \left\lfloor \frac{m}{N} \right\rfloor = \left\lfloor \frac{m}{4} \right\rfl
 x_{\mathrm{unit}} = k + (m \bmod N) \cdot s
 \]
 
-Реализация: тот же модуль [`lib/bayan-b-system.js`](../lib/bayan-b-system.js) с параметром `rowCount` / константой `BAYAN_CHROMATIC_4_ROW_COUNT`; страница [`app/bayan-keyboard.html`](../app/bayan-keyboard.html) — переключатель режима.
+Реализация: тот же модуль [`lib/bayan-b-system.js`](../lib/bayan-b-system.js) с параметром `rowCount` / константой `BAYAN_CHROMATIC_4_ROW_COUNT`; страница [`app/bayan-keyboard.html`](../app/bayan-keyboard.html) — переключатель режима. Физическая клавиатура ПК в режиме **bayiano4** на странице с синтезом — [`app/computer-keyboard-music.mjs`](../app/computer-keyboard-music.mjs): четыре ряда `event.code` сверху вниз начинаются с **`Digit4`**, **`KeyE`**, **`KeyS`**, **`KeyZ`** (см. [synth-structure.md](synth-structure.md)); при охвате октавы 3 от до — стартовые ноты **Eb3 / D3 / C#3 / C3** (4-й…1-й ряд).
 
 ## Подписи и цвет (как у классической клавиатуры)
 

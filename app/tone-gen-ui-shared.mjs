@@ -87,10 +87,24 @@ export function readToneGenParams(prefix, defaultA4Hz = DEFAULT_A4_HZ) {
   const vol = clamp(Number(/** @type {HTMLInputElement} */ ($('volume')).value) / 100, 0, 1);
   const wf = /** @type {HTMLSelectElement} */ ($('waveform')).value;
   const detune = clamp(Number(/** @type {HTMLInputElement} */ ($('detune')).value), -50, 50);
-  const harmMix01 = clamp(Number(/** @type {HTMLInputElement} */ ($('harm-mix')).value) / 100, 0, 1);
-  const harmRolloff = clamp(Number(/** @type {HTMLInputElement} */ ($('harm-rolloff')).value), 0.3, 2.5);
+  const harmMixEl = /** @type {HTMLInputElement | null} */ (
+    document.getElementById(`${prefix}harm-mix`)
+  );
+  const harmRolloffEl = /** @type {HTMLInputElement | null} */ (
+    document.getElementById(`${prefix}harm-rolloff`)
+  );
+  const releaseMsEl = /** @type {HTMLInputElement | null} */ (
+    document.getElementById(`${prefix}release-ms`)
+  );
+
+  const harmMix01 = harmMixEl
+    ? clamp(Number(harmMixEl.value) / 100, 0, 1)
+    : 0.4;
+  const harmRolloff = harmRolloffEl
+    ? clamp(Number(harmRolloffEl.value), 0.3, 2.5)
+    : 1.0;
   const harmEnabled = readHarmEnabled(harmWrap);
-  const releaseMsRaw = Number(/** @type {HTMLInputElement} */ ($('release-ms')).value);
+  const releaseMsRaw = releaseMsEl ? Number(releaseMsEl.value) : 55;
   const releaseSec = clamp(
     Number.isFinite(releaseMsRaw) ? releaseMsRaw / 1000 : 0.055,
     RELEASE_SEC_MIN,

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru" data-site-nav-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Мини-сквенсор / арпеджио</title>
+  <link rel="stylesheet" href="note-tone-gen.css" />
+  <link rel="stylesheet" href="synth-kit/synth-kit.css" />
+  <link rel="stylesheet" href="../site-nav.css" />
+</head>
+<body>
+  <div class="ntg-page">
+    <h1>Мини-сквенсор / арпеджио</h1>
+    <p class="ntg-lead">
+      Простая последовательность нот в <strong>равномерной темпации</strong> поверх
+      <span class="ntg-mono">lib/music-theory.js</span> и движка
+      <span class="ntg-mono">tone-gen-engine.mjs</span>.
+      Вводите имена нот как в теории:
+      <span class="ntg-mono">C D E F G A B</span>, с диезами и бемолями
+      (<span class="ntg-mono">C#</span>, <span class="ntg-mono">Eb</span>), без октавы или с ней
+      (<span class="ntg-mono">C4</span>, <span class="ntg-mono">G#3</span>).
+    </p>
+
+    <p id="seq-module-warning" class="ntg-warning" hidden></p>
+
+    <section class="ntg-panel" aria-label="Строка нот и режим арпеджио">
+      <h2>Ноты и режим</h2>
+      <div class="ntg-grid ntg-grid-tuning">
+        <label class="ntg-field ntg-field-span">
+          <span class="ntg-label">
+            Строка нот (через пробел)
+          </span>
+          <input
+            id="seq-notes"
+            type="text"
+            placeholder="C D E F G A B"
+            autocomplete="off"
+          />
+        </label>
+
+        <div class="ntg-field">
+          <span class="ntg-label">Режим арпеджио</span>
+          <div class="ntg-seg" role="group" aria-label="Режим арпеджио">
+            <button
+              type="button"
+              class="ntg-seg-btn"
+              id="seq-mode-up"
+              data-seq-mode="up"
+              aria-pressed="true"
+            >
+              Вверх
+            </button>
+            <button
+              type="button"
+              class="ntg-seg-btn"
+              id="seq-mode-down"
+              data-seq-mode="down"
+              aria-pressed="false"
+            >
+              Вниз
+            </button>
+            <button
+              type="button"
+              class="ntg-seg-btn"
+              id="seq-mode-updown"
+              data-seq-mode="up-down"
+              aria-pressed="false"
+            >
+              Вверх-вниз
+            </button>
+            <button
+              type="button"
+              class="ntg-seg-btn"
+              id="seq-mode-random"
+              data-seq-mode="random"
+              aria-pressed="false"
+            >
+              Random
+            </button>
+          </div>
+        </div>
+
+        <div class="ntg-field">
+          <span class="ntg-label">BPM (семисегментный индикатор)</span>
+          <input
+            id="seq-bpm"
+            type="range"
+            min="40"
+            max="240"
+            step="1"
+            value="120"
+            class="ntg-sr-only"
+            aria-hidden="true"
+            tabindex="-1"
+          />
+          <div id="seq-bpm-seg"></div>
+        </div>
+
+        <label class="ntg-field">
+          <span class="ntg-label">Октава по умолчанию</span>
+          <input
+            id="seq-default-octave"
+            type="number"
+            min="0"
+            max="8"
+            step="1"
+            value="4"
+          />
+        </label>
+      </div>
+      <p id="seq-error" class="ntg-warning" hidden></p>
+    </section>
+
+    <section class="ntg-panel" aria-label="Управление и индикация">
+      <h2>Управление</h2>
+      <div class="ntg-row">
+        <button id="seq-start" type="button" class="ntg-stop">Старт</button>
+        <button id="seq-stop" type="button" class="ntg-stop">Стоп</button>
+        <span class="ntg-status" id="seq-status" aria-live="polite">
+          Тишина
+        </span>
+      </div>
+      <p class="ntg-hint">
+        Длительность шага считается как
+        <span class="ntg-mono">60000 / BPM</span> миллисекунд (40…240 BPM).
+      </p>
+      <p class="ntg-hint">
+        Текущая нота:
+        <span class="ntg-mono" id="seq-current-note">—</span>
+      </p>
+    </section>
+  </div>
+
+  <script type="module" src="sequencer-demo.mjs"></script>
+  <script type="module">
+    import { mountSiteNav } from '../site-nav.mjs';
+    mountSiteNav();
+  </script>
+</body>
+</html>
+

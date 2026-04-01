@@ -84,7 +84,7 @@ function harmonicAmplitudes(harmMix01, rolloff, enabledByN) {
 function createVoice(ctx, outGain, p) {
   const now = ctx.currentTime;
   const freq = frequencyFromNoteNameOctave(p.name, p.octave, { referenceHz: p.a4Hz });
-  const attack = 0.022;
+  const attack = 0.035;
   const { total, fund, harm } = harmonicAmplitudes(p.harmMix01, p.harmRolloff, p.harmEnabled);
 
   if (total <= 0) return null;
@@ -92,7 +92,7 @@ function createVoice(ctx, outGain, p) {
   const master = ctx.createGain();
   master.connect(outGain);
   master.gain.setValueAtTime(0.0001, now);
-  master.gain.exponentialRampToValueAtTime(1, now + attack);
+  master.gain.exponentialRampToValueAtTime(0.9, now + attack);
 
   /** @type {Array<{ osc: OscillatorNode, gain: GainNode, partial: number }>} */
   const parts = [];
@@ -256,7 +256,8 @@ export class ToneGen {
     /**
      * Если не `null`, `keyboard-synth-controller` использует это вместо `mode` для клавиш;
      * на остальных страницах оставить `null`.
-     * @type {'hold' | 'latch' | 'latchPoly' | null}
+     * `holdPoly` — полифония с удержанием (ПК и pointer): нажал — голос, отпустил — плавный стоп.
+     * @type {'hold' | 'latch' | 'latchPoly' | 'holdPoly' | null}
      */
     this.keyboardMode = null;
     /** @type {string | null} моно-режим: последняя зафиксированная нота|октава */
@@ -305,9 +306,13 @@ export class ToneGen {
    * @param {object} p
    */
   startMono(p) {
-    this.stopMonoImmediate();
     const ctx = this.ensureCtx();
     if (!this.outGain) return;
+    if (this.monoVoice) {
+      const prev = this.monoVoice;
+      this.monoVoice = null;
+      stopVoiceSmooth(ctx, prev, undefined, Math.min(this.releaseSmoothSec, 0.08));
+    }
     const v = createVoice(ctx, this.outGain, p);
     if (!v) return;
     this.monoVoice = v;
@@ -445,12 +450,14 @@ export class ToneGen {
  * @typedef {object} ToneSynthEngine
  * @property {() => AudioContext} ensureCtx
  * @property {'hold' | 'latch' | 'latchPoly'} mode
- * @property {'hold' | 'latch' | 'latchPoly' | null} [keyboardMode]
+ * @property {'hold' | 'latch' | 'latchPoly' | 'holdPoly' | null} [keyboardMode]
  * @property {Map<string, unknown>} polyVoices
  * @property {unknown | null} monoVoice
  * @property {string | null} latchedKey
  * @property {(p: object) => void} startMono
  * @property {() => void} stopMonoSmooth
  * @property {(p: object) => void} startOrTogglePoly
+ * @property {(p: object) => void} startPolyVoice
+ * @property {(key: string) => void} stopPolyVoiceSmooth
  * @property {(key: string | null) => void} setLatchedKeyForMono
  */

@@ -30,20 +30,36 @@ const ROW2 = [...'ASDFGHJKL'.split('').map((ch) => `Key${ch}`), 'Semicolon', 'Qu
 const ROW3 = [...'ZXCVBNM'.split('').map((ch) => `Key${ch}`), 'Comma', 'Period', 'Slash'];
 
 /**
- * Четыре физических ряда US QWERTY сверху вниз — для четырёхрядной хроматической сетки (`rowCount === 4`):
- * 4-й ряд (баян) ↔ `Backquote`…`Equal`, 3-й ↔ `KeyQ`…`Backslash`, 2-й ↔ `KeyA`…`Quote`, 1-й ↔ `KeyZ`…`Slash`.
- * Индекс совпадает с `rowTopDown` в `rowIndexTopDownFromMidi(m, 4)` (0 = верх экрана).
+ * Четыре ряда ПК сверху вниз — для четырёхрядной хроматической сетки (`rowCount === 4`), та же логика привязки, что у **bayiano** (префикс по `chromaticColumnFromMidi`, избыток кнопок справа).
+ * `rowTopDown` = 0…3 ↔ ряды (баян) 4-й…1-й: `Digit4`…`Equal`, `KeyE`…`Backslash`, `KeyS`…`Quote`, `KeyZ`…`Slash`.
  */
-const BAYAN_CHROMATIC_4_PC_ROWS_FROM_TOP = [ROW0, ROW1, ROW2, ROW3];
+const BAYAN_CHROMATIC_4_PC_ROWS_FROM_TOP = [
+  ['Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0', 'Minus', 'Equal'],
+  [
+    ...'ERTYUIOP'.split('').map((ch) => `Key${ch}`),
+    'BracketLeft',
+    'BracketRight',
+    'Backslash',
+  ],
+  [...'SDFGHJKL'.split('').map((ch) => `Key${ch}`), 'Semicolon', 'Quote'],
+  [...'ZXCVBNM'.split('').map((ch) => `Key${ch}`), 'Comma', 'Period', 'Slash'],
+];
 
-/** Ряд ПК для bayiano: 1-й ряд (баян) ↔ `asdf…` без `KeyA`: от `KeyS` до `Quote` (10 кодов). */
-const BAYAN_PC_ROW_1 = [...'SDFGHJKL'.split('').map((ch) => `Key${ch}`), 'Semicolon', 'Quote'];
+/** Ряд ПК для bayiano: 1-й ряд (баян) ↔ `asdf…`: от `KeyA` до `Quote` (11 кодов), как `ROW2`. */
+const BAYAN_PC_ROW_1 = [...'ASDFGHJKL'.split('').map((ch) => `Key${ch}`), 'Semicolon', 'Quote'];
 
-/** Ряд ПК для bayiano: 2-й ряд ↔ `qwer…` без `KeyQ`, `KeyW`: от `KeyE` до `Backslash` (11 кодов). */
-const BAYAN_PC_ROW_2 = [...'ERTYUIOP'.split('').map((ch) => `Key${ch}`), 'BracketLeft', 'BracketRight', 'Backslash'];
+/** Ряд ПК для bayiano: 2-й ряд ↔ от `KeyW` до `Backslash` через `ERTYUIOP` и `[]` (12 кодов). */
+const BAYAN_PC_ROW_2 = [
+  'KeyW',
+  ...'ERTYUIOP'.split('').map((ch) => `Key${ch}`),
+  'BracketLeft',
+  'BracketRight',
+  'Backslash',
+];
 
-/** Ряд ПК для bayiano: 3-й ряд ↔ ряд цифр без `Backquote` и `Digit1`…`Digit3`: от `Digit4` до `Equal` (9 кодов). */
+/** Ряд ПК для bayiano: 3-й ряд ↔ ряд цифр без `Backquote`…`Digit2`: от `Digit3` до `Equal` (10 кодов). */
 const BAYAN_PC_ROW_3 = [
+  'Digit3',
   'Digit4',
   'Digit5',
   'Digit6',
@@ -223,10 +239,10 @@ export function linearBayianoIndexFromCode(code) {
 /**
  * Карта `event.code` → { name, octave } для режима bayiano / bayiano4.
  * **B-system (`rowCount` 3):** три ряда ПК снизу вверх соответствуют рядам (баян) 1-й…3-й
- * (индекс ряда сверху вниз в `rowIndexTopDownFromMidi`: 2 → 1-й ряд → `BAYAN_PC_ROW_1` от `KeyS`, 1 → 2-й → `BAYAN_PC_ROW_2` от `KeyE`, 0 → 3-й → `BAYAN_PC_ROW_3` от `Digit4`).
- * **Четырёхрядная сетка (`rowCount` 4):** четыре ряда ПК сверху вниз — `Backquote`…`Equal`, `KeyQ`…`Backslash`, `KeyA`…`Quote`, `KeyZ`…`Slash` ↔ ряды (баян) 4-й…1-й.
- * У левого края схемы первых клавиш в рядах нет (смещение относительно полных рядов); при избытке кнопок относительно ряда ПК — усечение слева
- * (крайние левые кнопки ряда без клавиш, игра мышью). В режиме 3 рядов ряд `zxcv…` не используется. Границы MIDI — как у переданного диапазона.
+ * (индекс ряда сверху вниз в `rowIndexTopDownFromMidi`: 2 → 1-й ряд → `BAYAN_PC_ROW_1` от `KeyA`, 1 → 2-й → `BAYAN_PC_ROW_2` от `KeyW`, 0 → 3-й → `BAYAN_PC_ROW_3` от `Digit3`).
+ * **Четырёхрядная сетка (`rowCount` 4):** четыре ряда ПК сверху вниз — `Digit4`…`Equal`, `KeyE`…`Backslash`, `KeyS`…`Quote`, `KeyZ`…`Slash` ↔ ряды (баян) 4-й…1-й.
+ * Первая клавиша каждого ряда ПК — к **наименьшей** `chromaticColumnFromMidi` в этом ряду (при **octave-min** = 3 и охвате октавы 3: **C3 / C#3 / D3** в рядах 1-й…3-й либо **C3 / C#3 / D3 / Eb3** в рядах 1-й…4-й); при избытке кнопок — усечение **справа**
+ * (крайние правые кнопки ряда без клавиш, игра мышью). В режиме 3 рядов ряд `zxcv…` не используется. Границы MIDI — как у переданного диапазона.
  * @param {number} midiMin
  * @param {number} midiMax
  * @param {{ rowCount?: number }} [options]
@@ -260,9 +276,8 @@ export function createBayanCodeMap(midiMin, midiMax, options) {
     });
     const codes = pcRows[rowTopDown];
     const n = Math.min(midis.length, codes.length);
-    const start = midis.length - n;
     for (let i = 0; i < n; i++) {
-      const m = midis[start + i];
+      const m = midis[i];
       const { name, octave } = noteNameOctaveFromMidi(m);
       map.set(codes[i], { name, octave });
     }

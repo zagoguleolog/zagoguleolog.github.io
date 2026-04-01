@@ -78,11 +78,55 @@ export function createKeyboardSynthController(opts) {
         /* */
       }
     }
+    // #region agent log
+    try {
+      const EP = 'http://127.0.0.1:7938/ingest/6bbad3b8-402f-432a-a975-1620a81e6667';
+      const SID = '1bcc0b';
+      const activeButtons = [];
+      for (const btn of applyRoot.querySelectorAll(`${keySelector}.ntg-key-active`)) {
+        const classes = new Set(btn.classList);
+        const note = btn.getAttribute('data-note');
+        const octave = btn.getAttribute('data-octave');
+        const isPianoWhite = classes.has('cts-pkey--white');
+        const isPianoBlack = classes.has('cts-pkey--black');
+        activeButtons.push({ note, octave, isPianoWhite, isPianoBlack });
+      }
+      fetch(EP, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Debug-Session-Id': SID,
+        },
+        body: JSON.stringify({
+          sessionId: SID,
+          runId: 'pre-fix',
+          hypothesisId: 'H-css-vs-logic',
+          location: 'keyboard-synth-controller.mjs:syncExecutionHighlight',
+          message: 'syncExecutionHighlight active buttons snapshot',
+          data: {
+            activeCount: activeButtons.length,
+            sample: activeButtons.slice(0, 12),
+          },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+    } catch {
+      /* */
+    }
+    // #endregion
   }
 
   function notify() {
     syncExecutionHighlight();
     onChange?.();
+  }
+
+  /** Снять класс «физически нажато» со всех клавиш в корне (режим hold). */
+  function stripAllKeyDown(root) {
+    if (!root) return;
+    for (const b of root.querySelectorAll(keySelector)) {
+      b.classList.remove('ntg-key-down');
+    }
   }
 
   /** @param {PointerEvent} ev */
@@ -114,6 +158,15 @@ export function createKeyboardSynthController(opts) {
       return;
     }
 
+    if (effectiveKeyboardMode() === 'holdPoly') {
+      engine.startPolyVoice(buildPlayPayload(name, octave));
+      btn.classList.add('ntg-key-down');
+      btn.setPointerCapture(ev.pointerId);
+      notify();
+      return;
+    }
+
+    stripAllKeyDown(getPointerRoot());
     btn.classList.add('ntg-key-down');
     btn.setPointerCapture(ev.pointerId);
     engine.setLatchedKeyForMono(voiceKey(name, octave));
@@ -124,13 +177,28 @@ export function createKeyboardSynthController(opts) {
   /** @param {PointerEvent} ev */
   function onPointerUp(ev) {
     const btn = /** @type {HTMLButtonElement} */ (ev.currentTarget);
+    const name = btn.dataset.note;
+    const octave = Number(btn.dataset.octave);
     btn.classList.remove('ntg-key-down');
-    if (effectiveKeyboardMode() !== 'hold') return;
+    const mode = effectiveKeyboardMode();
+    if (mode === 'holdPoly' && name && Number.isFinite(octave)) {
+      try {
+        btn.releasePointerCapture(ev.pointerId);
+      } catch {
+        /* */
+      }
+      engine.stopPolyVoiceSmooth(voiceKey(name, octave));
+      notify();
+      return;
+    }
+    if (mode !== 'hold') return;
     try {
       btn.releasePointerCapture(ev.pointerId);
     } catch {
       /* */
     }
+    if (!name || !Number.isFinite(octave)) return;
+    if (voiceKey(name, octave) !== engine.latchedKey) return;
     engine.stopMonoSmooth();
     engine.setLatchedKeyForMono(null);
     notify();
@@ -139,8 +207,18 @@ export function createKeyboardSynthController(opts) {
   /** @param {PointerEvent} ev */
   function onPointerCancel(ev) {
     const btn = /** @type {HTMLButtonElement} */ (ev.currentTarget);
+    const name = btn.dataset.note;
+    const octave = Number(btn.dataset.octave);
     btn.classList.remove('ntg-key-down');
-    if (effectiveKeyboardMode() !== 'hold') return;
+    const mode = effectiveKeyboardMode();
+    if (mode === 'holdPoly' && name && Number.isFinite(octave)) {
+      engine.stopPolyVoiceSmooth(voiceKey(name, octave));
+      notify();
+      return;
+    }
+    if (mode !== 'hold') return;
+    if (!name || !Number.isFinite(octave)) return;
+    if (voiceKey(name, octave) !== engine.latchedKey) return;
     engine.stopMonoSmooth();
     engine.setLatchedKeyForMono(null);
     notify();
@@ -149,8 +227,20 @@ export function createKeyboardSynthController(opts) {
   /** @param {PointerEvent} ev */
   function onPointerLeave(ev) {
     const btn = /** @type {HTMLButtonElement} */ (ev.currentTarget);
-    if (effectiveKeyboardMode() !== 'hold' || !btn.classList.contains('ntg-key-down')) return;
+    const name = btn.dataset.note;
+    const octave = Number(btn.dataset.octave);
+    const mode = effectiveKeyboardMode();
+    if (mode === 'holdPoly' && name && Number.isFinite(octave)) {
+      if (!btn.classList.contains('ntg-key-down')) return;
+      btn.classList.remove('ntg-key-down');
+      engine.stopPolyVoiceSmooth(voiceKey(name, octave));
+      notify();
+      return;
+    }
+    if (mode !== 'hold') return;
     btn.classList.remove('ntg-key-down');
+    if (!name || !Number.isFinite(octave)) return;
+    if (voiceKey(name, octave) !== engine.latchedKey) return;
     engine.stopMonoSmooth();
     engine.setLatchedKeyForMono(null);
     notify();
@@ -168,7 +258,7 @@ export function createKeyboardSynthController(opts) {
   }
 
   /**
-   * Глобальные keydown/keyup: та же семантика, что у pointer (`hold` / `latch` / `latchPoly`).
+   * Глобальные keydown/keyup: та же семантика, что у pointer (`hold` / `latch` / `latchPoly` / `holdPoly`).
    * Не вызывать, если фокус в полях ввода — обрабатывается внутри.
    * @param {ComputerKeyboardBindOptions} ck
    * @returns {{ unbind: () => void }}
@@ -177,6 +267,8 @@ export function createKeyboardSynthController(opts) {
     const { getLayout, getPianoCodeMap, getBayanCodeMap, getLinearComputerCodes } = ck;
     /** @type {Set<string>} */
     const pressedHold = new Set();
+    /** @type {Set<string>} */
+    const pressedHoldPoly = new Set();
 
     /** @param {KeyboardEvent} ev */
     function resolveNote(ev) {
@@ -269,6 +361,17 @@ export function createKeyboardSynthController(opts) {
         return;
       }
 
+      if (mode === 'holdPoly') {
+        const btn = findBtn(name, octave);
+        if (btn) btn.classList.add('ntg-key-down');
+        engine.startPolyVoice(buildPlayPayload(name, octave));
+        pressedHoldPoly.add(code);
+        notify();
+        ev.preventDefault();
+        return;
+      }
+
+      stripAllKeyDown(getHighlightRoot());
       const btn = findBtn(name, octave);
       if (btn) btn.classList.add('ntg-key-down');
       engine.setLatchedKeyForMono(voiceKey(name, octave));
@@ -280,8 +383,24 @@ export function createKeyboardSynthController(opts) {
 
     /** @param {KeyboardEvent} ev */
     function onKeyUp(ev) {
-      if (effectiveKeyboardMode() !== 'hold') return;
+      const mode = effectiveKeyboardMode();
       const code = ev.code;
+
+      if (mode === 'holdPoly') {
+        if (!pressedHoldPoly.has(code)) return;
+        pressedHoldPoly.delete(code);
+        const resolved = resolveNote(ev);
+        if (!resolved) return;
+        const { name, octave } = resolved;
+        const btn = findBtn(name, octave);
+        if (btn) btn.classList.remove('ntg-key-down');
+        engine.stopPolyVoiceSmooth(voiceKey(name, octave));
+        notify();
+        ev.preventDefault();
+        return;
+      }
+
+      if (mode !== 'hold') return;
       if (!pressedHold.has(code)) return;
 
       const resolved = resolveNote(ev);
@@ -290,10 +409,9 @@ export function createKeyboardSynthController(opts) {
 
       const { name, octave } = resolved;
       const vk = voiceKey(name, octave);
-      if (engine.latchedKey !== vk) return;
-
       const btn = findBtn(name, octave);
       if (btn) btn.classList.remove('ntg-key-down');
+      if (engine.latchedKey !== vk) return;
       engine.stopMonoSmooth();
       engine.setLatchedKeyForMono(null);
       notify();
@@ -308,6 +426,7 @@ export function createKeyboardSynthController(opts) {
         window.removeEventListener('keydown', onKeyDown, true);
         window.removeEventListener('keyup', onKeyUp, true);
         pressedHold.clear();
+        pressedHoldPoly.clear();
       },
     };
   }

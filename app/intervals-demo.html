@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru" data-site-nav-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Интервалы: таблица и клавиатура</title>
+  <link rel="stylesheet" href="circle-of-fifths.css" />
+  <link rel="stylesheet" href="circle-scales.css" />
+  <link rel="stylesheet" href="template-synth.css" />
+  <link rel="stylesheet" href="keyboard-piano.css" />
+  <link rel="stylesheet" href="bayan-keyboard.css" />
+  <link rel="stylesheet" href="../site-nav.css" />
+  <style>
+    .ivd-intervals-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .ivd-intervals-table th,
+    .ivd-intervals-table td {
+      padding: 0.35rem 0.6rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+      text-align: left;
+    }
+    .ivd-intervals-table tbody tr {
+      cursor: pointer;
+    }
+    .ivd-intervals-table tbody tr.ivd-interval-selected {
+      background: rgba(56, 189, 248, 0.12);
+    }
+    .ivd-intervals-table tbody tr.ivd-interval-selected td {
+      font-weight: 600;
+    }
+    .ivd-intervals-note {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--cof-muted, #8b9bab);
+    }
+    .ivd-interval-target {
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.9);
+    }
+    /* Пиано: отдельное усиление подсветки для белых/чёрных клавиш */
+    .cts-piano-panel .cts-pkey.ivd-interval-target {
+      box-shadow:
+        0 0 0 2px rgba(56, 189, 248, 0.9),
+        0 0 0 4px rgba(56, 189, 248, 0.45);
+      border-color: rgba(56, 189, 248, 0.9);
+    }
+    /* Баяны (SVG): подсветка через stroke + glow */
+    .cts-bayan-wrap svg circle.cts-byan-key.ivd-interval-target,
+    .cts-bayan4-wrap svg circle.cts-byan-key.ivd-interval-target {
+      filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.9));
+      stroke: rgba(56, 189, 248, 0.95) !important;
+      stroke-width: 4px !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="cof-page cts-wide-page">
+    <div class="cts-layout">
+      <aside class="cts-tone-rail" aria-label="Синтез: камертон и тембр">
+        <section class="tpl-panel cts-ntg-panel" aria-label="Камертон и октавы">
+          <h2 class="cts-rail-h2">Камертон и октавы</h2>
+          <div class="tpl-grid-tuning cts-rail-tuning">
+            <label class="tpl-field">
+              <span class="tpl-label">A4 (Гц)</span>
+              <input type="number" id="ivd-ntg-a4" min="1" max="2000" step="0.1" value="440" />
+            </label>
+            <label class="tpl-field">
+              <span class="tpl-label">Октава с</span>
+              <input type="number" id="ivd-ntg-octave-min" min="0" max="8" step="1" value="3" />
+            </label>
+            <label class="tpl-field">
+              <span class="tpl-label">Октава по</span>
+              <input type="number" id="ivd-ntg-octave-max" min="0" max="8" step="1" value="6" />
+            </label>
+          </div>
+        </section>
+
+        <section class="tpl-panel synth-kit-root cts-synth-root cts-ntg-panel" aria-label="Громкость и тембр">
+          <h2 class="cts-rail-h2">Громкость и тембр</h2>
+
+          <input type="range" id="ivd-ntg-volume" class="tpl-sr-only" min="0" max="100" value="25" tabindex="-1" aria-hidden="true" />
+          <input type="range" id="ivd-ntg-detune" class="tpl-sr-only" min="-50" max="50" value="0" tabindex="-1" aria-hidden="true" />
+          <input type="range" id="ivd-ntg-harm-mix" class="tpl-sr-only" min="0" max="100" value="40" tabindex="-1" aria-hidden="true" />
+          <input type="range" id="ivd-ntg-harm-rolloff" class="tpl-sr-only" min="0.3" max="2.5" value="1" step="0.05" tabindex="-1" aria-hidden="true" />
+          <input type="range" id="ivd-ntg-release-ms" class="tpl-sr-only" min="20" max="5000" value="120" step="10" tabindex="-1" aria-hidden="true" />
+
+          <div class="tpl-wave-row">
+            <label class="tpl-field tpl-kit-cell--wave">
+              <span class="tpl-label">Форма колебания</span>
+              <select id="ivd-ntg-waveform" aria-label="Форма колебания">
+                <option value="sine" selected>Синусоида</option>
+                <option value="triangle">Треугольник</option>
+                <option value="square">Квадрат</option>
+                <option value="sawtooth">Пила</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="cts-synth-kit-row">
+            <div class="tpl-kit-cell cts-synth-kit-slot">
+              <div id="ivd-ntg-mount-volume"></div>
+              <div id="ivd-ntg-seg-volume"></div>
+            </div>
+            <div class="tpl-harmonics-wrap cts-synth-kit-slot">
+              <span class="tpl-label">Обертоны n=1…16</span>
+              <div id="ivd-ntg-harmonics" role="group" aria-label="Обертоны n=1…16"></div>
+            </div>
+            <div class="tpl-kit-cell cts-synth-kit-slot">
+              <div id="ivd-ntg-mount-detune"></div>
+              <div id="ivd-ntg-seg-detune"></div>
+            </div>
+            <div class="tpl-kit-cell cts-synth-kit-slot">
+              <div id="ivd-ntg-mount-harm-rolloff"></div>
+              <div id="ivd-ntg-seg-harm-rolloff"></div>
+            </div>
+            <div class="tpl-kit-cell cts-synth-kit-slot">
+              <div id="ivd-ntg-mount-harm-mix"></div>
+              <div id="ivd-ntg-seg-harm-mix"></div>
+            </div>
+            <div class="tpl-kit-cell tpl-kit-cell--fader cts-synth-kit-slot">
+              <div id="ivd-ntg-mount-release"></div>
+              <p class="tpl-release-label">Угасание: <strong id="ivd-ntg-release-ms-val">120 мс</strong></p>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <div class="cts-main-column">
+        <h1>Интервалы: таблица и клавиатура</h1>
+        <p class="cof-hint">
+          Таблица слева — интервалы от унисона (0 полутонов) до чистой октавы (12 полутонов) в обозначениях
+          из <a href="../docs/music-theory.md">music-theory.md</a>. Выберите интервал, затем сыграйте ноту
+          на клавиатуре: базовая нота подсвечивается стандартным цветом, вторая нота интервала — другим
+          цветом, обе ноты звучат вместе и затухают одновременно.
+        </p>
+
+        <section class="cts-theory-panel" aria-label="Таблица интервалов 0–12 полутонов">
+          <h2>Интервалы в пределах октавы</h2>
+          <div class="ivd-intervals-wrap">
+            <table class="ivd-intervals-table">
+              <thead>
+                <tr>
+                  <th scope="col">Полутонов</th>
+                  <th scope="col">Код (id)</th>
+                  <th scope="col">Рус. кратко</th>
+                  <th scope="col">Название</th>
+                </tr>
+              </thead>
+              <tbody id="ivd-intervals-body">
+                <!-- Строки заполняются из lib/music-theory.js -->
+              </tbody>
+            </table>
+            <p class="ivd-intervals-note">
+              Выбор ведёт себя как переключатель (radio): в каждый момент активен один интервал.
+              При смене интервала уже зажатые ноты не перестраиваются — новый интервал применяется
+              к следующим нажатиям.
+            </p>
+          </div>
+        </section>
+
+        <section class="cts-piano-panel" aria-label="Клавиатура нот и режимы ввода">
+          <div class="cts-kbd-toolbar">
+            <span class="cts-kbd-toolbar-label" id="ivd-kbd-toolbar-label">Вид клавиатуры</span>
+            <div
+              id="ivd-kbd-mode-group"
+              class="cts-kbd-seg"
+              role="group"
+              aria-labelledby="ivd-kbd-toolbar-label"
+            >
+              <button type="button" class="cts-kbd-btn" data-ivd-kbd-mode="linear" aria-pressed="true">
+                linear
+              </button>
+              <button type="button" class="cts-kbd-btn" data-ivd-kbd-mode="piano" aria-pressed="false">
+                piano
+              </button>
+              <button type="button" class="cts-kbd-btn" data-ivd-kbd-mode="bayiano" aria-pressed="false">
+                bayiano
+              </button>
+              <button
+                type="button"
+                class="cts-kbd-btn"
+                data-ivd-kbd-mode="bayiano4"
+                aria-pressed="false"
+                title="Четыре ряда (хроматическая сетка мод 4), не B-system"
+              >
+                bayiano4
+              </button>
+            </div>
+          </div>
+
+          <div class="cts-kbd-mode-row cts-kbd-synth-row" aria-label="Режим клавиатуры">
+            <span class="cts-kbd-synth-label">Клавиатура</span>
+            <div class="cts-kbd-synth-stack">
+              <div class="cts-kbd-polyphony-row" role="group" aria-label="Голоса клавиатуры">
+                <span class="cts-kbd-sub-label">Голоса</span>
+                <div class="ntg-seg ntg-seg-modes cts-kbd-polyphony-seg" role="group">
+                  <button
+                    type="button"
+                    class="ntg-seg-btn"
+                    id="ivd-kbd-polyphony-mono"
+                    aria-pressed="false"
+                  >
+                    Монофония
+                  </button>
+                  <button
+                    type="button"
+                    class="ntg-seg-btn"
+                    id="ivd-kbd-polyphony-poly"
+                    aria-pressed="true"
+                  >
+                    Полифония
+                  </button>
+                </div>
+              </div>
+              <div class="cts-kbd-articulation-row">
+                <span class="cts-kbd-sub-label" id="ivd-kbd-articulation-label">Артикуляция</span>
+                <div
+                  id="ivd-kbd-articulation-mono"
+                  class="ntg-seg ntg-seg-modes cts-kbd-synth-modes"
+                  role="group"
+                  aria-labelledby="ivd-kbd-articulation-label"
+                  hidden
+                >
+                  <button
+                    type="button"
+                    class="ntg-seg-btn"
+                    id="ivd-kbd-mode-hold"
+                    aria-pressed="true"
+                  >
+                    Удержание
+                  </button>
+                  <button
+                    type="button"
+                    class="ntg-seg-btn"
+                    id="ivd-kbd-mode-latch"
+                    aria-pressed="false"
+                  >
+                    Фиксация
+                  </button>
+                </div>
+                <div
+                  id="ivd-kbd-articulation-poly"
+                  class="ntg-seg ntg-seg-modes cts-kbd-synth-modes"
+                  role="group"
+                  aria-labelledby="ivd-kbd-articulation-label"
+                >
+                  <button
+                    type="button"
+                    class="ntg-seg-btn"
+                    id="ivd-kbd-mode-hold-poly"
+                    aria-pressed="true"
+                  >
+                    Удержание
+                  </button>
+                  <button
+                    type="button"
+                    class="ntg-seg-btn"
+                    id="ivd-kbd-mode-latch-poly"
+                    aria-pressed="false"
+                  >
+                    Переключение
+                  </button>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="ntg-stop cts-kbd-stop" id="ivd-ntg-stop">Стоп</button>
+          </div>
+
+          <div id="ivd-keyboard-stage" class="cts-keyboard-stage">
+            <div id="ivd-keys-linear" class="cts-kbd-view">
+              <div class="ntg-keys-wrap" aria-label="Ноты по октавам (линейная раскладка)"></div>
+            </div>
+            <div id="ivd-keys-piano" class="cts-kbd-view" hidden>
+              <div class="cts-scroll-x">
+                <div
+                  class="cts-piano-keyboard"
+                  role="group"
+                  aria-label="Ноты по октавам (раскладка пиано)"
+                ></div>
+              </div>
+            </div>
+            <div id="ivd-keys-bayiano" class="cts-kbd-view" hidden>
+              <div class="cts-scroll-x cts-bayan-scroll">
+                <div
+                  id="ivd-bayan-wrap"
+                  class="cts-bayan-wrap"
+                  aria-label="Баян B-system"
+                ></div>
+              </div>
+            </div>
+            <div id="ivd-keys-bayiano4" class="cts-kbd-view" hidden>
+              <div class="cts-scroll-x cts-bayan-scroll">
+                <div
+                  id="ivd-bayan4-wrap"
+                  class="cts-bayan-wrap cts-bayan4-wrap"
+                  aria-label="Четырёхрядная хроматическая сетка (баян)"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script defer src="circle-of-fifths.js"></script>
+  <script defer src="circle-scales-core.js"></script>
+  <script type="module" src="intervals-demo.mjs"></script>
+  <script type="module">
+    import { mountSiteNav } from '../site-nav.mjs';
+    mountSiteNav();
+  </script>
+</body>
+</html>
+

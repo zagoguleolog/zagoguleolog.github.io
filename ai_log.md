@@ -1,3 +1,19 @@
+#062 | 2026-04-01 — DONE | Страница `app/seventh-chords.html`: таблица типов септаккордов из `getSeventhChordCatalog()` (шесть строк, поля как в разделе «Септаккорды» `docs/music-theory.md`) и клавиатура (режимы linear / piano / bayiano / bayiano4) на общем движке `ToneGen` (`seventh-chords.mjs`); при выборе строки и нажатии ноты строится соответствующий септаккорд 1–3–5–7 (верхние три ноты как отдельные голоса с префиксом `sc7:` в `mapKey`), все четыре ноты подсвечиваются на активной клавиатуре и затухают по общим настройкам синта; смена типа не переоценивает уже зажатые ноты. Страница добавлена в `web/stranichki.html`. Проверка: `npm run verify` OK
+
+#061 | 2026-04-01 — DONE | Теория септаккордов: раздел «Септаккорды» в `docs/music-theory.md` (шесть базовых типов, интервальные формулы, качества 3 и 7 ступеней, связь с диатоникой); сиды `SEVENTH_CHORD_SEED` и каталог `getSeventhChordCatalog()` в `lib/music-theory.js` без дублирования чисел полутонов (используются интервалы из `INTERVAL_CATALOG_SEED`); таблица «Типы септаккордов» в `renderTheoryTables`. Проверка: `npm run verify` OK
+
+#060 | 2026-03-31 — DONE | `circle-scales.html`: подключены `keyboard-piano.css` и `bayan-keyboard.css` как на `intervals-demo.html` — единый визуальный стиль пиано-клавиатуры и баяна + сохранён слой подсказки лада (`ntg-key-hint`) и подсветка воспроизведения; `npm run verify` OK
+
+#059 | 2026-03-29 — DONE | **hold**: визуал `ntg-key-down` — `stripAllKeyDown` при новом нажатии (ПК/мышь), `keyup`/pointer up|leave|cancel останавливают моно только при совпадении ноты с `latchedKey`; `docs/synth-structure.md`, `docs/errors.md` ERR-002; `node --check`, `npm run verify` OK
+
+#059 | 2026-03-29 — DONE | **`holdPoly`**: полифония с удержанием (ПК + pointer) — `startPolyVoice` / `stopPolyVoiceSmooth`; UI круга — голоса (моно/поли) + артикуляция (`hold`/`latch` vs `holdPoly`/`latchPoly`); дефолт клавиатуры **полифония + удержание**; `docs/synth-structure.md`, `overview.md`, `domain.md`; `node --check`, `npm run verify` OK
+
+#058 | 2026-03-29 — DONE | **bayiano4**: `BAYAN_CHROMATIC_4_PC_ROWS_FROM_TOP` — стартовые клавиши **Digit4 / KeyE / KeyS / KeyZ** (4-й…1-й ряд баян), при octave-min 3 — **Eb3 / D3 / C#3 / C3**; `docs/synth-structure.md`, `overview.md`, `bayan-b-system.md`, JSDoc; `node --check`, `npm run verify`, smoke KeyZ/KeyS/KeyE/Digit4 OK
+
+#057 | 2026-03-29 — DONE | **bayiano** / **bayiano4**: `createBayanCodeMap` — префикс по колонке (не суффикс): первая клавиша ряда ПК → минимальная колонка в диапазоне (**C3/C#3/D3** при octave-min 3); избыток кнопок — справа без ПК; `docs/synth-structure.md`, JSDoc; `node --check`, `npm run verify`, smoke OK
+
+#056 | 2026-03-29 — DONE | **bayiano** ПК: ряды **A / W / 3** — `BAYAN_PC_ROW_1` (`KeyA`…`Quote`), `BAYAN_PC_ROW_2` (`KeyW`…`Backslash`), `BAYAN_PC_ROW_3` (`Digit3`…`Equal`); JSDoc `createBayanCodeMap`; `docs/synth-structure.md`, `overview.md`, `log.md`; `node --check`, `npm run verify` OK
+
 #055 | 2026-03-29 — DONE | Баян **4 ряда** (четырёхрядная хроматическая сетка): `rowCount` в `lib/bayan-b-system.js`, `renderBayanKeyboard` / `bayan-keyboard.html`, `createBayanCodeMap(..., { rowCount })` + `ROW0`…`ROW3`; **bayiano4** на `circle-scales`; документация `bayan-b-system.md`, `domain.md`, `overview.md`, `synth-structure.md`, `music-theory.md`; `npm run verify` OK
 
 #054 | 2026-03-29 — DONE | **bayiano** ПК: стартовые ряды **S / E / 4** — `BAYAN_PC_ROW_1`…`BAYAN_PC_ROW_3` в `createBayanCodeMap` (`[BAYAN_PC_ROW_3, BAYAN_PC_ROW_2, BAYAN_PC_ROW_1]` по `rowTopDown`); JSDoc; `docs/synth-structure.md`, `overview.md`; `node --check`, `npm run verify`, smoke KeyS/KeyE/Digit4 OK
@@ -129,3 +145,6 @@
 #002 | 2026-03-25 — DONE | AI_RULES: всегда прямая ссылка на артефакт; карта docs + overview
 
 #001 | 2026-03-25 — DONE | Круг: draw(svg, [2 строки]), число секторов от min длин списков
+
+#060 | 2026-03-31 — DONE | Страница `app/intervals-demo.html`: таблица интервалов 0–12 полутонов из `getIntervalCatalog()` (`INTERVAL_CATALOG_SEED`), клавиатура с режимами **linear / piano / bayiano / bayiano4** и вводом с ПК как на `circle-scales` (`ToneGen`, `keyboard-layouts.mjs`, `keyboard-synth-controller.mjs`, `computer-keyboard-music.mjs`); при выборе интервала и нажатии ноты базовая нота подсвечивается стандартным цветом, вторая нота интервала строится по полутоновому сдвигу (каноническое имя + октава по MIDI) и подсвечивается отдельным классом, обе ноты звучат совместно как отдельные голоса `ToneGen` (префикс `ivd:` в `mapKey`) и затухают одновременно при отпускании базовой ноты; смена интервала не переоценивает уже зажатые ноты. Обновлены `web/stranichki.html`, `site-nav.mjs`, раздел про генераторы тона в `docs/overview.md`. Проверка: `npm run verify` OK.
+#063 | 2026-04-01 — DONE | Клавиатура пиано: `app/keyboard-piano.css` зафиксирован как единый источник истины для геометрии и светлой темы пиано-клавиатуры; из `app/circle-scales.css` удалён дублирующий блок базовых стилей пиано (`cts-scroll-x`, `.cts-piano-keyboard`, белые/чёрные клавиши, подписи октав), оставлены только переопределения под тёмную тему (`body:has(> .cof-page.cts-wide-page)`). Логика подсветки (`ntg-key-active` и `ntg-key-hint`) и работа всех страниц с пиано-клавиатурой не изменились.
