@@ -2,6 +2,10 @@
 
 Сайт музыкальной теории. Публичная версия: **https://zagoguleolog.github.io/**
 
+## GitHub Pages
+
+В настройках репозитория: **Source → Deploy from a branch**, ветка **main**, папка **`/ (root)`** (корень репо — каталог `music/` при отдельном репозитории только для сайта). Ожидаемый URL: `https://<user>.github.io/<repo>/`. Точка входа для пользователя: **`index.html`** (краткая витрина основных интерактивных страниц); полная карта сайта — **`web/stranichki.html`**. Навигация (`site-nav.mjs`) строит ссылки относительно каталога `music/`, чтобы меню работало с префиксом репозитория на Pages; ссылка «Главная» ведёт на **`index.html`**.
+
 ## Структура
 
 ```text
@@ -52,7 +56,7 @@ project_template/
 | Таблицы из теории | **http://127.0.0.1:4173/theory-tables.html** |
 | Демо synth-kit | **http://127.0.0.1:4173/app/synth-kit-demo.html** |
 | Галерея атласа knobs.png | **http://127.0.0.1:4173/app/knobs-atlas-showcase.html** |
-| Корень (главная — карта сайта, `web/stranichki.html`) | **http://127.0.0.1:4173/** |
+| Корень (`index.html`, витрина; полная карта — `web/stranichki.html`) | **http://127.0.0.1:4173/** |
 
 Проверка отдачи `lib/music-theory.js` с `application/javascript`: в отдельном терминале при уже запущенном сервере — `npm run verify:http`.
 

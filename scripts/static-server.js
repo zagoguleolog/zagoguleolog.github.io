@@ -31,7 +31,7 @@ function safeJoin(root, reqPath) {
 
 const server = http.createServer(async (req, res) => {
   try {
-    const urlPath = req.url === '/' ? '/web/stranichki.html' : req.url;
+    const urlPath = req.url === '/' ? '/index.html' : req.url;
     const abs = safeJoin(ROOT, urlPath);
     if (!abs) {
       res.writeHead(403).end();
@@ -54,6 +54,6 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   process.stdout.write(
-    `music static: http://127.0.0.1:${PORT}/ (→ web/stranichki.html) | http://127.0.0.1:${PORT}/web/stranichki.html | http://127.0.0.1:${PORT}/theory-tables.html | http://127.0.0.1:${PORT}/web/index.html | http://127.0.0.1:${PORT}/app/note-tone-gen.html | http://127.0.0.1:${PORT}/app/template-synth.html | http://127.0.0.1:${PORT}/app/bayan-keyboard.html (root ${ROOT})\n`,
+    `music static: http://127.0.0.1:${PORT}/ (→ index.html, витрина) | http://127.0.0.1:${PORT}/web/stranichki.html | http://127.0.0.1:${PORT}/theory-tables.html | http://127.0.0.1:${PORT}/web/index.html | http://127.0.0.1:${PORT}/app/note-tone-gen.html | http://127.0.0.1:${PORT}/app/template-synth.html | http://127.0.0.1:${PORT}/app/bayan-keyboard.html (root ${ROOT})\n`,
   );
 });

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>music — главная</title>
+  <link rel="canonical" href="index.html" />
+  <link rel="stylesheet" href="site-nav.css" />
+  <style>
+    :root {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      line-height: 1.45;
+      color: #1a1a1a;
+      background: #f4f2ef;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 980px;
+      padding: 1.25rem 1rem 3rem;
+    }
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 650;
+      margin: 0 0 0.75rem;
+    }
+    .hint {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 1.25rem;
+    }
+    .block {
+      background: #fff;
+      border: 1px solid #dcd8d3;
+      border-radius: 10px;
+      padding: 1rem 1.1rem 1.15rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+    .block h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin: 0 0 0.6rem;
+    }
+    ul {
+      margin: 0;
+      padding-left: 1.2rem;
+    }
+    li {
+      margin: 0.35rem 0;
+    }
+    a { color: #0b5bd3; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code {
+      font-family: ui-monospace, "Cascadia Code", monospace;
+      font-size: 0.86em;
+    }
+    .secondary {
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Интерактивная теория</h1>
+  <p class="hint">
+    Ниже — основные страницы с синтезатором (ToneGen), экранной клавиатурой и теоретическим контентом.
+    Для корректной загрузки ES-модулей запускайте локальный сервер: <code>npm run serve</code> в каталоге <code>music</code>
+    (например <code>http://127.0.0.1:4173/</code>).
+  </p>
+
+  <section class="block" aria-label="Основные интерактивные страницы">
+    <h2>Страницы</h2>
+    <ul>
+      <li><a href="app/circle-scales.html">Квартово-квинтовый круг и тональность</a> (<code>app/circle-scales.html</code>)</li>
+      <li><a href="app/lads.html">Лады и арпеджио по ступеням</a> (<code>app/lads.html</code>)</li>
+      <li><a href="app/intervals-demo.html">Интервалы и клавиатура</a> (<code>app/intervals-demo.html</code>)</li>
+      <li><a href="app/seventh-chords.html">Септаккорды и клавиатура</a> (<code>app/seventh-chords.html</code>)</li>
+    </ul>
+    <p class="secondary">
+      <a href="web/stranichki.html">Полная карта сайта</a> — все HTML и ссылки на документацию (<code>web/stranichki.html</code>).
+    </p>
+  </section>
+
+  <script type="module">
+    import { mountSiteNav } from './site-nav.mjs';
+    mountSiteNav();
+  </script>
+</body>
+</html>

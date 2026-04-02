@@ -1,23 +1,36 @@
 /**
  * Навигация по HTML-страницам каталога music — тот же набор, что в разделе «HTML-страницы» на
- * `web/stranichki.html`. Пути от корня сервера (`npm run serve`).
+ * `web/stranichki.html`. Базовый путь из `import.meta.url`, чтобы ссылки работали и при
+ * `npm run serve`, и на GitHub Pages (префикс `/<repo>/`).
  */
-export const SITE_NAV_LINKS = [
-  { href: '/web/stranichki.html', label: 'web/stranichki.html (главная)' },
-  { href: '/web/index.html', label: 'web/index.html (таблицы из теории)' },
-  { href: '/theory-tables.html', label: 'theory-tables.html (корень music)' },
-  { href: '/piano-keyboard.html', label: 'piano-keyboard.html (клавиатура)' },
-  { href: '/app/bayan-keyboard.html', label: 'app/bayan-keyboard.html (B-system)' },
-  { href: '/app/note-tone-gen.html', label: 'app/note-tone-gen.html (генератор тона)' },
-  { href: '/app/sequencer-demo.html', label: 'app/sequencer-demo.html (мини-сквенсор / арпеджио)' },
-  { href: '/app/lads.html', label: 'app/lads.html (лады + арпеджио по ступеням)' },
-  { href: '/app/template-synth.html', label: 'app/template-synth.html (темплейт-синт, synth-kit)' },
-  { href: '/app/circle-of-fifths.html', label: 'app/circle-of-fifths.html (круг)' },
-  { href: '/app/circle-scales.html', label: 'app/circle-scales.html (круг + тональность)' },
-  { href: '/app/intervals-demo.html', label: 'app/intervals-demo.html (интервалы + клавиатура)' },
-  { href: '/app/synth-kit-demo.html', label: 'app/synth-kit-demo.html (демо UI-синта)' },
-  { href: '/app/knobs-atlas-showcase.html', label: 'app/knobs-atlas-showcase.html (галерея фрагментов knobs.png)' },
+const SITE_ROOT = new URL('./', import.meta.url);
+
+function siteHref(relativePath) {
+  return new URL(relativePath, SITE_ROOT).href;
+}
+
+const SITE_NAV_ENTRIES = [
+  { path: 'web/stranichki.html', label: 'web/stranichki.html (полная карта сайта)' },
+  { path: 'web/index.html', label: 'web/index.html (таблицы из теории)' },
+  { path: 'theory-tables.html', label: 'theory-tables.html (корень music)' },
+  { path: 'piano-keyboard.html', label: 'piano-keyboard.html (клавиатура)' },
+  { path: 'app/bayan-keyboard.html', label: 'app/bayan-keyboard.html (B-system)' },
+  { path: 'app/note-tone-gen.html', label: 'app/note-tone-gen.html (генератор тона)' },
+  { path: 'app/sequencer-demo.html', label: 'app/sequencer-demo.html (мини-сквенсор / арпеджио)' },
+  { path: 'app/template-synth.html', label: 'app/template-synth.html (темплейт-синт, synth-kit)' },
+  { path: 'app/lads.html', label: 'app/lads.html (лады + арпеджио по ступеням)' },
+  { path: 'app/circle-of-fifths.html', label: 'app/circle-of-fifths.html (круг)' },
+  { path: 'app/circle-scales.html', label: 'app/circle-scales.html (круг + тональность)' },
+  { path: 'app/intervals-demo.html', label: 'app/intervals-demo.html (интервалы + клавиатура)' },
+  { path: 'app/seventh-chords.html', label: 'app/seventh-chords.html (септаккорды + клавиатура)' },
+  { path: 'app/synth-kit-demo.html', label: 'app/synth-kit-demo.html (демо UI-синта)' },
+  { path: 'app/knobs-atlas-showcase.html', label: 'app/knobs-atlas-showcase.html (галерея фрагментов knobs.png)' },
 ];
+
+export const SITE_NAV_LINKS = SITE_NAV_ENTRIES.map(({ path, label }) => ({
+  href: siteHref(path),
+  label,
+}));
 
 export function mountSiteNav() {
   const wrap = document.createElement('div');
@@ -29,7 +42,7 @@ export function mountSiteNav() {
 
   const home = document.createElement('a');
   home.className = 'site-nav__home';
-  home.href = '/web/stranichki.html';
+  home.href = siteHref('index.html');
   home.textContent = 'Главная';
 
   const toggle = document.createElement('button');

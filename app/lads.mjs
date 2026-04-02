@@ -596,6 +596,51 @@ function initScaleTableClicks() {
   });
 }
 
+function initScaleKeyboardNavigation() {
+  const tbody = document.getElementById('lads-scale-body');
+  if (!tbody || tbody.dataset.ladsKbdWired) return;
+  tbody.dataset.ladsKbdWired = '1';
+
+  function moveSelection(delta) {
+    const order = LAD_PATTERN_ORDER;
+    let idx = order.indexOf(currentPatternId);
+    if (idx === -1) idx = 0;
+    let nextIdx = idx + delta;
+    if (nextIdx < 0) nextIdx = 0;
+    if (nextIdx >= order.length) nextIdx = order.length - 1;
+    const nextId = order[nextIdx];
+    if (!nextId || nextId === currentPatternId) return;
+    currentPatternId = nextId;
+    rebuildScale();
+    const nextRow = tbody.querySelector(`tr[data-pattern-id="${CSS.escape(nextId)}"]`);
+    if (nextRow instanceof HTMLElement) {
+      nextRow.focus();
+    }
+  }
+
+  document.addEventListener(
+    'keydown',
+    (e) => {
+      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+      const t = e.target;
+      if (
+        t instanceof Element &&
+        t.closest('input, textarea, select, [contenteditable="true"], [contenteditable=""]')
+      ) {
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        moveSelection(-1);
+        e.preventDefault();
+      } else if (e.key === 'ArrowDown') {
+        moveSelection(1);
+        e.preventDefault();
+      }
+    },
+    true,
+  );
+}
+
 function buildSequencer() {
   sequencer = createSequencer({
     notes: currentSeqNotes,
@@ -819,6 +864,7 @@ function initArpControls() {
 function boot() {
   initSynth();
   initScaleTableClicks();
+  initScaleKeyboardNavigation();
   wireKeyboardLayoutSwitcher();
   buildSequencer();
   rebuildScale();
