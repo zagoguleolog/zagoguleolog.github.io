@@ -99,7 +99,7 @@
         </p>
         <p class="cof-hint">
           На кольцах — аккорды (внешнее: мажорные центры, внутреннее: относительные миноры). Зелёная подсветка по умолчанию — <strong>три спицы</strong> кластера IV–I–V опорного мажора (шесть аккордов, по два кольца на спице); опционально галочка «седьмая триада» добавляет vii° / ii° на остальной окружности. У <strong>относительных тональностей</strong> (например <strong>C мажор</strong> и <strong>A нат. минор</strong>) кластер на круге тот же геометрически, см. <a href="../docs/music-theory.md">music-theory.md</a>.
-          Синий/голубой выделенный сектор: в режимах <strong>удержание</strong> и <strong>полифония</strong> клик по сектору по-прежнему вкл/выкл выделение; в режиме <strong>фиксация</strong> на круге всегда не больше одного синего сектора — клик <strong>переключает</strong> на новый аккорд (повторный клик по тому же сектору не глушит звук). <strong>Удержание</strong> — звук пока нажата кнопка мыши/пера; <strong>фиксация</strong> — одна триада у выбранного сектора; <strong>полифония</strong> — несколько выделенных секторов и триад. Режимы круга — блок <strong>Круг</strong> слева под SVG; под клавиатурой — <strong>голоса</strong> (моно/поли) и <strong>артикуляция</strong>: в полифонии «удержание» — несколько нот с ПК и с экрана одновременно (отпускание глушит только свой голос; см. <span class="mono">docs/synth-structure.md</span> про rollover клавиатуры). <strong>Стоп</strong> глушит круг и клавиатуру до следующего действия.
+          Синий/голубой выделенный сектор: в режимах <strong>удержание</strong> и <strong>полифония</strong> клик по сектору вкл/выкл выделение; в режиме <strong>фиксация</strong> на круге не больше одного синего сектора — клик по <strong>другому</strong> сектору переключает аккорд; повторный клик по <strong>тому же</strong> выбранному сектору снимает выделение и глушит триаду. <strong>Удержание</strong> — звук пока нажата кнопка мыши/пера; <strong>фиксация</strong> — одна триада у выбранного сектора; <strong>полифония</strong> — несколько выделенных секторов и триад. Режимы круга — блок <strong>Круг</strong> слева под SVG; под клавиатурой — <strong>голоса</strong> (моно/поли) и <strong>артикуляция</strong>: в полифонии «удержание» — несколько нот с ПК и с экрана одновременно (отпускание глушит только свой голос; см. <span class="mono">docs/synth-structure.md</span> про rollover клавиатуры). <strong>Стоп</strong> глушит круг и клавиатуру до следующего действия.
           Базовая страница без теории: <a href="circle-of-fifths.html">circle-of-fifths.html</a>.
         </p>
 
@@ -149,18 +149,6 @@
           </div>
         </section>
 
-        <div class="cof-controls">
-          <div>
-            <label for="cts-major-line">Внешнее кольцо</label>
-            <textarea id="cts-major-line" rows="3" spellcheck="false">C G D A E B F# Db Ab Eb Bb F</textarea>
-          </div>
-          <div>
-            <label for="cts-minor-line">Внутреннее кольцо</label>
-            <textarea id="cts-minor-line" rows="3" spellcheck="false">Am Em Bm F#m C#m G#m D#m Bbm Fm Cm Gm Dm</textarea>
-          </div>
-          <button type="button" id="cts-redraw">Перерисовать круг</button>
-        </div>
-
         <div class="cof-svg-wrap">
           <svg id="cts-circle" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" aria-label="Кварто-квинтовый круг с подсветкой диатоники выбранной тональности"></svg>
         </div>
@@ -168,9 +156,9 @@
         <div class="cts-circle-controls" aria-label="Режим озвучивания круга">
           <span class="cts-circle-controls-label">Круг</span>
           <div class="ntg-seg ntg-seg-modes cts-circle-modes" role="group" aria-label="Режим круга">
-            <button type="button" class="ntg-seg-btn" id="cts-circle-mode-hold" aria-pressed="false">Удержание</button>
+            <button type="button" class="ntg-seg-btn" id="cts-circle-mode-hold" aria-pressed="true">Удержание</button>
             <button type="button" class="ntg-seg-btn" id="cts-circle-mode-latch" aria-pressed="false">Фиксация</button>
-            <button type="button" class="ntg-seg-btn" id="cts-circle-mode-latch-poly" aria-pressed="true">Полифония</button>
+            <button type="button" class="ntg-seg-btn" id="cts-circle-mode-latch-poly" aria-pressed="false">Полифония</button>
           </div>
         </div>
 
@@ -200,7 +188,7 @@
               type="button"
               id="cts-kbd-grey-toggle"
               class="cts-kbd-btn cts-kbd-btn-grey"
-              aria-pressed="false"
+              aria-pressed="true"
               title="Сделать ноты вне выбранной тональности серыми"
             >
               grey
@@ -280,7 +268,7 @@
         <p class="cof-hint">
           В режиме «Задать тональность…» клик по <strong>внешнему</strong> сектору задаёт <strong>мажорную</strong> тональность по корню подписи; по <strong>внутреннему</strong> — <strong>натуральный минор</strong> (для «Am» тоника A). Учитывается «A / B».
           По умолчанию зелёным подсвечиваются только спицы <strong>IV–I–V</strong> по внешнему кольцу (относительный мажор в режиме нат. минора). Галочка выше — также седьмая диатоническая триада вне этой тройки. Подробнее — <span class="mono">docs/music-theory.md</span>.
-          Для своих строк подписей надёжнее форматы как по умолчанию (<strong>C</strong>, <strong>Am</strong> …): разбор корня рассчитан на имя ноты и суффикс <strong>m</strong> у минора; обозначения вроде <strong>Bdim</strong>, <strong>C7</strong>, <strong>Am7</strong> не гарантируются.
+          Подписи на кольцах заданы в коде (как в <span class="mono">lib/music-theory.js</span>, константы <span class="mono">CIRCLE_OF_FIFTHS_*</span>); разбор корня рассчитан на имя ноты и суффикс <strong>m</strong> у минора; обозначения вроде <strong>Bdim</strong>, <strong>C7</strong>, <strong>Am7</strong> не гарантируются.
         </p>
       </div>
     </div>

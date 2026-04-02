@@ -1,7 +1,8 @@
 /**
- * Навигация по HTML-страницам каталога music — тот же набор, что в разделе «HTML-страницы» на
- * `web/stranichki.html`. Базовый путь из `import.meta.url`, чтобы ссылки работали и при
- * локальном HTTP-сервере разработки и на GitHub Pages (префикс `/<repo>/`).
+ * Навигация по HTML-страницам каталога music: «Главная» → `index.html`; выпадающее меню — те же
+ * четыре интерактивные страницы, что в блоке «Страницы» на `index.html`. Базовый путь из
+ * `import.meta.url`, чтобы ссылки работали и при локальном HTTP-сервере разработки и на
+ * GitHub Pages (префикс `/<repo>/`). Полный перечень HTML — `web/stranichki.html`.
  */
 const SITE_ROOT = new URL('./', import.meta.url);
 
@@ -10,21 +11,10 @@ function siteHref(relativePath) {
 }
 
 const SITE_NAV_ENTRIES = [
-  { path: 'web/stranichki.html', label: 'web/stranichki.html (полная карта сайта)' },
-  { path: 'web/index.html', label: 'web/index.html (таблицы из теории)' },
-  { path: 'theory-tables.html', label: 'theory-tables.html (корень music)' },
-  { path: 'piano-keyboard.html', label: 'piano-keyboard.html (клавиатура)' },
-  { path: 'app/bayan-keyboard.html', label: 'app/bayan-keyboard.html (B-system)' },
-  { path: 'app/note-tone-gen.html', label: 'app/note-tone-gen.html (генератор тона)' },
-  { path: 'app/sequencer-demo.html', label: 'app/sequencer-demo.html (мини-сквенсор / арпеджио)' },
-  { path: 'app/template-synth.html', label: 'app/template-synth.html (темплейт-синт, synth-kit)' },
-  { path: 'app/lads.html', label: 'app/lads.html (лады + арпеджио по ступеням)' },
-  { path: 'app/circle-of-fifths.html', label: 'app/circle-of-fifths.html (круг)' },
-  { path: 'app/circle-scales.html', label: 'app/circle-scales.html (круг + тональность)' },
-  { path: 'app/intervals-demo.html', label: 'app/intervals-demo.html (интервалы + клавиатура)' },
-  { path: 'app/seventh-chords.html', label: 'app/seventh-chords.html (септаккорды + клавиатура)' },
-  { path: 'app/synth-kit-demo.html', label: 'app/synth-kit-demo.html (демо UI-синта)' },
-  { path: 'app/knobs-atlas-showcase.html', label: 'app/knobs-atlas-showcase.html (галерея фрагментов knobs.png)' },
+  { path: 'app/circle-scales.html', label: 'Квартово-квинтовый круг и тональность' },
+  { path: 'app/lads.html', label: 'Лады и арпеджио по ступеням' },
+  { path: 'app/intervals-demo.html', label: 'Интервалы и клавиатура' },
+  { path: 'app/seventh-chords.html', label: 'Септаккорды и клавиатура' },
 ];
 
 export const SITE_NAV_LINKS = SITE_NAV_ENTRIES.map(({ path, label }) => ({

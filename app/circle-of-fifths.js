@@ -235,19 +235,36 @@
     g.setAttribute('aria-pressed', 'true');
   }
 
+  /** Снять выделение со всех секторов (для режима «фиксация» с повторным кликом по активному сектору). */
+  function clearAllSectorSelection(svg) {
+    var sectors = svg.querySelectorAll('.cof-sector');
+    for (var i = 0; i < sectors.length; i++) {
+      var el = sectors[i];
+      el.classList.remove('is-selected');
+      el.setAttribute('aria-pressed', 'false');
+    }
+  }
+
   /**
    * @param {SVGGElement} g
    * @param {{
    *   onSectorActivate?: function(SVGGElement, Event): boolean|void,
-   *   onSectorSelectionChange?: function(SVGSVGElement, SVGGElement): void,
-   *   getSectorSelectionMode?: function(): 'toggle'|'exclusive'
+   *   onSectorSelectionChange?: function(SVGSVGElement, SVGGElement|null): void,
+   *   getSectorSelectionMode?: function(): 'toggle'|'exclusive',
+   *   exclusiveSameClearsSelection?: boolean|function(): boolean
    * }} [options]
    *   Если onSectorActivate вернёт false — выделение сектора (is-selected) не переключается.
-   *   onSectorSelectionChange — после успешного переключения is-selected (передаётся svg и группа сектора).
-   *   getSectorSelectionMode — при каждом акте: 'exclusive' = только один выбранный сектор (без снятия кликом по тому же).
+   *   onSectorSelectionChange — после переключения is-selected; второй аргумент null — снято всё выделение.
+   *   getSectorSelectionMode — при каждом акте: 'exclusive' = только один выбранный сектор.
+   *   exclusiveSameClearsSelection — в режиме exclusive: повторный клик по уже выбранному сектору снимает выделение (можно передать функцию — вызывается на каждый клик).
    */
   function bindToggle(g, options) {
     options = options || {};
+    function exclusiveSameClearsNow() {
+      var v = options.exclusiveSameClearsSelection;
+      if (typeof v === 'function') return !!v();
+      return !!v;
+    }
     function onActivate(e) {
       if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
       if (e.type === 'keydown') e.preventDefault();
@@ -261,6 +278,17 @@
           ? options.getSectorSelectionMode()
           : 'toggle';
       if (mode === 'exclusive' && svg) {
+        if (exclusiveSameClearsNow() && g.classList.contains('is-selected')) {
+          clearAllSectorSelection(svg);
+          if (options.onSectorSelectionChange) {
+            try {
+              options.onSectorSelectionChange(svg, null);
+            } catch (err) {
+              console.error(err);
+            }
+          }
+          return;
+        }
         selectExclusiveSector(svg, g);
       } else {
         toggleSelected(g);
@@ -286,8 +314,9 @@
    * @param {{
    *   afterDraw?: function(SVGSVGElement, { pairs: {outer:string,inner:string}[], n: number }): void,
    *   onSectorActivate?: function(SVGGElement, Event): boolean|void,
-   *   onSectorSelectionChange?: function(SVGSVGElement, SVGGElement): void,
-   *   getSectorSelectionMode?: function(): 'toggle'|'exclusive'
+   *   onSectorSelectionChange?: function(SVGSVGElement, SVGGElement|null): void,
+   *   getSectorSelectionMode?: function(): 'toggle'|'exclusive',
+   *   exclusiveSameClearsSelection?: boolean|function(): boolean
    * }} [options]
    */
   function drawCircleOfFifths(svg, notePairLines, options) {
@@ -393,7 +422,10 @@
     svg.appendChild(center);
   }
 
-  /** Демо: классический полный круг (12 секторов), порядок по квинтам от C. */
+  /**
+   * Демо: классический полный круг (12 секторов), порядок по квинтам от C.
+   * Литералы синхронны с lib/music-theory.js: CIRCLE_OF_FIFTHS_OUTER_LINE / CIRCLE_OF_FIFTHS_INNER_LINE.
+   */
   var DEFAULT_MAJOR_LINE =
     'C G D A E B F# Db Ab Eb Bb F';
   var DEFAULT_MINOR_LINE =
@@ -409,19 +441,8 @@
 
   function initPage() {
     var svg = document.getElementById('circle');
-    var majorEl = document.getElementById('cof-major-line');
-    var minorEl = document.getElementById('cof-minor-line');
-    var btn = document.getElementById('cof-redraw');
-    if (!svg || !majorEl || !minorEl) return;
-
-    function redraw() {
-      drawCircleOfFifths(svg, [majorEl.value, minorEl.value]);
-    }
-
-    majorEl.value = majorEl.value || DEFAULT_MAJOR_LINE;
-    minorEl.value = minorEl.value || DEFAULT_MINOR_LINE;
-    redraw();
-    if (btn) btn.addEventListener('click', redraw);
+    if (!svg) return;
+    drawCircleOfFifths(svg, [DEFAULT_MAJOR_LINE, DEFAULT_MINOR_LINE]);
   }
 
   if (document.readyState === 'loading') {

@@ -4,6 +4,8 @@
  */
 import {
   CANONICAL_TONIC_BY_PC,
+  CIRCLE_OF_FIFTHS_INNER_LINE,
+  CIRCLE_OF_FIFTHS_OUTER_LINE,
   DEFAULT_A4_HZ,
   diatonicTriadRootPcsInKey,
   frequencyFromNoteNameOctave,
@@ -68,7 +70,7 @@ const state = {
   /** vii° / ii° на спице вне IV–I–V (одно кольцо); по умолчанию только 6 аккордов на 3 спицах */
   showSeventhChord: false,
   /** Режим «grey»: ноты вне диатоники становятся серыми на активной клавиатуре. */
-  greyKeyboardMode: false,
+  greyKeyboardMode: true,
 };
 
 /**
@@ -690,8 +692,9 @@ function wireToneRail() {
   });
 
   toneEngine = new ToneGen();
-  toneEngine.mode = 'latchPoly';
+  toneEngine.mode = 'hold';
   toneEngine.keyboardMode = 'holdPoly';
+  syncCircleModeUi('hold');
 
   kbdController = createKeyboardSynthController({
     getPointerRoot: getKeyboardStage,
@@ -825,6 +828,7 @@ function wireToneRail() {
   const greyBtn = document.getElementById('cts-kbd-grey-toggle');
   if (greyBtn && !greyBtn.dataset.ctsWired) {
     greyBtn.dataset.ctsWired = '1';
+    greyBtn.setAttribute('aria-pressed', state.greyKeyboardMode ? 'true' : 'false');
     greyBtn.addEventListener('click', () => {
       state.greyKeyboardMode = !state.greyKeyboardMode;
       greyBtn.setAttribute('aria-pressed', state.greyKeyboardMode ? 'true' : 'false');
@@ -899,12 +903,10 @@ function wireCircleHoldPointers() {
 
 function redraw() {
   const svg = document.getElementById('cts-circle');
-  const majorEl = document.getElementById('cts-major-line');
-  const minorEl = document.getElementById('cts-minor-line');
   const drawer = window.CircleOfFifthsDrawer;
-  if (!svg || !majorEl || !minorEl || !drawer || typeof drawer.draw !== 'function') return;
+  if (!svg || !drawer || typeof drawer.draw !== 'function') return;
 
-  drawer.draw(svg, [majorEl.value, minorEl.value], {
+  drawer.draw(svg, [CIRCLE_OF_FIFTHS_OUTER_LINE, CIRCLE_OF_FIFTHS_INNER_LINE], {
     onSectorActivate(g, e) {
       if (state.clickMode !== 'tonic') return true;
       if (e.type !== 'click') return true;
@@ -922,9 +924,14 @@ function redraw() {
     getSectorSelectionMode() {
       return toneEngine && toneEngine.mode === 'latch' ? 'exclusive' : 'toggle';
     },
+    exclusiveSameClearsSelection: () => !!(toneEngine && toneEngine.mode === 'latch'),
     onSectorSelectionChange(svgEl, g) {
       chordAudioEnabled = true;
-      lastLatchSectorId = `${g.dataset.kind}-${g.dataset.index}`;
+      if (g == null) {
+        lastLatchSectorId = null;
+      } else {
+        lastLatchSectorId = `${g.dataset.kind}-${g.dataset.index}`;
+      }
       syncChordAudioAndList(svgEl);
     },
     afterDraw(svgEl) {
@@ -986,13 +993,8 @@ function initTheoryPanel() {
 }
 
 function boot() {
-  const majorEl = document.getElementById('cts-major-line');
-  const minorEl = document.getElementById('cts-minor-line');
   const drawer = window.CircleOfFifthsDrawer;
-  if (!majorEl || !minorEl || !drawer) return;
-
-  if (!majorEl.value.trim()) majorEl.value = drawer.DEFAULT_MAJOR_LINE;
-  if (!minorEl.value.trim()) minorEl.value = drawer.DEFAULT_MINOR_LINE;
+  if (!drawer) return;
 
   initTheoryPanel();
   try {

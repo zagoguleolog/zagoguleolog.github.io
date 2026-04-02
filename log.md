@@ -14,6 +14,10 @@
 
 ## 2026-04-02
 
+- 2026-04-02 — Кварто-квинтовый круг и grey по умолчанию: в [`lib/music-theory.js`](lib/music-theory.js) добавлены константы строк колец `CIRCLE_OF_FIFTHS_OUTER_LINE` и `CIRCLE_OF_FIFTHS_INNER_LINE`; страницы [`app/circle-of-fifths.html`](app/circle-of-fifths.html) и [`app/circle-scales.html`](app/circle-scales.html) без ручного ввода колец; [`app/circle-scales.mjs`](app/circle-scales.mjs) и [`app/circle-scales-core.js`](app/circle-scales-core.js) подставляют эти строки; по умолчанию режим озвучивания круга — **удержание**, в режиме **фиксация** повторный клик по выбранному сектору глушит триаду ([`app/circle-of-fifths.js`](app/circle-of-fifths.js)); кнопка **grey** включена по умолчанию на `circle-scales` и [`app/lads.html`](app/lads.html). Обновлены [`docs/overview.md`](docs/overview.md), [`docs/domain.md`](docs/domain.md), [`docs/music-theory.md`](docs/music-theory.md). Проверка: `npm run verify`, `node --check` для не-модульных скриптов круга.
+
+- 2026-04-02 — [`site-nav.mjs`](site-nav.mjs): выпадающее меню содержит только четыре интерактивные страницы с корневого [`index.html`](index.html) (те же подписи, что в блоке «Страницы» на витрине); ссылка «Главная» по-прежнему ведёт на `index.html`. Обновлены [`docs/overview.md`](docs/overview.md), [`README.md`](README.md), [`docs/architecture.md`](docs/architecture.md). Проверка: `npm run verify`.
+
 - 2026-04-02 — Документация и подсказки в HTML: вместо обязательного `npm run serve` для посетителей — формулировки про GitHub Pages и HTTPS; прямые ссылки в [`README.md`](README.md) на `https://zagoguleolog.github.io/…`; обновлены [`docs/overview.md`](docs/overview.md), [`docs/music-theory.md`](docs/music-theory.md), [`docs/synth-ui.md`](docs/synth-ui.md), [`docs/architecture.md`](docs/architecture.md); тексты ошибок импорта модулей в клиентских `.mjs`. Проверка: `npm run verify`. Коммит `69c77e8`, `git push origin main`.
 
 - 2026-04-02 22:20 — Коммит `ab4f711` («Главная: витрина из 4 комби-страниц…»): `git push origin main` в [zagoguleolog.github.io](https://github.com/zagoguleolog/zagoguleolog.github.io).

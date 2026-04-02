@@ -69,7 +69,7 @@ let currentTonicName = 'C';
 /** @type {'linear' | 'piano' | 'bayiano' | 'bayiano4'} */
 let keyboardLayout = 'linear';
 /** Режим «grey»: ступени лада подсвечены, остальные клавиши серые. */
-let greyKeyboardMode = false;
+let greyKeyboardMode = true;
 /** Направление секвенции арпеджио. */
 /** @type {'up' | 'down' | 'zigzag'} */
 let arpDirection = 'up';

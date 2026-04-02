@@ -10,22 +10,11 @@
 <body>
   <div class="cof-page">
     <h1>Квартово-квинтовый круг</h1>
-    <div class="cof-controls">
-      <div>
-        <label for="cof-major-line">Внешнее кольцо (подписи через пробел или запятую)</label>
-        <textarea id="cof-major-line" rows="3" spellcheck="false"></textarea>
-      </div>
-      <div>
-        <label for="cof-minor-line">Внутреннее кольцо</label>
-        <textarea id="cof-minor-line" rows="3" spellcheck="false"></textarea>
-      </div>
-      <button type="button" id="cof-redraw">Перерисовать</button>
-    </div>
     <div class="cof-svg-wrap">
       <svg id="circle" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" aria-label="Кольцо секторов"></svg>
     </div>
     <p class="cof-hint">
-      Число <strong>спиц</strong> (долей круга, пар подписей) равно меньшей длине списков; на каждой спице два кликабельных сектора — внешнее и внутреннее кольцо. Обход по часовой стрелке от верха. Энгармонику можно задавать как «A / B» в одной подписи (см. docs).
+      Подписи колец заданы по умолчанию (классический полный круг, 12 спиц); при необходимости списки можно задать программно через <span class="mono">CircleOfFifthsDrawer.draw(svg, [внешняяСтрока, внутренняяСтрока])</span>. Число <strong>спиц</strong> равно меньшей длине списков; на каждой спице два кликабельных сектора — внешнее и внутреннее кольцо. Обход по часовой стрелке от верха. Энгармонику можно задавать как «A / B» в одной подписи (см. docs).
     </p>
   </div>
   <script src="circle-of-fifths.js"></script>
