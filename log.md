@@ -14,6 +14,8 @@
 
 ## 2026-04-02
 
+- 2026-04-02 22:20 — Коммит `ab4f711` («Главная: витрина из 4 комби-страниц…»): `git push origin main` в [zagoguleolog.github.io](https://github.com/zagoguleolog/zagoguleolog.github.io).
+
 - 2026-04-02 — Корневой [`index.html`](index.html): витрина из четырёх основных интерактивных страниц (синт + клавиатура + теория), без редиректа; вторичная ссылка на полную карту [`web/stranichki.html`](web/stranichki.html). В [`site-nav.mjs`](site-nav.mjs) ссылка «Главная» ведёт на `index.html`. Обновлены [`docs/overview.md`](docs/overview.md), [`README.md`](README.md), [`docs/music-theory.md`](docs/music-theory.md), подсказка на [`web/stranichki.html`](web/stranichki.html), строка приветствия в [`scripts/static-server.js`](scripts/static-server.js). Проверка: `npm run verify`.
 
 - 2026-04-02 — GitHub Pages: в корне `music/` добавлен `index.html` (переход на `web/stranichki.html`); [`site-nav.mjs`](site-nav.mjs) строит ссылки через `new URL` от `import.meta.url` (префикс репозитория на Pages); в меню добавлен `app/seventh-chords.html` в том же порядке, что на карте сайта. Локальный [`scripts/static-server.js`](scripts/static-server.js) на `GET /` отдаёт `index.html`. Расширен [`.gitignore`](.gitignore) (`.cursor/`, логи и т.д.). Обновлены [`README.md`](README.md), [`docs/overview.md`](docs/overview.md), [`docs/architecture.md`](docs/architecture.md), подсказка на [`web/stranichki.html`](web/stranichki.html). Проверка: `npm run verify`, `npm run verify:http` (сервер запущен).
