@@ -1,6 +1,6 @@
 /**
- * Проверка, что `npm run serve` отдаёт HTML и lib/music-theory.js с корректным MIME.
- * Запуск: в другом терминале уже должен работать `npm run serve` (порт из PORT или 4173).
+ * Проверка, что локальный static-server отдаёт HTML и lib/music-theory.js с корректным MIME.
+ * Запуск: в другом терминале уже должен работать сервер (скрипт `serve` в package.json; порт из PORT или 4173).
  */
 import http from 'node:http';
 
@@ -60,7 +60,7 @@ try {
   console.log('');
   console.log('verify-http: OK');
 } catch (e) {
-  console.error('Сервер не отвечает. Запустите в каталоге music: npm run serve');
+  console.error('Сервер не отвечает. Запустите в каталоге music локальный static-server (скрипт serve в package.json).');
   console.error(e.message || e);
   process.exit(1);
 }

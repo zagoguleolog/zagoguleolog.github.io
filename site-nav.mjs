@@ -1,7 +1,7 @@
 /**
  * Навигация по HTML-страницам каталога music — тот же набор, что в разделе «HTML-страницы» на
  * `web/stranichki.html`. Базовый путь из `import.meta.url`, чтобы ссылки работали и при
- * `npm run serve`, и на GitHub Pages (префикс `/<repo>/`).
+ * локальном HTTP-сервере разработки и на GitHub Pages (префикс `/<repo>/`).
  */
 const SITE_ROOT = new URL('./', import.meta.url);
 

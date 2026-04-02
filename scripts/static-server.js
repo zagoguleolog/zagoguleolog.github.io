@@ -1,6 +1,6 @@
 /**
  * Статика с корректным MIME для ES-модулей (в т.ч. если расширение .mjs).
- * Запуск из каталога music: npm run serve
+ * Запуск из каталога music: скрипт `serve` в package.json (обёртка над этим файлом).
  */
 import http from 'node:http';
 import fs from 'node:fs/promises';

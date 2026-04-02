@@ -232,7 +232,7 @@ async function main() {
   } catch (e) {
     warn.hidden = false;
     warn.textContent =
-      'Не удалось загрузить lib/music-theory.js (нужен HTTP-сервер с корректным MIME для ES-модулей). Запустите из каталога music: npm run serve и откройте /app/sequencer-demo.html.';
+      'Не удалось загрузить lib/music-theory.js. Откройте страницу на опубликованном сайте по HTTPS или по HTTP с корректным MIME для ES-модулей; не открывайте файл напрямую через file://.';
     console.error(e);
     return;
   }
