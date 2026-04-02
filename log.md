@@ -14,7 +14,7 @@
 
 ## 2026-04-02
 
-- 2026-04-02 — Документация и подсказки в HTML: вместо обязательного `npm run serve` для посетителей — формулировки про GitHub Pages и HTTPS; прямые ссылки в [`README.md`](README.md) на `https://zagoguleolog.github.io/…`; обновлены [`docs/overview.md`](docs/overview.md), [`docs/music-theory.md`](docs/music-theory.md), [`docs/synth-ui.md`](docs/synth-ui.md), [`docs/architecture.md`](docs/architecture.md); тексты ошибок импорта модулей в клиентских `.mjs`. Проверка: `npm run verify`.
+- 2026-04-02 — Документация и подсказки в HTML: вместо обязательного `npm run serve` для посетителей — формулировки про GitHub Pages и HTTPS; прямые ссылки в [`README.md`](README.md) на `https://zagoguleolog.github.io/…`; обновлены [`docs/overview.md`](docs/overview.md), [`docs/music-theory.md`](docs/music-theory.md), [`docs/synth-ui.md`](docs/synth-ui.md), [`docs/architecture.md`](docs/architecture.md); тексты ошибок импорта модулей в клиентских `.mjs`. Проверка: `npm run verify`. Коммит `69c77e8`, `git push origin main`.
 
 - 2026-04-02 22:20 — Коммит `ab4f711` («Главная: витрина из 4 комби-страниц…»): `git push origin main` в [zagoguleolog.github.io](https://github.com/zagoguleolog/zagoguleolog.github.io).
 
