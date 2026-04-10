@@ -3,7 +3,9 @@
  * Переиспользует ToneGen, synth-kit, keyboard-layouts и keyboard-synth-controller с circle-scales.
  */
 import {
-  CANONICAL_TONIC_BY_PC,
+  CHROMATIC_NAMES_SHARP_BY_PC,
+  DEFAULT_A4_HZ,
+  frequencyFromNoteNameOctave,
   getIntervalCatalog,
   midiNoteFromPcOctave,
   parseNoteName,
@@ -26,8 +28,6 @@ import {
 } from './computer-keyboard-music.mjs';
 import { createKeyboardSynthController } from './keyboard-synth-controller.mjs';
 import { renderBayanKeyboard } from './bayan-keyboard.mjs';
-import { DEFAULT_A4_HZ, frequencyFromNoteNameOctave } from '../lib/music-theory.js';
-
 initToneGenTheory({
   frequencyFromNoteNameOctave,
   DEFAULT_A4_HZ,
@@ -73,7 +73,7 @@ function noteNameOctaveFromMidi(midi) {
   const m = Math.round(midi);
   const pc = ((m % 12) + 12) % 12;
   const octave = Math.floor(m / 12) - 1;
-  return { name: CANONICAL_TONIC_BY_PC[pc], octave };
+  return { name: CHROMATIC_NAMES_SHARP_BY_PC[pc], octave };
 }
 
 function clearIntervalHighlights() {
@@ -388,11 +388,12 @@ function wireSynth() {
   kbdController.bindComputerKeyboard({
     getLayout: () => keyboardLayout,
     getPianoCodeMap: () => {
+      const extra = { namesByPc: CHROMATIC_NAMES_SHARP_BY_PC };
       try {
         const { octaveMin, octaveMax } = readOctaveRange(PREFIX);
-        return createPianoCodeMap(octaveMin, octaveMax);
+        return createPianoCodeMap(octaveMin, octaveMax, extra);
       } catch {
-        return createPianoCodeMap(3, 6);
+        return createPianoCodeMap(3, 6, extra);
       }
     },
     getLinearComputerCodes: () => {
@@ -405,16 +406,17 @@ function wireSynth() {
     },
     getBayanCodeMap: () => {
       const rc = keyboardLayout === 'bayiano4' ? 4 : 3;
+      const extra = { rowCount: rc, namesByPc: CHROMATIC_NAMES_SHARP_BY_PC };
       try {
         const { octaveMin, octaveMax } = readOctaveRange(PREFIX);
         const midiMin = midiNoteFromPcOctave(0, octaveMin);
         const midiMax = midiNoteFromPcOctave(11, octaveMax);
-        return createBayanCodeMap(midiMin, midiMax, { rowCount: rc });
+        return createBayanCodeMap(midiMin, midiMax, extra);
       } catch {
         return createBayanCodeMap(
           midiNoteFromPcOctave(0, 3),
           midiNoteFromPcOctave(11, 6),
-          { rowCount: rc },
+          extra,
         );
       }
     },

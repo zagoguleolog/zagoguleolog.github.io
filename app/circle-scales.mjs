@@ -3,7 +3,10 @@
  * Выбранные секторы озвучиваются как мажорная или минорная триада (движок tone-gen-engine.mjs).
  */
 import {
-  CANONICAL_TONIC_BY_PC,
+  accidentalSystemFromScale,
+  buildScale,
+  chromaticNamesByAccidentalSystem,
+  CHROMATIC_NAMES_SHARP_BY_PC,
   CIRCLE_OF_FIFTHS_INNER_LINE,
   CIRCLE_OF_FIFTHS_OUTER_LINE,
   DEFAULT_A4_HZ,
@@ -74,6 +77,17 @@ const state = {
   greyKeyboardMode: true,
 };
 
+/** Хроматический ряд подписей клавиатуры и чипов тоники по выбранной тональности (мажор / натуральный минор). */
+function tonalityChromaticNamesByPc() {
+  try {
+    const patternId = state.keyMode === 'major' ? 'ionian' : 'aeolian';
+    const scale = buildScale(patternId, state.tonicName);
+    return chromaticNamesByAccidentalSystem(accidentalSystemFromScale(scale));
+  } catch {
+    return CHROMATIC_NAMES_SHARP_BY_PC;
+  }
+}
+
 /**
  * Первый токен подписи (до «/»); для «Am» корень после снятия суффикса m у минорного трезвучия.
  * @param {string} raw
@@ -100,35 +114,33 @@ function chordRootPcFromLabel(raw) {
 }
 
 /**
- * Каноническое имя тоники по подписи сектора (буква ноты корня).
- * @param {string} raw
- * @returns {string | null}
- */
-function firstTonicNameFromLabelRaw(raw) {
-  const pc = chordRootPcFromLabel(raw);
-  if (pc == null) return null;
-  return CANONICAL_TONIC_BY_PC[pc];
-}
-
-function tonicToCanonical(name) {
-  try {
-    const pc = parseNoteName(name).pc;
-    return CANONICAL_TONIC_BY_PC[pc];
-  } catch {
-    return name;
-  }
-}
-
-/**
  * @param {string} raw
  * @param {string} kind 'major' | 'minor' из разметки сектора
  * @returns {{ tonicName: string, keyMode: 'major' | 'naturalMinor' } | null}
  */
 function keyFromSectorLabel(raw, kind) {
-  const tonicName = firstTonicNameFromLabelRaw(raw);
-  if (!tonicName) return null;
+  const rootPc = chordRootPcFromLabel(raw);
+  if (rootPc == null) return null;
+  const parts = String(raw)
+    .split(/\s*\/\s*/u)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  let tonicForBuild = parts[0] ?? 'C';
+  tonicForBuild = tonicForBuild.replace(/m$/i, '').trim();
+  try {
+    parseNoteName(tonicForBuild);
+  } catch {
+    tonicForBuild = CHROMATIC_NAMES_SHARP_BY_PC[rootPc];
+  }
   const keyMode = kind === 'major' ? 'major' : 'naturalMinor';
-  return { tonicName, keyMode };
+  const patternId = keyMode === 'major' ? 'ionian' : 'aeolian';
+  try {
+    const scale = buildScale(patternId, tonicForBuild);
+    const row = chromaticNamesByAccidentalSystem(accidentalSystemFromScale(scale));
+    return { tonicName: row[rootPc], keyMode };
+  } catch {
+    return { tonicName: CHROMATIC_NAMES_SHARP_BY_PC[rootPc], keyMode };
+  }
 }
 
 /**
@@ -151,7 +163,8 @@ function noteNameOctaveFromMidi(midi) {
   const m = Math.round(midi);
   const pc = ((m % 12) + 12) % 12;
   const octave = Math.floor(m / 12) - 1;
-  return { name: CANONICAL_TONIC_BY_PC[pc], octave };
+  const row = tonalityChromaticNamesByPc();
+  return { name: row[pc], octave };
 }
 
 function chordVoiceMapKey(sectorId, name, octave) {
@@ -245,9 +258,26 @@ function setExclusivePressed(container, activeEl) {
 function syncTonicUI() {
   const wrap = document.getElementById('cts-tonic-group');
   if (!wrap) return;
-  const canonical = tonicToCanonical(state.tonicName);
-  const btn = wrap.querySelector(`[data-tonic="${canonical}"]`);
-  if (btn) setExclusivePressed(wrap, btn);
+  const row = tonalityChromaticNamesByPc();
+  let selPc = 0;
+  try {
+    selPc = parseNoteName(state.tonicName).pc;
+  } catch {
+    selPc = 0;
+  }
+  state.tonicName = row[selPc];
+  const chips = [...wrap.querySelectorAll('[data-tonic]')];
+  for (let pc = 0; pc < 12; pc++) {
+    const btn = chips[pc];
+    if (!btn) continue;
+    btn.dataset.tonic = row[pc];
+    btn.textContent = row[pc];
+  }
+  let pressed = null;
+  for (const b of wrap.querySelectorAll('[data-tonic]')) {
+    if (b.dataset.tonic === state.tonicName) pressed = b;
+  }
+  if (pressed) setExclusivePressed(wrap, pressed);
 }
 
 function syncKeyModeUI() {
@@ -365,10 +395,12 @@ function rebuildLinearKeyRows() {
     octaveMin = 3;
     octaveMax = 6;
   }
+  const npc = tonalityChromaticNamesByPc();
   buildLinearKeys(keysWrap, {
     octaveMin,
     octaveMax,
     keyButtonClass: 'ntg-key cts-play-key',
+    noteNamesChromatic: npc,
   });
 }
 
@@ -383,7 +415,7 @@ function rebuildPianoKeyboardLayout() {
     octaveMin = 3;
     octaveMax = 6;
   }
-  buildPianoKeys(kb, { octaveMin, octaveMax });
+  buildPianoKeys(kb, { octaveMin, octaveMax, noteNamesChromatic: tonalityChromaticNamesByPc() });
 }
 
 function rebuildBayanKeyboardLayout() {
@@ -411,6 +443,7 @@ function rebuildBayanKeyboardLayout() {
       rowCount: 3,
       interactive: true,
       compact: false,
+      chromaticNamesByPc: tonalityChromaticNamesByPc(),
     });
   } catch (e) {
     console.error(e);
@@ -447,6 +480,7 @@ function rebuildBayan4KeyboardLayout() {
       rowCount: 4,
       interactive: true,
       compact: false,
+      chromaticNamesByPc: tonalityChromaticNamesByPc(),
     });
   } catch (e) {
     console.error(e);
@@ -655,11 +689,13 @@ function wireToneRail() {
   kbdController.bindComputerKeyboard({
     getLayout: () => keyboardLayout,
     getPianoCodeMap: () => {
+      const npc = tonalityChromaticNamesByPc();
+      const extra = { namesByPc: npc };
       try {
         const { octaveMin, octaveMax } = readOctaveRange(CTS_PREFIX);
-        return createPianoCodeMap(octaveMin, octaveMax);
+        return createPianoCodeMap(octaveMin, octaveMax, extra);
       } catch {
-        return createPianoCodeMap(3, 6);
+        return createPianoCodeMap(3, 6, extra);
       }
     },
     getLinearComputerCodes: () => {
@@ -672,13 +708,15 @@ function wireToneRail() {
     },
     getBayanCodeMap: () => {
       const rc = keyboardLayout === 'bayiano4' ? 4 : 3;
+      const npc = tonalityChromaticNamesByPc();
+      const extra = { rowCount: rc, namesByPc: npc };
       try {
         const { octaveMin, octaveMax } = readOctaveRange(CTS_PREFIX);
         const midiMin = midiNoteFromPcOctave(0, octaveMin);
         const midiMax = midiNoteFromPcOctave(11, octaveMax);
-        return createBayanCodeMap(midiMin, midiMax, { rowCount: rc });
+        return createBayanCodeMap(midiMin, midiMax, extra);
       } catch {
-        return createBayanCodeMap(midiNoteFromPcOctave(0, 3), midiNoteFromPcOctave(11, 6), { rowCount: rc });
+        return createBayanCodeMap(midiNoteFromPcOctave(0, 3), midiNoteFromPcOctave(11, 6), extra);
       }
     },
   });
@@ -863,7 +901,10 @@ function redraw() {
         state.keyMode = parsed.keyMode;
         syncTonicUI();
         syncKeyModeUI();
+        stopNonCirclePolyAndMonoForPianoResync();
+        rebuildAllKeyboards();
         applyTonalityHighlight(svg);
+        syncChordAudioAndList(svg);
       }
       return false;
     },
@@ -895,8 +936,12 @@ function initTheoryPanel() {
       const b = e.target.closest('[data-tonic]');
       if (!b) return;
       state.tonicName = b.dataset.tonic;
-      setExclusivePressed(tonicWrap, b);
-      applyTonalityHighlight(document.getElementById('cts-circle'));
+      syncTonicUI();
+      stopNonCirclePolyAndMonoForPianoResync();
+      rebuildAllKeyboards();
+      const svg = document.getElementById('cts-circle');
+      applyTonalityHighlight(svg);
+      if (svg) syncChordAudioAndList(svg);
     });
   }
 
@@ -908,7 +953,12 @@ function initTheoryPanel() {
       if (!b) return;
       state.keyMode = b.dataset.keyMode;
       setExclusivePressed(keyModeWrap, b);
-      applyTonalityHighlight(document.getElementById('cts-circle'));
+      syncTonicUI();
+      stopNonCirclePolyAndMonoForPianoResync();
+      rebuildAllKeyboards();
+      const svg = document.getElementById('cts-circle');
+      applyTonalityHighlight(svg);
+      if (svg) syncChordAudioAndList(svg);
     });
   }
 

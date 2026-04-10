@@ -1,9 +1,8 @@
 /**
- * Единая геометрия клавиатур: линейный ряд по NOTE_NAMES (или переданному хроматическому ряду) и пиано (белые/чёрные).
- * По умолчанию имена — канонические (CANONICAL_TONIC_BY_PC в lib/music-theory.js); опционально — однородный ряд (см. система знаков в docs/domain.md).
+ * Единая геометрия клавиатур: линейный ряд и пиано (белые/чёрные).
+ * По умолчанию — диезный хроматический ряд (**CHROMATIC_NAMES_SHARP_BY_PC**); иначе переданный `noteNamesChromatic` (см. **система знаков** в docs/domain.md).
  */
-import { CANONICAL_TONIC_BY_PC } from '../lib/music-theory.js';
-import { NOTE_NAMES } from './tone-gen-engine.mjs';
+import { CHROMATIC_NAMES_SHARP_BY_PC } from '../lib/music-theory.js';
 
 /** Натуральные ступени в порядке белых клавиш (pitch class). */
 export const PIANO_WHITE_PCS = [0, 2, 4, 5, 7, 9, 11];
@@ -18,14 +17,14 @@ export const PIANO_BLACK_KEYS = [
 ];
 
 /**
- * Линейные кнопки по октавам: одна сетка на октаву, хроматика по `noteNamesChromatic` или по умолчанию `NOTE_NAMES`, data-note / data-octave.
+ * Линейные кнопки по октавам: одна сетка на октаву, хроматика по `noteNamesChromatic` или по умолчанию диезный ряд, data-note / data-octave.
  * Привязка физической клавиатуры ПК к кнопкам — в `linearComputerCodesForOctaveRange` (computer-keyboard-music.mjs).
  * @param {HTMLElement} container
  * @param {{ octaveMin: number, octaveMax: number, keyButtonClass: string, noteNamesChromatic?: readonly string[] }} opts
  */
 export function buildLinearKeys(container, opts) {
   const { octaveMin, octaveMax, keyButtonClass, noteNamesChromatic } = opts;
-  const chromaticRow = noteNamesChromatic ?? NOTE_NAMES;
+  const chromaticRow = noteNamesChromatic ?? CHROMATIC_NAMES_SHARP_BY_PC;
   container.replaceChildren();
   for (let o = octaveMin; o <= octaveMax; o++) {
     const row = document.createElement('div');
@@ -53,12 +52,12 @@ export function buildLinearKeys(container, opts) {
 }
 
 /**
- * Одна октава пиано: белые + чёрные; имена по `noteNamesChromatic` (длина 12, индекс = PC) или канонические.
+ * Одна октава пиано: белые + чёрные; имена по `noteNamesChromatic` (длина 12, индекс = PC) или диезный ряд по умолчанию.
  * @param {number} octave
  * @param {{ noteNamesChromatic?: readonly string[] }} [options]
  */
 export function buildPianoOctaveElement(octave, options = {}) {
-  const namesByPc = options.noteNamesChromatic ?? CANONICAL_TONIC_BY_PC;
+  const namesByPc = options.noteNamesChromatic ?? CHROMATIC_NAMES_SHARP_BY_PC;
   const wrap = document.createElement('div');
   wrap.className = 'cts-octave';
   wrap.dataset.octave = String(octave);

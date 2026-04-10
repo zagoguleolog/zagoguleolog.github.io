@@ -15,7 +15,8 @@ export function initToneGenTheory(m) {
   DEFAULT_A4_HZ = m.DEFAULT_A4_HZ;
 }
 
-export const NOTE_NAMES = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+/** Порядок имён в линейной сетке по умолчанию (диезная запись, индекс = PC); согласовано с **CHROMATIC_NAMES_SHARP_BY_PC** в lib/music-theory.js. */
+export const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 export const HARMONIC_START = 2;
 export const HARMONIC_END = 16;
 

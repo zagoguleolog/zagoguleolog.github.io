@@ -170,7 +170,7 @@ function updateIfPlaying() {
   kbdController?.syncExecutionHighlight();
 }
 
-/** Хроматический ряд подписей клавиатуры по текущему ладу; без шкалы — прежнее смешанное поведение layout. */
+/** Хроматический ряд подписей клавиатуры по текущему ладу; без шкалы — диезный ряд по умолчанию в layout. */
 function keyboardChromaticNamesByPc() {
   if (!currentScale) return null;
   return chromaticNamesByAccidentalSystem(accidentalSystemFromScale(currentScale));

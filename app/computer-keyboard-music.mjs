@@ -8,7 +8,7 @@ import {
   chromaticColumnFromMidi,
   rowIndexTopDownFromMidi,
 } from '../lib/bayan-b-system.js';
-import { CANONICAL_TONIC_BY_PC, midiNoteFromPcOctave } from '../lib/music-theory.js';
+import { CHROMATIC_NAMES_SHARP_BY_PC, midiNoteFromPcOctave } from '../lib/music-theory.js';
 
 /** Четыре ряда клавиш: сверху вниз, слева направо (как на US QWERTY). */
 const ROW0 = (() => {
@@ -173,7 +173,7 @@ const LINEAR_EXTRA_CODES = [
 
 /**
  * Порядок `event.code` для линейной клавиатуры: совпадает с порядком кнопок после `buildLinearKeys`
- * (одна сетка на октаву по `NOTE_NAMES`). Каждая октава в диапазоне привязана к **своему** ряду ПК:
+ * (одна сетка на октаву по диезному хроматическому ряду по умолчанию). Каждая октава в диапазоне привязана к **своему** ряду ПК:
  * 1-я — `1234567890-=`, 2-я — `qwertyuiop[]`, 3-я — `asdfghjkl;'` + `Backslash`, 4-я — `zxcvbnm,./` + `Backquote` + `Space`.
  * Пятая и далее — по 12 кодов из неиспользованных в `SEQUENTIAL_ROW_CODES`, затем `LINEAR_EXTRA_CODES`.
  * @param {number} octaveMin
@@ -250,7 +250,7 @@ export function linearBayianoIndexFromCode(code) {
  */
 export function createBayanCodeMap(midiMin, midiMax, options) {
   const rowCount = options?.rowCount ?? B_SYSTEM_ROW_COUNT;
-  const namesByPc = options?.namesByPc ?? CANONICAL_TONIC_BY_PC;
+  const namesByPc = options?.namesByPc ?? CHROMATIC_NAMES_SHARP_BY_PC;
   const lo = Math.round(Number(midiMin));
   const hi = Math.round(Number(midiMax));
   if (!Number.isInteger(lo) || !Number.isInteger(hi) || lo > hi) {
@@ -292,7 +292,7 @@ export function createBayanCodeMap(midiMin, midiMax, options) {
  * @param {readonly string[]} [namesByPc] длина 12, индекс = PC
  * @returns {{ name: string, octave: number }}
  */
-function noteNameOctaveFromMidi(midi, namesByPc = CANONICAL_TONIC_BY_PC) {
+function noteNameOctaveFromMidi(midi, namesByPc = CHROMATIC_NAMES_SHARP_BY_PC) {
   const m = Math.round(midi);
   const pc = ((m % 12) + 12) % 12;
   const octave = Math.floor(m / 12) - 1;
@@ -305,11 +305,11 @@ function noteNameOctaveFromMidi(midi, namesByPc = CANONICAL_TONIC_BY_PC) {
  * Опорная октава белых с `KeyQ` — `octaveMin` (`base`); чёрные ряды — диезы и «немые» позиции между ми–фа и си–до в охвате белых.
  * @param {number} octaveMin
  * @param {number} octaveMax
- * @param {{ namesByPc?: readonly string[] }} [options] подписи по PC (длина 12); по умолчанию канонические имена каталога
+ * @param {{ namesByPc?: readonly string[] }} [options] подписи по PC (длина 12); по умолчанию диезный хроматический ряд
  * @returns {Map<string, { name: string, octave: number }>}
  */
 export function createPianoCodeMap(octaveMin, octaveMax, options = {}) {
-  const namesByPc = options.namesByPc ?? CANONICAL_TONIC_BY_PC;
+  const namesByPc = options.namesByPc ?? CHROMATIC_NAMES_SHARP_BY_PC;
   const midiMin = midiNoteFromPcOctave(0, octaveMin);
   const midiMax = midiNoteFromPcOctave(11, octaveMax);
   /** @type {Map<string, { name: string, octave: number }>} */

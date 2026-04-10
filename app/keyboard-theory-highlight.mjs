@@ -8,7 +8,7 @@ export const THEORY_MUTED_CLASS = 'ntg-key-muted';
 
 /**
  * Кнопка клавиатуры с тем же классом высоты и научной октавой, что в секвенции или голосе движка
- * (энгармоника: D# в ряду ступеней → кнопка Eb на пиано по `CANONICAL_TONIC_BY_PC`).
+ * (поиск по классу высоты: подпись на кнопке может быть в диезной или бемольной системе знаков).
  *
  * @param {Element} root
  * @param {string} noteName имя ноты, например из `spellScaleFromPattern`

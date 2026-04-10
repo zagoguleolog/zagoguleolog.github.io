@@ -2,7 +2,7 @@
  * Рендер SVG поля баяна (B-system или четырёхрядная хроматическая сетка); данные из lib/bayan-b-system.js.
  */
 import { buildBayanButtonModels, B_SYSTEM_ROW_COUNT } from '../lib/bayan-b-system.js';
-import { CANONICAL_TONIC_BY_PC } from '../lib/music-theory.js';
+import { CHROMATIC_NAMES_SHARP_BY_PC } from '../lib/music-theory.js';
 
 const ROW_LABELS_3 = ['3-й ряд', '2-й ряд', '1-й ряд'];
 const ROW_LABELS_4 = ['4-й ряд', '3-й ряд', '2-й ряд', '1-й ряд'];
@@ -44,7 +44,7 @@ export function renderBayanKeyboard(container, opts) {
     compact = false,
     chromaticNamesByPc,
   } = opts;
-  const interactiveNamesByPc = chromaticNamesByPc ?? CANONICAL_TONIC_BY_PC;
+  const interactiveNamesByPc = chromaticNamesByPc ?? CHROMATIC_NAMES_SHARP_BY_PC;
 
   const labelColW = compact ? 50 : 72;
   const pad = compact ? 8 : 14;
