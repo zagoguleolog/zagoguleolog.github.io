@@ -3,6 +3,7 @@
  * Зависит от контракта ToneSynthEngine, не от класса ToneGen.
  */
 import { linearBayianoIndexFromCode, linearIndexFromCode } from './computer-keyboard-music.mjs';
+import { findPlayKeyElementByPitch } from './keyboard-theory-highlight.mjs';
 import { parseVoiceKey, voiceKey } from './tone-gen-engine.mjs';
 
 /**
@@ -59,9 +60,7 @@ export function createKeyboardSynthController(opts) {
       if (!includeVoiceInHighlight(key)) continue;
       try {
         const { name, octave } = parseVoiceKey(key);
-        const btn = applyRoot.querySelector(
-          `${keySelector}[data-note="${CSS.escape(name)}"][data-octave="${String(octave)}"]`,
-        );
+        const btn = findPlayKeyElementByPitch(applyRoot, name, octave, keySelector);
         if (btn) btn.classList.add('ntg-key-active');
       } catch {
         /* */
@@ -70,50 +69,12 @@ export function createKeyboardSynthController(opts) {
     if (engine.monoVoice && engine.latchedKey) {
       try {
         const { name, octave } = parseVoiceKey(engine.latchedKey);
-        const btn = applyRoot.querySelector(
-          `${keySelector}[data-note="${CSS.escape(name)}"][data-octave="${String(octave)}"]`,
-        );
+        const btn = findPlayKeyElementByPitch(applyRoot, name, octave, keySelector);
         if (btn) btn.classList.add('ntg-key-active');
       } catch {
         /* */
       }
     }
-    // #region agent log
-    try {
-      const EP = 'http://127.0.0.1:7938/ingest/6bbad3b8-402f-432a-a975-1620a81e6667';
-      const SID = '1bcc0b';
-      const activeButtons = [];
-      for (const btn of applyRoot.querySelectorAll(`${keySelector}.ntg-key-active`)) {
-        const classes = new Set(btn.classList);
-        const note = btn.getAttribute('data-note');
-        const octave = btn.getAttribute('data-octave');
-        const isPianoWhite = classes.has('cts-pkey--white');
-        const isPianoBlack = classes.has('cts-pkey--black');
-        activeButtons.push({ note, octave, isPianoWhite, isPianoBlack });
-      }
-      fetch(EP, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Debug-Session-Id': SID,
-        },
-        body: JSON.stringify({
-          sessionId: SID,
-          runId: 'pre-fix',
-          hypothesisId: 'H-css-vs-logic',
-          location: 'keyboard-synth-controller.mjs:syncExecutionHighlight',
-          message: 'syncExecutionHighlight active buttons snapshot',
-          data: {
-            activeCount: activeButtons.length,
-            sample: activeButtons.slice(0, 12),
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-    } catch {
-      /* */
-    }
-    // #endregion
   }
 
   function notify() {
@@ -313,9 +274,7 @@ export function createKeyboardSynthController(opts) {
     function findBtn(name, octave) {
       const root = getHighlightRoot();
       if (!root) return null;
-      return root.querySelector(
-        `${keySelector}[data-note="${CSS.escape(name)}"][data-octave="${String(octave)}"]`,
-      );
+      return findPlayKeyElementByPitch(root, name, octave, keySelector);
     }
 
     /** @param {KeyboardEvent} ev */

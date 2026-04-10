@@ -280,50 +280,6 @@
   <script type="module">
     import { mountSiteNav } from '../site-nav.mjs';
     mountSiteNav();
-    // #region agent log
-    (() => {
-      const EP = 'http://127.0.0.1:7938/ingest/6bbad3b8-402f-432a-a975-1620a81e6667';
-      const SID = 'd27c8d';
-      function logCtsSynthLayout(runId) {
-        const root = document.querySelector('.cts-synth-root');
-        const row = root?.querySelector('.cts-synth-kit-row');
-        const slots = row ? Array.from(row.querySelectorAll(':scope > .cts-synth-kit-slot')) : [];
-        if (slots.length !== 6) return;
-        const box = (el) => {
-          const r = el.getBoundingClientRect();
-          return { top: +r.top.toFixed(1), left: +r.left.toFixed(1), w: +r.width.toFixed(1), h: +r.height.toFixed(1) };
-        };
-        const dTop = (a, b) => Math.abs(box(a).top - box(b).top);
-        const data = {
-          runId,
-          hypothesisId: 'H3',
-          gridDisplay: row ? getComputedStyle(row).display : null,
-          gridCols: row ? getComputedStyle(row).gridTemplateColumns : null,
-          row1PairTopDelta: dTop(slots[0], slots[1]),
-          row2PairTopDelta: dTop(slots[2], slots[3]),
-          row3PairTopDelta: dTop(slots[4], slots[5]),
-          slot0: box(slots[0]),
-          slot1: box(slots[1]),
-        };
-        fetch(EP, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': SID },
-          body: JSON.stringify({
-            sessionId: SID,
-            runId,
-            hypothesisId: 'H3',
-            location: 'circle-scales.html:logCtsSynthLayout',
-            message: 'cts synth 3x2 grid row alignment',
-            data,
-            timestamp: Date.now(),
-          }),
-        }).catch(() => {});
-      }
-      const run = () => requestAnimationFrame(() => logCtsSynthLayout('layout-check'));
-      run();
-      window.addEventListener('resize', run);
-    })();
-    // #endregion
   </script>
 </body>
 </html>

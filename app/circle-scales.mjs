@@ -17,6 +17,7 @@ import {
 } from '../lib/music-theory.js';
 import { clamp, initToneGenTheory, parseVoiceKey, ToneGen } from './tone-gen-engine.mjs';
 import { buildBaseParams, buildPlayPayload, readOctaveRange, readToneGenParams } from './tone-gen-ui-shared.mjs';
+import { mountCtsToneRail } from './cts-tone-rail.mjs';
 import { mountTemplateSynthKit } from './template-synth.mjs';
 import { renderBayanKeyboard } from './bayan-keyboard.mjs';
 import { buildLinearKeys, buildPianoKeys } from './keyboard-layouts.mjs';
@@ -538,61 +539,6 @@ function syncChordAudioAndList(svg) {
     prevChordVoiceKeys.clear();
   }
   refreshToneRailStatus();
-
-  // #region agent log
-  try {
-    const EP = 'http://127.0.0.1:7938/ingest/6bbad3b8-402f-432a-a975-1620a81e6667';
-    const SID = '1bcc0b';
-    /** @type {Array<{ key: string, name: string, octave: number, isPianoWhite: boolean, isPianoBlack: boolean }>} */
-    const activeKeys = [];
-    const stage = document.getElementById('cts-keyboard-stage');
-    for (const key of nextKeys) {
-      try {
-        const parsed = parseVoiceKey(key);
-        const name = parsed.name;
-        const octave = parsed.octave;
-        let isPianoWhite = false;
-        let isPianoBlack = false;
-        if (stage) {
-          const btn = stage.querySelector(
-            `.cts-play-key[data-note="${CSS.escape(name)}"][data-octave="${String(octave)}"]`,
-          );
-          if (btn) {
-            const cls = btn.classList;
-            isPianoWhite = cls.contains('cts-pkey--white');
-            isPianoBlack = cls.contains('cts-pkey--black');
-          }
-        }
-        activeKeys.push({ key, name, octave, isPianoWhite, isPianoBlack });
-      } catch {
-        /* ignore parse errors */
-      }
-    }
-    fetch(EP, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Debug-Session-Id': SID,
-      },
-      body: JSON.stringify({
-        sessionId: SID,
-        runId: 'pre-fix',
-        hypothesisId: 'H-chord-keys',
-        location: 'circle-scales.mjs:syncChordAudioAndList',
-        message: 'active chord keys and mapping to piano buttons',
-        data: {
-          chordAudioEnabled,
-          toneMode: toneEngine ? toneEngine.mode : null,
-          nextKeyCount: nextKeys.size,
-          sample: activeKeys.slice(0, 12),
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-  } catch {
-    /* logging failure ignored */
-  }
-  // #endregion
 }
 
 function refreshToneRailStatus() {
@@ -993,6 +939,7 @@ function initTheoryPanel() {
 }
 
 function boot() {
+  mountCtsToneRail();
   const drawer = window.CircleOfFifthsDrawer;
   if (!drawer) return;
 

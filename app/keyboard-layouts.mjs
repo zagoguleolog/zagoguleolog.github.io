@@ -1,6 +1,6 @@
 /**
- * Единая геометрия клавиатур: линейный ряд по NOTE_NAMES и пиано (белые/чёрные).
- * Имена нот — канонические (как CANONICAL_TONIC_BY_PC в lib/music-theory.js).
+ * Единая геометрия клавиатур: линейный ряд по NOTE_NAMES (или переданному хроматическому ряду) и пиано (белые/чёрные).
+ * По умолчанию имена — канонические (CANONICAL_TONIC_BY_PC в lib/music-theory.js); опционально — однородный ряд (см. система знаков в docs/domain.md).
  */
 import { CANONICAL_TONIC_BY_PC } from '../lib/music-theory.js';
 import { NOTE_NAMES } from './tone-gen-engine.mjs';
@@ -18,13 +18,14 @@ export const PIANO_BLACK_KEYS = [
 ];
 
 /**
- * Линейные кнопки по октавам: одна сетка на октаву, хроматика по `NOTE_NAMES`, data-note / data-octave.
+ * Линейные кнопки по октавам: одна сетка на октаву, хроматика по `noteNamesChromatic` или по умолчанию `NOTE_NAMES`, data-note / data-octave.
  * Привязка физической клавиатуры ПК к кнопкам — в `linearComputerCodesForOctaveRange` (computer-keyboard-music.mjs).
  * @param {HTMLElement} container
- * @param {{ octaveMin: number, octaveMax: number, keyButtonClass: string }} opts
+ * @param {{ octaveMin: number, octaveMax: number, keyButtonClass: string, noteNamesChromatic?: readonly string[] }} opts
  */
 export function buildLinearKeys(container, opts) {
-  const { octaveMin, octaveMax, keyButtonClass } = opts;
+  const { octaveMin, octaveMax, keyButtonClass, noteNamesChromatic } = opts;
+  const chromaticRow = noteNamesChromatic ?? NOTE_NAMES;
   container.replaceChildren();
   for (let o = octaveMin; o <= octaveMax; o++) {
     const row = document.createElement('div');
@@ -36,7 +37,7 @@ export function buildLinearKeys(container, opts) {
     grid.className = 'ntg-keys';
     grid.setAttribute('role', 'group');
     grid.setAttribute('aria-label', `Октава ${o}`);
-    for (const name of NOTE_NAMES) {
+    for (const name of chromaticRow) {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = keyButtonClass;
@@ -52,10 +53,12 @@ export function buildLinearKeys(container, opts) {
 }
 
 /**
- * Одна октава пиано: белые + чёрные, канонические имена.
+ * Одна октава пиано: белые + чёрные; имена по `noteNamesChromatic` (длина 12, индекс = PC) или канонические.
  * @param {number} octave
+ * @param {{ noteNamesChromatic?: readonly string[] }} [options]
  */
-export function buildPianoOctaveElement(octave) {
+export function buildPianoOctaveElement(octave, options = {}) {
+  const namesByPc = options.noteNamesChromatic ?? CANONICAL_TONIC_BY_PC;
   const wrap = document.createElement('div');
   wrap.className = 'cts-octave';
   wrap.dataset.octave = String(octave);
@@ -68,7 +71,7 @@ export function buildPianoOctaveElement(octave) {
   blackRow.setAttribute('aria-hidden', 'true');
 
   for (const pc of PIANO_WHITE_PCS) {
-    const name = CANONICAL_TONIC_BY_PC[pc];
+    const name = namesByPc[pc];
     const keyBtn = document.createElement('button');
     keyBtn.type = 'button';
     keyBtn.className = 'cts-pkey cts-pkey--white ntg-key cts-play-key';
@@ -80,7 +83,7 @@ export function buildPianoOctaveElement(octave) {
   }
 
   for (const { n, pc } of PIANO_BLACK_KEYS) {
-    const name = CANONICAL_TONIC_BY_PC[pc];
+    const name = namesByPc[pc];
     const keyBtn = document.createElement('button');
     keyBtn.type = 'button';
     keyBtn.className = 'cts-pkey cts-pkey--black ntg-key cts-play-key';
@@ -105,12 +108,12 @@ export function buildPianoOctaveElement(octave) {
 /**
  * Пиано: несколько октав подряд внутри контейнера (.cts-piano-keyboard).
  * @param {HTMLElement} container
- * @param {{ octaveMin: number, octaveMax: number }} opts
+ * @param {{ octaveMin: number, octaveMax: number, noteNamesChromatic?: readonly string[] }} opts
  */
 export function buildPianoKeys(container, opts) {
-  const { octaveMin, octaveMax } = opts;
+  const { octaveMin, octaveMax, noteNamesChromatic } = opts;
   container.replaceChildren();
   for (let o = octaveMin; o <= octaveMax; o++) {
-    container.appendChild(buildPianoOctaveElement(o));
+    container.appendChild(buildPianoOctaveElement(o, { noteNamesChromatic }));
   }
 }

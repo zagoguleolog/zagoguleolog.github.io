@@ -2,8 +2,11 @@
  * Быстрая проверка: генерация совпадает с примерами из docs/music-theory.md.
  */
 import {
+  accidentalSystemFromScale,
   buildScale,
+  buildScaleDegreeRowsByMidiOrder,
   allCanonicalScales,
+  chromaticNamesByAccidentalSystem,
   sumSteps,
   getScalePatterns,
   getMusicTheoryGraph,
@@ -54,6 +57,13 @@ console.assert(
   cMajPent.degrees.map((d) => d.name).join(',') === expectedCMajPent.join(','),
   'C major pentatonic spelling',
 );
+
+const fIonian = buildScale('ionian', 'F');
+console.assert(accidentalSystemFromScale(fIonian) === 'flat', 'F ionian → бемольная система знаков');
+console.assert(chromaticNamesByAccidentalSystem('flat')[1] === 'Db', 'бемольный хроматический ряд PC 1');
+const gIonian = buildScale('ionian', 'G');
+console.assert(accidentalSystemFromScale(gIonian) === 'sharp', 'G ionian → диезная система знаков');
+console.assert(chromaticNamesByAccidentalSystem('sharp')[6] === 'F#', 'диезный хроматический ряд PC 6');
 
 for (const p of getScalePatterns()) {
   console.assert(sumSteps(p.semitoneSteps) === 12, `${p.id} sum 12`);
@@ -149,6 +159,18 @@ const g = getMusicTheoryGraph();
 console.assert(g.nodes.size > 0, 'graph nodes');
 console.assert(g.edgesByKind('intervalDirected').length === 144, '12x12 directed PCs');
 console.assert(g.edgesFrom('scale:major|C').length > 0, 'scale edges');
+
+const cSharpRow = buildScaleDegreeRowsByMidiOrder(buildScale('major', 'C#'), 3, 4);
+console.assert(cSharpRow.length === 14, 'C# major C3…B4 = 14 scale tones');
+for (let i = 0; i < cSharpRow.length - 1; i++) {
+  const a = midiNoteFromPcOctave(cSharpRow[i].pc, cSharpRow[i].octave);
+  const b = midiNoteFromPcOctave(cSharpRow[i + 1].pc, cSharpRow[i + 1].octave);
+  console.assert(b > a, `C# row MIDI strictly up at ${i}: ${a}→${b}`);
+}
+console.assert(cSharpRow[0].name === 'B#' && cSharpRow[0].octave === 3, 'C# row starts at B#3 (pc 0 = C3 in range)');
+const gRow = buildScaleDegreeRowsByMidiOrder(buildScale('major', 'G'), 3, 4);
+console.assert(gRow[0].name === 'C' && gRow[0].octave === 3, 'G major row starts at C3, not G3 (keyboard span)');
+console.assert(gRow[gRow.length - 1].name === 'B' && gRow[gRow.length - 1].octave === 4, 'G major row ends at B4');
 
 console.log('verify-theory: OK', {
   patterns: getScalePatterns().length,

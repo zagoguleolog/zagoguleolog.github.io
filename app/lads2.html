@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Лады и арпеджио</title>
+  <title>Лады: три таблицы и арпеджио</title>
   <link rel="stylesheet" href="circle-of-fifths.css" />
   <link rel="stylesheet" href="circle-scales.css" />
   <link rel="stylesheet" href="template-synth.css" />
@@ -40,8 +40,23 @@
       background: rgba(148, 163, 184, 0.18);
     }
     .lads-scale-table tbody tr.lads-scale-selected-row {
-      background: rgba(56, 189, 248, 0.12);
+      background: rgba(56, 189, 248, 0.1);
       font-weight: 600;
+    }
+    .lads-scale-table tbody tr.lads-scale-selected-row > th,
+    .lads-scale-table tbody tr.lads-scale-selected-row > td {
+      border-top: 2px solid #38bdf8;
+      border-bottom: 2px solid #38bdf8;
+      box-shadow: inset 0 0 0 1px rgba(125, 211, 252, 0.35);
+    }
+    .lads-scale-table tbody tr.lads-scale-selected-row > :first-child {
+      border-left: 3px solid #22d3ee;
+    }
+    .lads-scale-table tbody tr.lads-scale-selected-row > :last-child {
+      border-right: 3px solid #22d3ee;
+    }
+    .lads-scale-table tbody tr.lads-scale-selected-row:hover {
+      background: rgba(56, 189, 248, 0.16);
     }
     .lads-scale-select-row {
       display: flex;
@@ -114,8 +129,6 @@
     .cts-pkey.lads-scale-degree {
       box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.9);
     }
-    /* Чёрные клавиши: узкое синее кольцо на тёмном градиенте почти не видно (класс уже есть, см. логи). */
-    /* Граница на прямоугольнике клавиши — не перекрывается соседними чёрными (в отличие от spread box-shadow). */
     .cts-piano-panel .cts-pkey--black.lads-scale-degree {
       z-index: 5;
       border: 2px solid rgba(186, 230, 253, 0.98);
@@ -175,8 +188,75 @@
       white-space: nowrap;
       border: 0;
     }
-    #lads-bpm-seg .synth-block {
+    #lads2-bpm-seg .synth-block {
       transform: scale(0.9);
+    }
+    .lads2-tables-region {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 0.35rem;
+    }
+    .lads2-table-caption {
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin: 0.35rem 0 0.2rem;
+      color: #cbd5e1;
+    }
+    .lads2-table-hint {
+      font-size: 0.78rem;
+      color: var(--ntg-muted);
+      margin: 0 0 0.35rem;
+    }
+    .lads-scale-table.lads2-matrix-table tbody tr[data-pattern-id] {
+      cursor: pointer;
+      transition: background-color 0.12s ease-out;
+    }
+    .lads-scale-table.lads2-matrix-table tbody tr[data-pattern-id]:hover {
+      background: rgba(148, 163, 184, 0.12);
+    }
+    .lads2-selected-lad-kbd-heading {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 0.55rem;
+      color: #e2e8f0;
+      min-height: 1.35em;
+    }
+    /* Средняя таблица: тон vs полутон */
+    .lads-scale-table td.lads2-cell-step-ton {
+      background: rgba(34, 211, 238, 0.2);
+      color: #cffafe;
+    }
+    .lads-scale-table td.lads2-cell-step-semi {
+      background: rgba(251, 191, 36, 0.22);
+      color: #fef3c7;
+    }
+    .lads-scale-table td.lads2-cell-step-other {
+      background: rgba(148, 163, 184, 0.14);
+      color: #e2e8f0;
+    }
+    /* Третья таблица: альтерации */
+    .lads-scale-table td.lads2-cell-acc-sharp {
+      background: rgba(244, 114, 182, 0.22);
+      color: #fce7f3;
+    }
+    .lads-scale-table td.lads2-cell-acc-flat {
+      background: rgba(96, 165, 250, 0.22);
+      color: #dbeafe;
+    }
+    .lads-scale-table td.lads2-cell-acc-natural {
+      background: rgba(74, 222, 128, 0.12);
+      color: #d1fae5;
+    }
+    /* Первая таблица: ноты с диезом / бемолем / натуральные */
+    .lads-scale-table td.lads2-cell-deg-sharp {
+      background: rgba(244, 114, 182, 0.14);
+    }
+    .lads-scale-table td.lads2-cell-deg-flat {
+      background: rgba(96, 165, 250, 0.14);
+    }
+    .lads-scale-table td.lads2-cell-deg-natural {
+      background: rgba(74, 222, 128, 0.08);
     }
   </style>
 </head>
@@ -189,15 +269,15 @@
           <div class="tpl-grid-tuning cts-rail-tuning">
             <label class="tpl-field">
               <span class="tpl-label">A4 (Гц)</span>
-              <input type="number" id="lads-ntg-a4" min="1" max="2000" step="0.1" value="440" />
+              <input type="number" id="lads2-ntg-a4" min="1" max="2000" step="0.1" value="440" />
             </label>
             <label class="tpl-field">
               <span class="tpl-label">Октава с</span>
-              <input type="number" id="lads-ntg-octave-min" min="0" max="8" step="1" value="3" />
+              <input type="number" id="lads2-ntg-octave-min" min="0" max="8" step="1" value="3" />
             </label>
             <label class="tpl-field">
               <span class="tpl-label">Октава по</span>
-              <input type="number" id="lads-ntg-octave-max" min="0" max="8" step="1" value="5" />
+              <input type="number" id="lads2-ntg-octave-max" min="0" max="8" step="1" value="5" />
             </label>
           </div>
         </section>
@@ -206,12 +286,12 @@
           <h2 class="cts-rail-h2">Громкость и основной тон</h2>
           <div class="ntg-grid ntg-grid-sound">
             <label class="ntg-field ntg-field-span">
-              <span class="ntg-label">Громкость: <strong id="lads-ntg-vol-val">25</strong>%</span>
-              <input type="range" id="lads-ntg-volume" min="0" max="100" value="25" />
+              <span class="ntg-label">Громкость: <strong id="lads2-ntg-vol-val">25</strong>%</span>
+              <input type="range" id="lads2-ntg-volume" min="0" max="100" value="25" />
             </label>
             <label class="ntg-field">
               <span class="ntg-label">Форма колебания</span>
-              <select id="lads-ntg-waveform" aria-label="Форма колебания">
+              <select id="lads2-ntg-waveform" aria-label="Форма колебания">
                 <option value="sine" selected>Синусоида</option>
                 <option value="triangle">Треугольник</option>
                 <option value="square">Квадрат</option>
@@ -219,34 +299,34 @@
               </select>
             </label>
             <label class="ntg-field">
-              <span class="ntg-label">Детун (центы): <strong id="lads-ntg-detune-val">0</strong></span>
-              <input type="range" id="lads-ntg-detune" min="-50" max="50" value="0" />
+              <span class="ntg-label">Детун (центы): <strong id="lads2-ntg-detune-val">0</strong></span>
+              <input type="range" id="lads2-ntg-detune" min="-50" max="50" value="0" />
             </label>
           </div>
         </section>
       </aside>
 
       <div class="cts-main-column">
-        <h1>Лады и арпеджио</h1>
+        <h1>Лады: три таблицы и арпеджио</h1>
         <p class="cof-hint">
-          Диатонические лады из
+          Вторая версия страницы ладов: те же данные из
           <span class="mono">lib/music-theory.js</span>
-          / <a href="../docs/music-theory.md">music-theory.md</a>:
-          выбор лада и тоники, таблица ступеней и арпеджио по ступеням через общий движок синтеза.
+          (<a href="../docs/music-theory.md">music-theory.md</a>), три синхронизированные таблицы
+          и арпеджио по ступеням.
         </p>
 
         <section class="cts-theory-panel" aria-label="Лад, тоника и арпеджио">
           <h2>Лад и арпеджио</h2>
 
         <p class="ntg-hint">
-          Клик по клавиатуре ниже задаёт тонику (по имени ноты); таблица ладов строится от этой ноты.
-          Клик по строке таблицы выбирает лад.
+          Клик по клавиатуре ниже задаёт тонику (по имени ноты); три таблицы строятся от этой ноты.
+          Клик по строке в любой из трёх таблиц выбирает лад; выбранный лад подсвечивается во всех таблицах и на клавиатуре.
         </p>
 
         <div class="lads-arp-row">
           <span class="lads-arp-label">Арпеджио</span>
           <div class="ntg-seg lads-arp-seg" role="group" aria-label="Включение арпеджио">
-            <button type="button" class="ntg-seg-btn" id="lads-arp-off" aria-pressed="true">
+            <button type="button" class="ntg-seg-btn" id="lads2-arp-off" aria-pressed="true">
               Выкл
             </button>
           </div>
@@ -258,7 +338,7 @@
             <button
               type="button"
               class="ntg-seg-btn"
-              id="lads-arp-dir-up"
+              id="lads2-arp-dir-up"
               data-arp-dir="up"
               aria-pressed="true"
             >
@@ -267,7 +347,7 @@
             <button
               type="button"
               class="ntg-seg-btn"
-              id="lads-arp-dir-down"
+              id="lads2-arp-dir-down"
               data-arp-dir="down"
               aria-pressed="false"
             >
@@ -276,7 +356,7 @@
             <button
               type="button"
               class="ntg-seg-btn"
-              id="lads-arp-dir-zigzag"
+              id="lads2-arp-dir-zigzag"
               data-arp-dir="zigzag"
               aria-pressed="false"
             >
@@ -291,7 +371,7 @@
             <button
               type="button"
               class="ntg-seg-btn"
-              id="lads-arp-seq-linear"
+              id="lads2-arp-seq-linear"
               data-arp-seq="linear"
               aria-pressed="true"
             >
@@ -300,7 +380,7 @@
             <button
               type="button"
               class="ntg-seg-btn"
-              id="lads-arp-seq-3"
+              id="lads2-arp-seq-3"
               data-arp-seq="seq3"
               aria-pressed="false"
             >
@@ -309,7 +389,7 @@
             <button
               type="button"
               class="ntg-seg-btn"
-              id="lads-arp-seq-4"
+              id="lads2-arp-seq-4"
               data-arp-seq="seq4"
               aria-pressed="false"
             >
@@ -318,7 +398,7 @@
             <button
               type="button"
               class="ntg-seg-btn"
-              id="lads-arp-seq-5"
+              id="lads2-arp-seq-5"
               data-arp-seq="seq5"
               aria-pressed="false"
             >
@@ -329,11 +409,11 @@
 
         <div class="lads-arp-row lads-arp-bpm">
           <span class="lads-arp-label">BPM</span>
-          <div id="lads-bpm-seg"></div>
+          <div id="lads2-bpm-seg"></div>
         </div>
         <input
           type="range"
-          id="lads-bpm"
+          id="lads2-bpm"
           class="lad-bpm-sr"
           min="20"
           max="400"
@@ -345,16 +425,16 @@
         <div class="lads-arp-row">
           <span class="lads-arp-label">Длительность шага</span>
           <div class="ntg-seg lads-arp-seg" role="group" aria-label="Длительность шага арпеджио">
-            <button type="button" class="ntg-seg-btn" id="lads-step-quarter" data-step-len="1/4" aria-pressed="true">
+            <button type="button" class="ntg-seg-btn" id="lads2-step-quarter" data-step-len="1/4" aria-pressed="true">
               1/4
             </button>
-            <button type="button" class="ntg-seg-btn" id="lads-step-eighth" data-step-len="1/8" aria-pressed="false">
+            <button type="button" class="ntg-seg-btn" id="lads2-step-eighth" data-step-len="1/8" aria-pressed="false">
               1/8
             </button>
             <button
               type="button"
               class="ntg-seg-btn"
-              id="lads-step-sixteenth"
+              id="lads2-step-sixteenth"
               data-step-len="1/16"
               aria-pressed="false"
             >
@@ -363,7 +443,7 @@
             <button
               type="button"
               class="ntg-seg-btn"
-              id="lads-step-thirtysecond"
+              id="lads2-step-thirtysecond"
               data-step-len="1/32"
               aria-pressed="false"
             >
@@ -377,48 +457,89 @@
           на клавиатуре.
         </p>
 
-        <table class="lads-scale-table" aria-label="Лады от выбранной тоники">
-          <thead>
-            <tr>
-              <th>Лад</th>
-              <th>Гамма (буквы)</th>
-              <th>Интервальный код</th>
-            </tr>
-          </thead>
-          <tbody id="lads-scale-body">
-          </tbody>
-        </table>
+        <div id="lads2-tables-region" class="lads2-tables-region">
+          <p class="lads2-table-hint lads2-color-legend" aria-label="Легенда цветов ячеек">
+            Цвета ячеек: в 1-й таблице — натуральная ступень (зелёный оттенок), диез / бемоль (розовый / синий); во 2-й —
+            <strong>т</strong> (бирюза), <strong>п</strong> (янтарь); в 3-й — те же три типа альтерации, что символами ·, #, b.
+          </p>
+          <div>
+            <h3 class="lads2-table-caption">Ступени по буквенным обозначениям лада</h3>
+            <p class="lads2-table-hint">
+              Слева — буквенные названия ладов от выбранной тоники (шаблон как для C: CΔ, Cm7+6, Cm7−2, CΔ+4, C7−7, Cm7,
+              Cm7ø −2−5); сверху — номера ступеней <strong>1–7</strong>. Натуральная буква ступени с пометкой «△», иначе —
+              имя ноты из <span class="mono">buildScale</span>.
+            </p>
+            <table
+              class="lads-scale-table lads2-scale-table-deg"
+              aria-label="Ступени диатонических ладов: символы ладов и номера ступеней 1–7"
+            >
+              <thead id="lads2-scale-deg-head"></thead>
+              <tbody id="lads2-scale-deg-body"></tbody>
+            </table>
+          </div>
+
+          <div>
+            <h3 class="lads2-table-caption">Тоны и полутоны по ступеням</h3>
+            <p class="lads2-table-hint">
+              Строки — римские номера ладов (I — ионийский … VII — локрийский); столбцы — ступени лада <strong>1–7</strong>
+              (шаг от этой ступени к следующей). <strong>т</strong> — тон, <strong>п</strong> — полутон.
+            </p>
+            <table
+              class="lads-scale-table lads2-matrix-table"
+              aria-label="Тоны и полутоны между ступенями по ладам"
+            >
+              <thead id="lads2-scale-steps-head"></thead>
+              <tbody id="lads2-scale-steps-body"></tbody>
+            </table>
+          </div>
+
+          <div>
+            <h3 class="lads2-table-caption">Альтерации букв ступеней</h3>
+            <p class="lads2-table-hint">
+              Та же сетка: строки — римские номера ладов (I–VII), столбцы — ступени <strong>1–7</strong>. «·» — натуральная
+              буква слота, «#» / «b» — диез или бемоль (повтор при двойных знаках).
+            </p>
+            <table
+              class="lads-scale-table lads2-matrix-table"
+              aria-label="Альтерации ступеней ладов"
+            >
+              <thead id="lads2-scale-acc-head"></thead>
+              <tbody id="lads2-scale-acc-body"></tbody>
+            </table>
+          </div>
+        </div>
         </section>
 
         <section class="cts-piano-panel" aria-label="Клавиатура и режим воспроизведения">
           <div class="ntg-panel" aria-label="Клавиатура и арпеджио">
             <h2>Режим и клавиатура</h2>
+            <p class="lads2-selected-lad-kbd-heading" id="lads2-selected-lad-title" aria-live="polite"></p>
             <div class="ntg-row">
-              <button type="button" class="ntg-stop" id="lads-ntg-stop">Стоп</button>
-              <span class="ntg-status" id="lads-ntg-status" aria-live="polite">Тишина</span>
+              <button type="button" class="ntg-stop" id="lads2-ntg-stop">Стоп</button>
+              <span class="ntg-status" id="lads2-ntg-status" aria-live="polite">Тишина</span>
             </div>
 
             <div class="cts-kbd-toolbar">
-              <span class="cts-kbd-toolbar-label" id="lads-kbd-toolbar-label">Вид клавиатуры</span>
+              <span class="cts-kbd-toolbar-label" id="lads2-kbd-toolbar-label">Вид клавиатуры</span>
               <div
-                id="lads-kbd-mode-group"
+                id="lads2-kbd-mode-group"
                 class="cts-kbd-seg"
                 role="group"
-                aria-labelledby="lads-kbd-toolbar-label"
+                aria-labelledby="lads2-kbd-toolbar-label"
               >
-                <button type="button" class="cts-kbd-btn" data-lads-kbd-mode="linear" aria-pressed="true">
+                <button type="button" class="cts-kbd-btn" data-lads2-kbd-mode="linear" aria-pressed="true">
                   linear
                 </button>
-                <button type="button" class="cts-kbd-btn" data-lads-kbd-mode="piano" aria-pressed="false">
+                <button type="button" class="cts-kbd-btn" data-lads2-kbd-mode="piano" aria-pressed="false">
                   piano
                 </button>
-                <button type="button" class="cts-kbd-btn" data-lads-kbd-mode="bayiano" aria-pressed="false">
+                <button type="button" class="cts-kbd-btn" data-lads2-kbd-mode="bayiano" aria-pressed="false">
                   bayiano
                 </button>
                 <button
                   type="button"
                   class="cts-kbd-btn"
-                  data-lads-kbd-mode="bayiano4"
+                  data-lads2-kbd-mode="bayiano4"
                   aria-pressed="false"
                   title="Четыре ряда (хроматическая сетка мод 4), не B-system"
                 >
@@ -427,7 +548,7 @@
               </div>
               <button
                 type="button"
-                id="lads-kbd-grey-toggle"
+                id="lads2-kbd-grey-toggle"
                 class="cts-kbd-btn cts-kbd-btn-grey"
                 aria-pressed="true"
                 title="Сделать ноты вне выбранного лада серыми"
@@ -436,11 +557,11 @@
               </button>
             </div>
 
-            <div id="lads-keyboard-stage" class="cts-keyboard-stage">
-              <div id="lads-keys-linear" class="cts-kbd-view">
+            <div id="lads2-keyboard-stage" class="cts-keyboard-stage">
+              <div id="lads2-keys-linear" class="cts-kbd-view">
                 <div class="ntg-keys-wrap" aria-label="Ноты по октавам (линейная раскладка)"></div>
               </div>
-              <div id="lads-keys-piano" class="cts-kbd-view" hidden>
+              <div id="lads2-keys-piano" class="cts-kbd-view" hidden>
                 <div class="cts-scroll-x">
                   <div
                     class="cts-piano-keyboard"
@@ -449,19 +570,19 @@
                   ></div>
                 </div>
               </div>
-              <div id="lads-keys-bayiano" class="cts-kbd-view" hidden>
+              <div id="lads2-keys-bayiano" class="cts-kbd-view" hidden>
                 <div class="cts-scroll-x cts-bayan-scroll">
                   <div
-                    id="lads-bayan-wrap"
+                    id="lads2-bayan-wrap"
                     class="cts-bayan-wrap"
                     aria-label="Баян B-system"
                   ></div>
                 </div>
               </div>
-              <div id="lads-keys-bayiano4" class="cts-kbd-view" hidden>
+              <div id="lads2-keys-bayiano4" class="cts-kbd-view" hidden>
                 <div class="cts-scroll-x cts-bayan-scroll">
                   <div
-                    id="lads-bayan4-wrap"
+                    id="lads2-bayan4-wrap"
                     class="cts-bayan-wrap cts-bayan4-wrap"
                     aria-label="Четырёхрядная хроматическая сетка (баян)"
                   ></div>
@@ -481,7 +602,7 @@
     </p>
   </div>
 
-  <script type="module" src="lads.mjs"></script>
+  <script type="module" src="lads2.mjs"></script>
   <script type="module">
     import { mountSiteNav } from '../site-nav.mjs';
     mountSiteNav();

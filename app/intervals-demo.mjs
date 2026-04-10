@@ -16,6 +16,7 @@ import {
   voiceKey,
 } from './tone-gen-engine.mjs';
 import { buildBaseParams, buildPlayPayload, readOctaveRange, readToneGenParams } from './tone-gen-ui-shared.mjs';
+import { mountCtsToneRail } from './cts-tone-rail.mjs';
 import { mountTemplateSynthKit } from './template-synth.mjs';
 import { buildLinearKeys, buildPianoKeys } from './keyboard-layouts.mjs';
 import {
@@ -630,6 +631,7 @@ function renderIntervalsTable() {
 }
 
 function boot() {
+  mountCtsToneRail();
   renderIntervalsTable();
   wireSynth();
   wireKeyboardModeControls();

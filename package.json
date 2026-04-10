@@ -5,6 +5,8 @@
   "scripts": {
     "serve": "node scripts/static-server.js",
     "verify": "node scripts/verify-theory.js",
-    "verify:http": "node scripts/verify-http.mjs"
+    "verify:http": "node scripts/verify-http.mjs",
+    "zigzag:gen": "node scripts/generate-zigzag-sequences.mjs",
+    "zigzag:analyze": "node scripts/analyze-zigzag-sequences.mjs"
   }
 }

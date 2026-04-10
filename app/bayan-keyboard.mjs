@@ -28,7 +28,7 @@ function styleButton(circle, textEl, btn) {
 
 /**
  * @param {HTMLElement} container
- * @param {{ midiMin: number, midiMax: number, cellWidth: number, buttonRadius: number, rowGap: number, staggerFraction: number, brickHalfSteps: number, rowCount?: number, interactive?: boolean, compact?: boolean }} opts
+ * @param {{ midiMin: number, midiMax: number, cellWidth: number, buttonRadius: number, rowGap: number, staggerFraction: number, brickHalfSteps: number, rowCount?: number, interactive?: boolean, compact?: boolean, chromaticNamesByPc?: readonly string[] }} opts
  */
 export function renderBayanKeyboard(container, opts) {
   const {
@@ -42,7 +42,9 @@ export function renderBayanKeyboard(container, opts) {
     rowCount = B_SYSTEM_ROW_COUNT,
     interactive = false,
     compact = false,
+    chromaticNamesByPc,
   } = opts;
+  const interactiveNamesByPc = chromaticNamesByPc ?? CANONICAL_TONIC_BY_PC;
 
   const labelColW = compact ? 50 : 72;
   const pad = compact ? 8 : 14;
@@ -139,7 +141,7 @@ export function renderBayanKeyboard(container, opts) {
     styleButton(circle, textEl, b);
 
     if (interactive) {
-      const name = CANONICAL_TONIC_BY_PC[b.pc];
+      const name = interactiveNamesByPc[b.pc];
       const octave = b.octave;
       circle.setAttribute('data-note', name);
       circle.setAttribute('data-octave', String(octave));

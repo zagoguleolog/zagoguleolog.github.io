@@ -1,5 +1,27 @@
 # Журнал
 
+## 2026-04-11
+
+- 2026-04-11 — [`buildScaleDegreeRowsByMidiOrder`](lib/music-theory.js): базовый ряд арпеджио по полосе **C…B** выбранных октав (как клавиатура), без старта «с тоники внизу»; [`docs/music-theory.md`](docs/music-theory.md), ERR-007 в [`docs/errors.md`](docs/errors.md), [`scripts/verify-theory.js`](scripts/verify-theory.js), обновлён [`output/zigzag-sequences.jsonl`](output/zigzag-sequences.jsonl). Проверка: `npm run verify`, `npm run zigzag:gen`.
+
+- 2026-04-11 — Удалены отладочные `fetch` к ingest и блоки `agent log` в [`app/keyboard-theory-highlight.mjs`](app/keyboard-theory-highlight.mjs), [`app/lads.mjs`](app/lads.mjs), [`app/lads2.mjs`](app/lads2.mjs), [`app/keyboard-synth-controller.mjs`](app/keyboard-synth-controller.mjs), [`app/circle-scales.mjs`](app/circle-scales.mjs), [`app/circle-scales.html`](app/circle-scales.html). Проверка: `npm run verify`.
+
+- 2026-04-11 — Клавиатуры **`lads`** / **`lads2`**: хроматические подписи в однородной **системе знаков** (диезная или бемольная) по ступеням текущего лада — см. термин в [`docs/domain.md`](docs/domain.md), функции в [`lib/music-theory.js`](lib/music-theory.js), правка [`docs/music-theory.md`](docs/music-theory.md). Реализация: [`app/keyboard-layouts.mjs`](app/keyboard-layouts.mjs), [`app/bayan-keyboard.mjs`](app/bayan-keyboard.mjs), [`app/computer-keyboard-music.mjs`](app/computer-keyboard-music.mjs), [`app/lads.mjs`](app/lads.mjs), [`app/lads2.mjs`](app/lads2.mjs). Проверка: `node scripts/verify-theory.js`, `node --check` на изменённых модулях.
+
+- 2026-04-11 — Подсветка **текущей ноты** при арпеджио: совпадение клавиши по классу высоты и октаве (**`findPlayKeyElementByPitch`** в [`app/keyboard-theory-highlight.mjs`](app/keyboard-theory-highlight.mjs)), подключено в [`app/lads.mjs`](app/lads.mjs), [`app/lads2.mjs`](app/lads2.mjs), [`app/keyboard-synth-controller.mjs`](app/keyboard-synth-controller.mjs); см. ERR-006 в [`docs/errors.md`](docs/errors.md).
+
+- 2026-04-11 — Секвенции арпеджио (зигзаг по 3/4/5): скрипты [`scripts/generate-zigzag-sequences.mjs`](scripts/generate-zigzag-sequences.mjs) и [`scripts/analyze-zigzag-sequences.mjs`](scripts/analyze-zigzag-sequences.mjs), вывод [`output/zigzag-sequences.jsonl`](output/zigzag-sequences.jsonl) и [`output/zigzag-analysis-report.md`](output/zigzag-analysis-report.md). Базовый ряд ступеней для `lads`/`lads2` строится через **`buildScaleDegreeRowsByMidiOrder`** ([`lib/music-theory.js`](lib/music-theory.js)) — устранены ложные скачки MIDI из-за энгармоники (см. ERR-004 в [`docs/errors.md`](docs/errors.md)). Документация: [`docs/music-theory.md`](docs/music-theory.md). Проверка: `npm run verify`, `npm run zigzag:gen`, `npm run zigzag:analyze`.
+
+- 2026-04-11 — [`app/lads2.html`](app/lads2.html): выделение выбранного лада — контрастная рамка вокруг строки (cyan, вертикальные края 3px), лёгкий inset и более заметный фон при hover.
+
+- 2026-04-11 — [`app/lads2.html`](app/lads2.html) / [`app/lads2.mjs`](app/lads2.mjs): цветовая подсветка ячеек для анализа паттернов — во 2-й таблице **т** и **п** (бирюза / янтарь), в 3-й и 1-й — диезы, бемоли и натуральные ступени (розовый / синий / зелёный оттенок); краткая легенда над таблицами. Проверка: `node --check app/lads2.mjs`.
+
+- 2026-04-11 — [`app/lads2.html`](app/lads2.html) / [`app/lads2.mjs`](app/lads2.mjs): таблицы по уточнённому ТЗ — первая: строки с буквенными символами ладов от тоники (суффиксы Δ, m7+6, m7−2, Δ+4, 7−7, m7, m7ø −2−5), столбцы ступеней **1–7**; вторая и третья: строки **I–VII** (лад от ионийского к локрийскому), столбцы **1–7**; выбор лада — клик по строке; обновлены подсказки и [`docs/music-theory.md`](docs/music-theory.md). Проверка: `node --check app/lads2.mjs`.
+
+- 2026-04-11 — Колонка синтеза (`.cts-tone-rail`): модуль [`app/cts-tone-rail.mjs`](app/cts-tone-rail.mjs) — обёртка тела панели и переключатель видимости блоков (UI синта), общее состояние в `localStorage` (`music.cts-tone-rail.collapsed`); в [`app/circle-scales.css`](app/circle-scales.css) на узком экране макет `.cts-layout` — колонка с основным контентом визуально первая; подключено в пяти страничных модулях; обновлён [`docs/architecture.md`](docs/architecture.md). Проверка: `npm run verify`, `node --check app/cts-tone-rail.mjs`.
+
+- 2026-04-11 — Добавлены [`app/lads2.html`](app/lads2.html) и [`app/lads2.mjs`](app/lads2.mjs): вторая версия страницы ладов с тремя таблицами (ступени I–VII с пометкой △ для натуральной буквы, шаги «т/п» по ступеням и ладам, альтерации «·/#/b»), общий выбор лада и арпеджио как на `lads.html`; пункт меню в [`site-nav.mjs`](site-nav.mjs), ссылки на [`index.html`](index.html) и [`web/stranichki.html`](web/stranichki.html), правки в [`docs/music-theory.md`](docs/music-theory.md), [`docs/overview.md`](docs/overview.md), [`README.md`](README.md). Проверка: `npm run verify`, `node --check app/lads2.mjs`, запрос `GET /app/lads2.html` к локальному static-server.
+
 ## 2026-03-31
 
 - 2026-03-31 — [`app/circle-scales.html`](app/circle-scales.html): подключены стили [`app/keyboard-piano.css`](app/keyboard-piano.css) и [`app/bayan-keyboard.css`](app/bayan-keyboard.css) как на странице интервалов, чтобы пиано-клавиатура и баян под кругом выглядели одинаково; при этом слой подсказки лада (`ntg-key-hint`) и подсветка воспроизведения клавиш остались без изменений. Проверка: `npm run verify`.

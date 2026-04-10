@@ -245,11 +245,12 @@ export function linearBayianoIndexFromCode(code) {
  * (крайние правые кнопки ряда без клавиш, игра мышью). В режиме 3 рядов ряд `zxcv…` не используется. Границы MIDI — как у переданного диапазона.
  * @param {number} midiMin
  * @param {number} midiMax
- * @param {{ rowCount?: number }} [options]
+ * @param {{ rowCount?: number, namesByPc?: readonly string[] }} [options]
  * @returns {Map<string, { name: string, octave: number }>}
  */
 export function createBayanCodeMap(midiMin, midiMax, options) {
   const rowCount = options?.rowCount ?? B_SYSTEM_ROW_COUNT;
+  const namesByPc = options?.namesByPc ?? CANONICAL_TONIC_BY_PC;
   const lo = Math.round(Number(midiMin));
   const hi = Math.round(Number(midiMax));
   if (!Number.isInteger(lo) || !Number.isInteger(hi) || lo > hi) {
@@ -278,7 +279,7 @@ export function createBayanCodeMap(midiMin, midiMax, options) {
     const n = Math.min(midis.length, codes.length);
     for (let i = 0; i < n; i++) {
       const m = midis[i];
-      const { name, octave } = noteNameOctaveFromMidi(m);
+      const { name, octave } = noteNameOctaveFromMidi(m, namesByPc);
       map.set(codes[i], { name, octave });
     }
   }
@@ -288,13 +289,14 @@ export function createBayanCodeMap(midiMin, midiMax, options) {
 
 /**
  * @param {number} midi
+ * @param {readonly string[]} [namesByPc] длина 12, индекс = PC
  * @returns {{ name: string, octave: number }}
  */
-function noteNameOctaveFromMidi(midi) {
+function noteNameOctaveFromMidi(midi, namesByPc = CANONICAL_TONIC_BY_PC) {
   const m = Math.round(midi);
   const pc = ((m % 12) + 12) % 12;
   const octave = Math.floor(m / 12) - 1;
-  return { name: CANONICAL_TONIC_BY_PC[pc], octave };
+  return { name: namesByPc[pc], octave };
 }
 
 /**
@@ -303,9 +305,11 @@ function noteNameOctaveFromMidi(midi) {
  * Опорная октава белых с `KeyQ` — `octaveMin` (`base`); чёрные ряды — диезы и «немые» позиции между ми–фа и си–до в охвате белых.
  * @param {number} octaveMin
  * @param {number} octaveMax
+ * @param {{ namesByPc?: readonly string[] }} [options] подписи по PC (длина 12); по умолчанию канонические имена каталога
  * @returns {Map<string, { name: string, octave: number }>}
  */
-export function createPianoCodeMap(octaveMin, octaveMax) {
+export function createPianoCodeMap(octaveMin, octaveMax, options = {}) {
+  const namesByPc = options.namesByPc ?? CANONICAL_TONIC_BY_PC;
   const midiMin = midiNoteFromPcOctave(0, octaveMin);
   const midiMax = midiNoteFromPcOctave(11, octaveMax);
   /** @type {Map<string, { name: string, octave: number }>} */
@@ -313,7 +317,7 @@ export function createPianoCodeMap(octaveMin, octaveMax) {
 
   function add(code, midi) {
     if (midi < midiMin || midi > midiMax) return;
-    const { name, octave } = noteNameOctaveFromMidi(midi);
+    const { name, octave } = noteNameOctaveFromMidi(midi, namesByPc);
     map.set(code, { name, octave });
   }
 

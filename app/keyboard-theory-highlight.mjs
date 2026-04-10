@@ -7,6 +7,39 @@ export const THEORY_HINT_CLASS = 'ntg-key-hint';
 export const THEORY_MUTED_CLASS = 'ntg-key-muted';
 
 /**
+ * Кнопка клавиатуры с тем же классом высоты и научной октавой, что в секвенции или голосе движка
+ * (энгармоника: D# в ряду ступеней → кнопка Eb на пиано по `CANONICAL_TONIC_BY_PC`).
+ *
+ * @param {Element} root
+ * @param {string} noteName имя ноты, например из `spellScaleFromPattern`
+ * @param {number} octave научная октава
+ * @param {string} [keySelector='.cts-play-key']
+ * @returns {Element | null}
+ */
+export function findPlayKeyElementByPitch(root, noteName, octave, keySelector = '.cts-play-key') {
+  if (!noteName || !Number.isFinite(octave)) return null;
+  let targetPc;
+  try {
+    targetPc = parseNoteName(noteName).pc;
+  } catch {
+    return null;
+  }
+  const oc = String(octave);
+  for (const el of root.querySelectorAll(keySelector)) {
+    if (!(el instanceof Element)) continue;
+    const dn = el.getAttribute('data-note');
+    const doct = el.getAttribute('data-octave');
+    if (dn == null || doct !== oc) continue;
+    try {
+      if (parseNoteName(dn).pc === targetPc) return el;
+    } catch {
+      continue;
+    }
+  }
+  return null;
+}
+
+/**
  * Подсветить клавиши, чей pitch class входит в множество (ступени гаммы в тональности).
  * @param {Element} root
  * @param {ReadonlySet<number> | Iterable<number>} pcs pitch class 0…11
@@ -16,24 +49,6 @@ export function setTheoryPcsHighlight(root, pcs, opts = {}) {
   const keySelector = opts.keySelector ?? '[data-note][data-octave]';
   const className = opts.className ?? THEORY_HINT_CLASS;
   const set = pcs instanceof Set ? pcs : new Set(pcs);
-  // #region agent log
-  fetch('http://127.0.0.1:7938/ingest/6bbad3b8-402f-432a-a975-1620a81e6667', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Debug-Session-Id': 'bb4261',
-    },
-    body: JSON.stringify({
-      sessionId: 'bb4261',
-      runId: 'pre-fix',
-      hypothesisId: 'H1',
-      location: 'app/keyboard-theory-highlight.mjs:setTheoryPcsHighlight',
-      message: 'setTheoryPcsHighlight invoked',
-      data: { keySelector, className, pcsCount: set.size },
-      timestamp: Date.now(),
-    }),
-  }).catch(() => {});
-  // #endregion
   for (const el of root.querySelectorAll(keySelector)) {
     const name = el.getAttribute('data-note');
     if (!name) continue;

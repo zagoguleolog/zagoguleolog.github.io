@@ -41,7 +41,24 @@ initToneGenTheory({
   DEFAULT_A4_HZ,
 });
 
-const PREFIX = 'lads-ntg-';
+const PREFIX = 'lads2-ntg-';
+
+/** Римские номера ладов (I-й — ионийский … VII-й — локрийский) в строках 2-й и 3-й таблиц. */
+const ROMAN_MODE_LABELS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+
+/**
+ * Суффиксы буквенных обозначений лада после имени тоники (как в ТЗ для C: Δ, m7+6, m7−2 …).
+ * Индекс совпадает с порядком в LAD_PATTERN_ORDER.
+ */
+const LAD_LETTER_SYMBOL_SUFFIX = Object.freeze([
+  'Δ',
+  'm7+6',
+  'm7−2',
+  'Δ+4',
+  '7−7',
+  'm7',
+  'm7ø −2−5',
+]);
 
 /** Порядок диатонических ладов для таблицы. */
 const LAD_PATTERN_ORDER = [
@@ -97,7 +114,7 @@ function readSynthParams() {
 }
 
 function setStatus(text) {
-  $('lads-ntg-status').textContent = text;
+  $('lads2-ntg-status').textContent = text;
 }
 
 function fmtPlaying(name, octave, hz) {
@@ -168,10 +185,10 @@ function rebuildKeyboards() {
     octaveMin = 3;
     octaveMax = 5;
   }
-  const linearWrap = document.querySelector('#lads-keys-linear .ntg-keys-wrap');
-  const pianoRoot = document.querySelector('#lads-keys-piano .cts-piano-keyboard');
-  const bayanWrap = document.getElementById('lads-bayan-wrap');
-  const bayan4Wrap = document.getElementById('lads-bayan4-wrap');
+  const linearWrap = document.querySelector('#lads2-keys-linear .ntg-keys-wrap');
+  const pianoRoot = document.querySelector('#lads2-keys-piano .cts-piano-keyboard');
+  const bayanWrap = document.getElementById('lads2-bayan-wrap');
+  const bayan4Wrap = document.getElementById('lads2-bayan4-wrap');
   const chromaticRow = keyboardChromaticNamesByPc();
   const chromaticOpts = chromaticRow ? { noteNamesChromatic: chromaticRow } : {};
   if (linearWrap) {
@@ -221,32 +238,32 @@ function rebuildKeyboards() {
 }
 
 function getKeyboardStage() {
-  return /** @type {HTMLElement | null} */ (document.getElementById('lads-keyboard-stage'));
+  return /** @type {HTMLElement | null} */ (document.getElementById('lads2-keyboard-stage'));
 }
 
 function getActiveKeyHighlightScope() {
-  if (keyboardLayout === 'linear') return document.getElementById('lads-keys-linear');
-  if (keyboardLayout === 'piano') return document.getElementById('lads-keys-piano');
-  if (keyboardLayout === 'bayiano') return document.getElementById('lads-bayan-wrap');
-  if (keyboardLayout === 'bayiano4') return document.getElementById('lads-bayan4-wrap');
+  if (keyboardLayout === 'linear') return document.getElementById('lads2-keys-linear');
+  if (keyboardLayout === 'piano') return document.getElementById('lads2-keys-piano');
+  if (keyboardLayout === 'bayiano') return document.getElementById('lads2-bayan-wrap');
+  if (keyboardLayout === 'bayiano4') return document.getElementById('lads2-bayan4-wrap');
   return null;
 }
 
 function setKeyboardLayout(mode) {
   if (mode !== 'linear' && mode !== 'piano' && mode !== 'bayiano' && mode !== 'bayiano4') return;
   keyboardLayout = mode;
-  const linear = document.getElementById('lads-keys-linear');
-  const piano = document.getElementById('lads-keys-piano');
-  const bay = document.getElementById('lads-keys-bayiano');
-  const bay4 = document.getElementById('lads-keys-bayiano4');
-  const group = document.getElementById('lads-kbd-mode-group');
+  const linear = document.getElementById('lads2-keys-linear');
+  const piano = document.getElementById('lads2-keys-piano');
+  const bay = document.getElementById('lads2-keys-bayiano');
+  const bay4 = document.getElementById('lads2-keys-bayiano4');
+  const group = document.getElementById('lads2-kbd-mode-group');
   if (linear) linear.hidden = mode !== 'linear';
   if (piano) piano.hidden = mode !== 'piano';
   if (bay) bay.hidden = mode !== 'bayiano';
   if (bay4) bay4.hidden = mode !== 'bayiano4';
   if (group) {
-    for (const btn of group.querySelectorAll('[data-lads-kbd-mode]')) {
-      btn.setAttribute('aria-pressed', btn.dataset.ladsKbdMode === mode ? 'true' : 'false');
+    for (const btn of group.querySelectorAll('[data-lads2-kbd-mode]')) {
+      btn.setAttribute('aria-pressed', btn.dataset.lads2KbdMode === mode ? 'true' : 'false');
     }
   }
   kbdController?.syncExecutionHighlight();
@@ -319,8 +336,8 @@ function bindKeyboard() {
   });
 
   const stage = getKeyboardStage();
-  if (stage && !stage.dataset.ladsTonicWired) {
-    stage.dataset.ladsTonicWired = '1';
+  if (stage && !stage.dataset.lads2TonicWired) {
+    stage.dataset.lads2TonicWired = '1';
     stage.addEventListener('click', (e) => {
       const btn = e.target.closest('.cts-play-key');
       if (!(btn instanceof HTMLElement)) return;
@@ -343,9 +360,9 @@ function handleTonicFromKeyboard(noteName) {
 
 function setDirectionButtons(dir) {
   const map = {
-    up: 'lads-arp-dir-up',
-    down: 'lads-arp-dir-down',
-    zigzag: 'lads-arp-dir-zigzag',
+    up: 'lads2-arp-dir-up',
+    down: 'lads2-arp-dir-down',
+    zigzag: 'lads2-arp-dir-zigzag',
   };
   const activeId = map[dir] ?? map.up;
   for (const id of Object.values(map)) {
@@ -357,10 +374,10 @@ function setDirectionButtons(dir) {
 
 function setSequenceButtons(mode) {
   const map = {
-    linear: 'lads-arp-seq-linear',
-    seq3: 'lads-arp-seq-3',
-    seq4: 'lads-arp-seq-4',
-    seq5: 'lads-arp-seq-5',
+    linear: 'lads2-arp-seq-linear',
+    seq3: 'lads2-arp-seq-3',
+    seq4: 'lads2-arp-seq-4',
+    seq5: 'lads2-arp-seq-5',
   };
   const activeId = map[mode] ?? map.linear;
   for (const id of Object.values(map)) {
@@ -372,10 +389,10 @@ function setSequenceButtons(mode) {
 
 function setStepButtons(stepLen) {
   const map = {
-    '1/4': 'lads-step-quarter',
-    '1/8': 'lads-step-eighth',
-    '1/16': 'lads-step-sixteenth',
-    '1/32': 'lads-step-thirtysecond',
+    '1/4': 'lads2-step-quarter',
+    '1/8': 'lads2-step-eighth',
+    '1/16': 'lads2-step-sixteenth',
+    '1/32': 'lads2-step-thirtysecond',
   };
   for (const [len, id] of Object.entries(map)) {
     const btn = document.getElementById(id);
@@ -386,10 +403,10 @@ function setStepButtons(stepLen) {
 
 function clearScaleHighlight() {
   const scopes = [
-    document.getElementById('lads-keys-linear'),
-    document.getElementById('lads-keys-piano'),
-    document.getElementById('lads-bayan-wrap'),
-    document.getElementById('lads-bayan4-wrap'),
+    document.getElementById('lads2-keys-linear'),
+    document.getElementById('lads2-keys-piano'),
+    document.getElementById('lads2-bayan-wrap'),
+    document.getElementById('lads2-bayan4-wrap'),
   ];
   for (const root of scopes) {
     if (!root) continue;
@@ -444,7 +461,7 @@ function rebuildScale() {
     console.error(e);
     currentScale = null;
   }
-  updateScaleTable();
+  updateTriadTables();
   buildSeqNotesFromScale();
   clearCurrentNoteHighlight();
   rebuildArpSequence();
@@ -455,20 +472,20 @@ function rebuildScale() {
 }
 
 function wireKeyboardLayoutSwitcher() {
-  const kbdGroup = document.getElementById('lads-kbd-mode-group');
-  if (kbdGroup && !kbdGroup.dataset.ladsWired) {
-    kbdGroup.dataset.ladsWired = '1';
+  const kbdGroup = document.getElementById('lads2-kbd-mode-group');
+  if (kbdGroup && !kbdGroup.dataset.lads2KbdWired) {
+    kbdGroup.dataset.lads2KbdWired = '1';
     kbdGroup.addEventListener('click', (e) => {
-      const b = e.target.closest('[data-lads-kbd-mode]');
+      const b = e.target.closest('[data-lads2-kbd-mode]');
       if (!b) return;
-      const mode = /** @type {'linear' | 'piano'} */ (b.dataset.ladsKbdMode);
+      const mode = /** @type {'linear' | 'piano' | 'bayiano' | 'bayiano4'} */ (b.dataset.lads2KbdMode);
       setKeyboardLayout(mode);
     });
   }
 
-  const greyBtn = document.getElementById('lads-kbd-grey-toggle');
-  if (greyBtn && !greyBtn.dataset.ladsGreyWired) {
-    greyBtn.dataset.ladsGreyWired = '1';
+  const greyBtn = document.getElementById('lads2-kbd-grey-toggle');
+  if (greyBtn && !greyBtn.dataset.lads2GreyWired) {
+    greyBtn.dataset.lads2GreyWired = '1';
     greyBtn.addEventListener('click', () => {
       greyKeyboardMode = !greyKeyboardMode;
       greyBtn.setAttribute('aria-pressed', greyKeyboardMode ? 'true' : 'false');
@@ -579,54 +596,216 @@ function rebuildArpSequence() {
   }
 }
 
-function updateScaleTable() {
-  const tbody = $('lads-scale-body');
-  tbody.replaceChildren();
+/**
+ * Шаг код гаммы в подписи «т» (тон) / «п» (полутон); данные из semitoneSteps паттерна.
+ * @param {number} st
+ */
+function semitoneStepToTpLabel(st) {
+  if (st === 2) return 'т';
+  if (st === 1) return 'п';
+  return String(st);
+}
+
+/**
+ * Ячейка ступени в первой таблице: натуральная буква — с пометкой △, иначе имя ноты из гаммы.
+ * @param {{ letter: string, alteration: number, name: string }} deg
+ */
+function formatDegreeCellDisplay(deg) {
+  if (deg.alteration === 0) return `${deg.letter}△`;
+  return deg.name;
+}
+
+/**
+ * Альтерация буквы ступени: «·» — натуральная буква; иначе цепочка # или b.
+ * @param {{ alteration: number }} deg
+ */
+function formatAccAlterationCell(deg) {
+  const a = deg.alteration;
+  if (a === 0) return '·';
+  if (a > 0) return '#'.repeat(a);
+  return 'b'.repeat(-a);
+}
+
+/**
+ * Буквенное обозначение лада от выбранной тоники (первая таблица, заголовок строки).
+ * @param {string} tonicName
+ * @param {number} rowIndex 0…6 по LAD_PATTERN_ORDER
+ */
+function letterLadRowLabel(tonicName, rowIndex) {
+  const suf = LAD_LETTER_SYMBOL_SUFFIX[rowIndex];
+  return suf ? `${tonicName}${suf}` : tonicName;
+}
+
+/** @param {number | undefined} st */
+function stepCellHighlightClass(st) {
+  if (st === 2) return 'lads2-cell-step-ton';
+  if (st === 1) return 'lads2-cell-step-semi';
+  if (st === undefined) return '';
+  return 'lads2-cell-step-other';
+}
+
+/** @param {{ alteration: number } | null | undefined} deg */
+function accCellHighlightClass(deg) {
+  if (!deg) return '';
+  if (deg.alteration > 0) return 'lads2-cell-acc-sharp';
+  if (deg.alteration < 0) return 'lads2-cell-acc-flat';
+  return 'lads2-cell-acc-natural';
+}
+
+/** @param {{ alteration: number } | null | undefined} deg */
+function degreeCellHighlightClass(deg) {
+  if (!deg) return '';
+  if (deg.alteration > 0) return 'lads2-cell-deg-sharp';
+  if (deg.alteration < 0) return 'lads2-cell-deg-flat';
+  return 'lads2-cell-deg-natural';
+}
+
+function updateSelectedLadTitle() {
+  const el = document.getElementById('lads2-selected-lad-title');
+  if (!el) return;
   const allPatterns = getScalePatterns();
-  const byId = new Map(allPatterns.map((p) => [p.id, p]));
-  const rows = [];
-  for (const id of LAD_PATTERN_ORDER) {
-    const pat = byId.get(id);
-    if (!pat) continue;
-    let inst = null;
-    try {
-      inst = buildScale(pat.id, currentTonicName);
-    } catch {
-      inst = null;
-    }
-    const tr = document.createElement('tr');
-    tr.dataset.patternId = pat.id;
-    if (pat.id === currentPatternId) {
-      tr.classList.add('lads-scale-selected-row');
-    }
-    const tdName = document.createElement('td');
-    tdName.textContent = pat.nameRu;
-    const tdGamma = document.createElement('td');
-    tdGamma.className = 'lads-scale-note';
-    tdGamma.textContent = inst ? inst.degrees.map((d) => d.name).join(', ') : '';
-    const tdPattern = document.createElement('td');
-    tdPattern.textContent =
-      pat.tt != null && pat.tt.length
-        ? pat.tt.split('').join(' ')
-        : pat.semitoneSteps.join(', ');
-    tr.appendChild(tdName);
-    tr.appendChild(tdGamma);
-    tr.appendChild(tdPattern);
-    rows.push(tr);
-  }
-  for (const tr of rows) {
-    tbody.appendChild(tr);
+  const pat = allPatterns.find((p) => p.id === currentPatternId);
+  if (pat) {
+    el.textContent = `${pat.nameRu} — тоника ${currentTonicName}`;
+  } else {
+    el.textContent = '';
   }
 }
 
+function updateTriadTables() {
+  const degHead = $('lads2-scale-deg-head');
+  const degBody = $('lads2-scale-deg-body');
+  const stepsHead = $('lads2-scale-steps-head');
+  const stepsBody = $('lads2-scale-steps-body');
+  const accHead = $('lads2-scale-acc-head');
+  const accBody = $('lads2-scale-acc-body');
+
+  degHead.replaceChildren();
+  degBody.replaceChildren();
+  stepsHead.replaceChildren();
+  stepsBody.replaceChildren();
+  accHead.replaceChildren();
+  accBody.replaceChildren();
+
+  const allPatterns = getScalePatterns();
+  const byId = new Map(allPatterns.map((p) => [p.id, p]));
+  /** @type {typeof allPatterns} */
+  const ordered = [];
+  for (const id of LAD_PATTERN_ORDER) {
+    const p = byId.get(id);
+    if (p) ordered.push(p);
+  }
+
+  /** @type {Map<string, ReturnType<typeof buildScale> | null>} */
+  const instById = new Map();
+  for (const pat of ordered) {
+    try {
+      instById.set(pat.id, buildScale(pat.id, currentTonicName));
+    } catch {
+      instById.set(pat.id, null);
+    }
+  }
+
+  const trDegHead = document.createElement('tr');
+  const thDegCorner = document.createElement('th');
+  thDegCorner.textContent = '';
+  trDegHead.appendChild(thDegCorner);
+  for (let c = 1; c <= 7; c++) {
+    const th = document.createElement('th');
+    th.textContent = String(c);
+    trDegHead.appendChild(th);
+  }
+  degHead.appendChild(trDegHead);
+
+  ordered.forEach((pat, mi) => {
+    const inst = instById.get(pat.id) ?? null;
+    const tr = document.createElement('tr');
+    tr.dataset.patternId = pat.id;
+    tr.tabIndex = -1;
+    if (pat.id === currentPatternId) {
+      tr.classList.add('lads-scale-selected-row');
+    }
+    const thRow = document.createElement('th');
+    thRow.scope = 'row';
+    thRow.className = 'lads-scale-note';
+    thRow.textContent = letterLadRowLabel(currentTonicName, mi);
+    tr.appendChild(thRow);
+    for (let i = 0; i < 7; i++) {
+      const td = document.createElement('td');
+      const deg = inst?.degrees[i];
+      const hi = degreeCellHighlightClass(deg);
+      td.className = hi ? `lads-scale-note ${hi}` : 'lads-scale-note';
+      td.textContent = deg ? formatDegreeCellDisplay(deg) : '';
+      tr.appendChild(td);
+    }
+    degBody.appendChild(tr);
+  });
+
+  function buildNumericDegreeHeaderRow() {
+    const tr = document.createElement('tr');
+    const corner = document.createElement('th');
+    corner.textContent = '';
+    tr.appendChild(corner);
+    for (let c = 1; c <= 7; c++) {
+      const th = document.createElement('th');
+      th.textContent = String(c);
+      tr.appendChild(th);
+    }
+    return tr;
+  }
+
+  stepsHead.appendChild(buildNumericDegreeHeaderRow());
+  accHead.appendChild(buildNumericDegreeHeaderRow());
+
+  ordered.forEach((pat, mi) => {
+    const inst = instById.get(pat.id) ?? null;
+
+    const trS = document.createElement('tr');
+    trS.dataset.patternId = pat.id;
+    if (pat.id === currentPatternId) trS.classList.add('lads-scale-selected-row');
+    const thMode = document.createElement('th');
+    thMode.scope = 'row';
+    thMode.textContent = ROMAN_MODE_LABELS[mi];
+    trS.appendChild(thMode);
+    for (let c = 0; c < 7; c++) {
+      const td = document.createElement('td');
+      const st = pat.semitoneSteps[c];
+      const hi = stepCellHighlightClass(st);
+      td.className = hi ? `lads-scale-note ${hi}` : 'lads-scale-note';
+      td.textContent = st !== undefined ? semitoneStepToTpLabel(st) : '';
+      trS.appendChild(td);
+    }
+    stepsBody.appendChild(trS);
+
+    const trA = document.createElement('tr');
+    trA.dataset.patternId = pat.id;
+    if (pat.id === currentPatternId) trA.classList.add('lads-scale-selected-row');
+    const thModeA = document.createElement('th');
+    thModeA.scope = 'row';
+    thModeA.textContent = ROMAN_MODE_LABELS[mi];
+    trA.appendChild(thModeA);
+    for (let c = 0; c < 7; c++) {
+      const td = document.createElement('td');
+      const deg = inst?.degrees[c];
+      const hi = accCellHighlightClass(deg);
+      td.className = hi ? `lads-scale-note ${hi}` : 'lads-scale-note';
+      td.textContent = deg ? formatAccAlterationCell(deg) : '';
+      trA.appendChild(td);
+    }
+    accBody.appendChild(trA);
+  });
+
+  updateSelectedLadTitle();
+}
+
 function initScaleTableClicks() {
-  const tbody = document.getElementById('lads-scale-body');
-  if (!tbody || tbody.dataset.ladsWired) return;
-  tbody.dataset.ladsWired = '1';
-  tbody.addEventListener('click', (e) => {
-    const tr = /** @type {HTMLElement | null} */ (e.target.closest('tr'));
-    if (!tr || !tr.dataset.patternId) return;
-    const id = tr.dataset.patternId;
+  const region = document.getElementById('lads2-tables-region');
+  if (!region || region.dataset.lads2TablesWired) return;
+  region.dataset.lads2TablesWired = '1';
+  region.addEventListener('click', (e) => {
+    const hit = /** @type {HTMLElement | null} */ (e.target.closest('tr[data-pattern-id]'));
+    if (!hit) return;
+    const id = hit.dataset.patternId;
     if (!id || id === currentPatternId) return;
     currentPatternId = id;
     rebuildScale();
@@ -634,9 +813,9 @@ function initScaleTableClicks() {
 }
 
 function initScaleKeyboardNavigation() {
-  const tbody = document.getElementById('lads-scale-body');
-  if (!tbody || tbody.dataset.ladsKbdWired) return;
-  tbody.dataset.ladsKbdWired = '1';
+  const tbody = document.getElementById('lads2-scale-deg-body');
+  if (!tbody || tbody.dataset.lads2KbdWired) return;
+  tbody.dataset.lads2KbdWired = '1';
 
   function moveSelection(delta) {
     const order = LAD_PATTERN_ORDER;
@@ -682,7 +861,7 @@ function buildSequencer() {
   sequencer = createSequencer({
     notes: currentSeqNotes,
     mode: 'off',
-    bpm: Number($('lads-bpm').value) || 80,
+    bpm: Number($('lads2-bpm').value) || 80,
     stepNoteLength: '1/4',
     onStep(index, note, ctx) {
       if (!note || !engine) return;
@@ -694,7 +873,7 @@ function buildSequencer() {
       const { name, octave } = note;
       engine.startPolyVoice({
         ...buildPlayPayload(PREFIX, name, octave),
-        mapKey: `lads:${name}|${octave}`,
+        mapKey: `lads2:${name}|${octave}`,
       });
       currentSeqKey = `${name}|${octave}`;
       applyCurrentNoteHighlight(currentSeqKey);
@@ -709,7 +888,7 @@ function buildSequencer() {
 function stopSequencerVoices() {
   if (!engine) return;
   for (const key of [...engine.polyVoices.keys()]) {
-    if (key.startsWith('lads:')) {
+    if (key.startsWith('lads2:')) {
       engine.stopPolyVoiceSmooth(key);
     }
   }
@@ -729,38 +908,38 @@ function initSynth() {
     harmWrap.appendChild(lab);
   }
 
-  $('lads-ntg-volume').addEventListener('input', () => {
-    $('lads-ntg-vol-val').textContent = String(
-      /** @type {HTMLInputElement} */ ($('lads-ntg-volume')).value,
+  $('lads2-ntg-volume').addEventListener('input', () => {
+    $('lads2-ntg-vol-val').textContent = String(
+      /** @type {HTMLInputElement} */ ($('lads2-ntg-volume')).value,
     );
     applyVolumeFromUi();
   });
-  $('lads-ntg-detune').addEventListener('input', () => {
-    $('lads-ntg-detune-val').textContent = String(
-      /** @type {HTMLInputElement} */ ($('lads-ntg-detune')).value,
+  $('lads2-ntg-detune').addEventListener('input', () => {
+    $('lads2-ntg-detune-val').textContent = String(
+      /** @type {HTMLInputElement} */ ($('lads2-ntg-detune')).value,
     );
     updateIfPlaying();
   });
-  $('lads-ntg-waveform').addEventListener('change', () => updateIfPlaying());
-  $('lads-ntg-a4').addEventListener('input', () => updateIfPlaying());
+  $('lads2-ntg-waveform').addEventListener('change', () => updateIfPlaying());
+  $('lads2-ntg-a4').addEventListener('input', () => updateIfPlaying());
 
-  $('lads-ntg-octave-min').addEventListener('input', () => {
+  $('lads2-ntg-octave-min').addEventListener('input', () => {
     rebuildScale();
     updateIfPlaying();
   });
-  $('lads-ntg-octave-max').addEventListener('input', () => {
+  $('lads2-ntg-octave-max').addEventListener('input', () => {
     rebuildScale();
     updateIfPlaying();
   });
 
-  $('lads-ntg-stop').addEventListener('click', () => {
+  $('lads2-ntg-stop').addEventListener('click', () => {
     if (engine) {
       engine.stopMonoSmooth();
       engine.stopAllPolySmooth();
       engine.setLatchedKeyForMono(null);
     }
     // Полная остановка: арпеджио в режим "Выкл" и очистка подсветки.
-    const offBtn = document.getElementById('lads-arp-off');
+    const offBtn = document.getElementById('lads2-arp-off');
     if (offBtn) offBtn.setAttribute('aria-pressed', 'true');
     if (sequencer) {
       sequencer.setMode('off');
@@ -777,8 +956,8 @@ function initSynth() {
 }
 
 function initArpControls() {
-  $('lads-bpm').addEventListener('input', () => {
-    const val = Number(/** @type {HTMLInputElement} */ ($('lads-bpm')).value) || 80;
+  $('lads2-bpm').addEventListener('input', () => {
+    const val = Number(/** @type {HTMLInputElement} */ ($('lads2-bpm')).value) || 80;
     if (bpmSegControl) {
       bpmSegControl.setValue(val);
     }
@@ -787,13 +966,13 @@ function initArpControls() {
     }
   });
 
-  const bpmSegMount = document.getElementById('lads-bpm-seg');
+  const bpmSegMount = document.getElementById('lads2-bpm-seg');
   if (bpmSegMount) {
     bpmSegControl = createSegmentValueControl({
       mount: bpmSegMount,
       min: 20,
       max: 400,
-      value: Number(/** @type {HTMLInputElement} */ ($('lads-bpm')).value) || 80,
+      value: Number(/** @type {HTMLInputElement} */ ($('lads2-bpm')).value) || 80,
       step: 1,
       pixelsPerFullRange: 880,
       label: '',
@@ -802,7 +981,7 @@ function initArpControls() {
     });
     bpmSegControl.onChange((v) => {
       const val = Math.round(v);
-      const input = /** @type {HTMLInputElement} */ ($('lads-bpm'));
+      const input = /** @type {HTMLInputElement} */ ($('lads2-bpm'));
       input.value = String(val);
       if (sequencer) {
         sequencer.setBpm(val);
@@ -810,8 +989,8 @@ function initArpControls() {
     });
   }
 
-  $('lads-arp-off').addEventListener('click', () => {
-    const offBtn = document.getElementById('lads-arp-off');
+  $('lads2-arp-off').addEventListener('click', () => {
+    const offBtn = document.getElementById('lads2-arp-off');
     if (offBtn) offBtn.setAttribute('aria-pressed', 'true');
     if (sequencer) sequencer.setMode('off');
     stopSequencerVoices();
@@ -835,62 +1014,62 @@ function initArpControls() {
   function updateArpSequenceAndMode() {
     rebuildArpSequence();
     applyArpModeFromState();
-    const offBtn = document.getElementById('lads-arp-off');
+    const offBtn = document.getElementById('lads2-arp-off');
     if (offBtn) offBtn.setAttribute('aria-pressed', 'false');
   }
 
   // Направление
-  document.getElementById('lads-arp-dir-up')?.addEventListener('click', () => {
+  document.getElementById('lads2-arp-dir-up')?.addEventListener('click', () => {
     arpDirection = 'up';
     setDirectionButtons(arpDirection);
     updateArpSequenceAndMode();
   });
-  document.getElementById('lads-arp-dir-down')?.addEventListener('click', () => {
+  document.getElementById('lads2-arp-dir-down')?.addEventListener('click', () => {
     arpDirection = 'down';
     setDirectionButtons(arpDirection);
     updateArpSequenceAndMode();
   });
-  document.getElementById('lads-arp-dir-zigzag')?.addEventListener('click', () => {
+  document.getElementById('lads2-arp-dir-zigzag')?.addEventListener('click', () => {
     arpDirection = 'zigzag';
     setDirectionButtons(arpDirection);
     updateArpSequenceAndMode();
   });
 
   // Тип секвенции
-  document.getElementById('lads-arp-seq-linear')?.addEventListener('click', () => {
+  document.getElementById('lads2-arp-seq-linear')?.addEventListener('click', () => {
     arpSequenceMode = 'linear';
     setSequenceButtons(arpSequenceMode);
     updateArpSequenceAndMode();
   });
-  document.getElementById('lads-arp-seq-3')?.addEventListener('click', () => {
+  document.getElementById('lads2-arp-seq-3')?.addEventListener('click', () => {
     arpSequenceMode = 'seq3';
     setSequenceButtons(arpSequenceMode);
     updateArpSequenceAndMode();
   });
-  document.getElementById('lads-arp-seq-4')?.addEventListener('click', () => {
+  document.getElementById('lads2-arp-seq-4')?.addEventListener('click', () => {
     arpSequenceMode = 'seq4';
     setSequenceButtons(arpSequenceMode);
     updateArpSequenceAndMode();
   });
-  document.getElementById('lads-arp-seq-5')?.addEventListener('click', () => {
+  document.getElementById('lads2-arp-seq-5')?.addEventListener('click', () => {
     arpSequenceMode = 'seq5';
     setSequenceButtons(arpSequenceMode);
     updateArpSequenceAndMode();
   });
 
-  $('lads-step-quarter').addEventListener('click', () => {
+  $('lads2-step-quarter').addEventListener('click', () => {
     setStepButtons('1/4');
     if (sequencer) sequencer.setStepNoteLength('1/4');
   });
-  $('lads-step-eighth').addEventListener('click', () => {
+  $('lads2-step-eighth').addEventListener('click', () => {
     setStepButtons('1/8');
     if (sequencer) sequencer.setStepNoteLength('1/8');
   });
-  $('lads-step-sixteenth').addEventListener('click', () => {
+  $('lads2-step-sixteenth').addEventListener('click', () => {
     setStepButtons('1/16');
     if (sequencer) sequencer.setStepNoteLength('1/16');
   });
-  $('lads-step-thirtysecond').addEventListener('click', () => {
+  $('lads2-step-thirtysecond').addEventListener('click', () => {
     setStepButtons('1/32');
     if (sequencer) sequencer.setStepNoteLength('1/32');
   });

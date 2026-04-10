@@ -133,7 +133,13 @@
 
 @media (max-width: 52rem) {
   .cts-layout {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .cts-main-column {
+    order: -1;
   }
 
   .cts-tone-rail {
@@ -151,6 +157,56 @@
   font-family: 'Segoe UI', system-ui, sans-serif;
   font-size: 0.8rem;
   color: var(--ntg-ink);
+}
+
+.cts-tone-rail__chrome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.65rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--ntg-border);
+  border-radius: 0.35rem;
+  background: var(--ntg-surface);
+}
+
+.cts-tone-rail__title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ntg-ink);
+}
+
+.cts-tone-rail__toggle {
+  flex: 0 0 auto;
+  padding: 0.28rem 0.55rem;
+  font: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+  border: 1px solid var(--ntg-border);
+  border-radius: 0.3rem;
+  background: var(--ntg-bg);
+  color: var(--ntg-ink);
+}
+
+.cts-tone-rail__toggle:hover {
+  background: var(--ntg-key-hover);
+}
+
+.cts-tone-rail__toggle:focus-visible {
+  outline: 2px solid var(--ntg-focus);
+  outline-offset: 2px;
+}
+
+.cts-tone-rail.is-collapsed .cts-tone-rail__body {
+  display: none;
+}
+
+.cts-tone-rail.is-collapsed .cts-tone-rail__chrome {
+  margin-bottom: 0;
 }
 
 .cts-tone-rail .cts-ntg-panel {

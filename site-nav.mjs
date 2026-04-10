@@ -1,6 +1,6 @@
 /**
  * Навигация по HTML-страницам каталога music: «Главная» → `index.html`; выпадающее меню — те же
- * четыре интерактивные страницы, что в блоке «Страницы» на `index.html`. Базовый путь из
+ * основные интерактивные страницы, что в блоке «Страницы» на `index.html`. Базовый путь из
  * `import.meta.url`, чтобы ссылки работали и при локальном HTTP-сервере разработки и на
  * GitHub Pages (префикс `/<repo>/`). Полный перечень HTML — `web/stranichki.html`.
  */
@@ -13,6 +13,7 @@ function siteHref(relativePath) {
 const SITE_NAV_ENTRIES = [
   { path: 'app/circle-scales.html', label: 'Квартово-квинтовый круг и тональность' },
   { path: 'app/lads.html', label: 'Лады и арпеджио по ступеням' },
+  { path: 'app/lads2.html', label: 'Лады: три таблицы и арпеджио' },
   { path: 'app/intervals-demo.html', label: 'Интервалы и клавиатура' },
   { path: 'app/seventh-chords.html', label: 'Септаккорды и клавиатура' },
 ];
