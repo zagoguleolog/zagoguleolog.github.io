@@ -2,6 +2,8 @@
 
 ## 2026-04-11
 
+- 2026-04-11 — Git: коммит `50c8983` («Клавиатуры: одна система знаков, дефолт диез; круг — по тональности»), push `main` → `origin/main`.
+
 - 2026-04-11 — Единая **система знаков** на клавиатурах приложения: без смешения диезов и бемолей в одном хроматическом ряду; по гамме/тональности или диезный дефолт; кварто-квинтовый круг — исключение (подписи секторов). Код: `keyboard-layouts.mjs`, `computer-keyboard-music.mjs`, `bayan-keyboard.mjs`, `tone-gen-engine.mjs` (`NOTE_NAMES`), `circle-scales.mjs` / `circle-scales.html`, `intervals-demo.mjs`, `seventh-chords.mjs`, комментарии `lads`/`lads2`, `keyboard-theory-highlight.mjs`. Документация: `docs/domain.md`, `docs/music-theory.md`, `docs/synth-structure.md`; пример в `sequencer-demo.html`. Проверка: `npm run verify`, `node --check` на затронутых модулях.
 
 - 2026-04-11 — Git: коммит `df1df64` («Гамма/лад по полосе C…B клавиатуры, zigzag, lads2 и документация»), push ветки `main` в `origin/main`.
