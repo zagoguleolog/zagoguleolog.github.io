@@ -2,6 +2,8 @@
 
 ## 2026-04-11
 
+- 2026-04-11 — Git: коммит `df1df64` («Гамма/лад по полосе C…B клавиатуры, zigzag, lads2 и документация»), push ветки `main` в `origin/main`.
+
 - 2026-04-11 — [`buildScaleDegreeRowsByMidiOrder`](lib/music-theory.js): базовый ряд арпеджио по полосе **C…B** выбранных октав (как клавиатура), без старта «с тоники внизу»; [`docs/music-theory.md`](docs/music-theory.md), ERR-007 в [`docs/errors.md`](docs/errors.md), [`scripts/verify-theory.js`](scripts/verify-theory.js), обновлён [`output/zigzag-sequences.jsonl`](output/zigzag-sequences.jsonl). Проверка: `npm run verify`, `npm run zigzag:gen`.
 
 - 2026-04-11 — Удалены отладочные `fetch` к ingest и блоки `agent log` в [`app/keyboard-theory-highlight.mjs`](app/keyboard-theory-highlight.mjs), [`app/lads.mjs`](app/lads.mjs), [`app/lads2.mjs`](app/lads2.mjs), [`app/keyboard-synth-controller.mjs`](app/keyboard-synth-controller.mjs), [`app/circle-scales.mjs`](app/circle-scales.mjs), [`app/circle-scales.html`](app/circle-scales.html). Проверка: `npm run verify`.
