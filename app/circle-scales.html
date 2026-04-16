@@ -12,6 +12,14 @@
   <link rel="stylesheet" href="../site-nav.css" />
 </head>
 <body>
+  <button
+    type="button"
+    class="ntg-stop cts-overlay-stop"
+    id="cts-overlay-stop"
+    aria-label="Остановить звук и вернуть клавиатуру в режим удержания"
+  >
+    STOP
+  </button>
   <div class="cof-page cts-wide-page">
     <div class="cts-layout">
       <aside class="cts-tone-rail" aria-label="Синтез: камертон и тембр">
@@ -31,8 +39,8 @@
               <input type="number" id="cts-ntg-octave-max" min="0" max="8" step="1" value="6" />
             </label>
             <label class="tpl-field">
-              <span class="tpl-label">Октава корня триады</span>
-              <input type="number" id="cts-chord-root-octave" min="0" max="8" step="1" value="4" />
+              <span class="tpl-label">Октава звучания круга</span>
+              <input type="number" id="cts-chord-root-octave" min="0" max="8" step="1" value="3" />
             </label>
           </div>
         </section>

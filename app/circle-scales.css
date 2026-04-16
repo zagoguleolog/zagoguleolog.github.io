@@ -16,6 +16,23 @@
   font-size: 0.82rem;
 }
 
+.cts-overlay-stop {
+  position: fixed;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 11000;
+  min-width: 4.25rem;
+  padding: 0.55rem 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.38);
+}
+
+@media (max-width: 480px) {
+  .cts-overlay-stop {
+    left: 0.4rem;
+    top: 0.4rem;
+  }
+}
+
 .cts-theory-panel {
   margin-bottom: 1.25rem;
   padding: 1rem;
@@ -106,6 +123,14 @@
   fill: #b8e6c8;
   stroke: #0d47a1;
   stroke-width: 1.6;
+}
+
+.cof-sector,
+.cof-sector text,
+.cof-sector tspan {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 /* Двухколоночный макет: узкая панель синтеза + основной контент */

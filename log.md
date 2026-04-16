@@ -2,6 +2,8 @@
 
 ## 2026-04-16
 
+- 2026-04-16 08:29 — В [`app/circle-scales.html`](app/circle-scales.html), [`app/circle-scales.mjs`](app/circle-scales.mjs), [`app/circle-scales.css`](app/circle-scales.css), [`app/circle-of-fifths.js`](app/circle-of-fifths.js), [`app/circle-of-fifths.css`](app/circle-of-fifths.css) подписи аккордов на круге сделаны невыделяемыми для mobile long-press; добавлена фиксированная красная кнопка `STOP` поверх страницы, которая останавливает круг и клавиатуры и возвращает клавиатуры в режим удержания; поле `Октава звучания круга` теперь по умолчанию равно `3`. Документация: [`docs/overview.md`](docs/overview.md), [`docs/music-theory.md`](docs/music-theory.md), [`docs/synth-structure.md`](docs/synth-structure.md). Проверка: `npm run verify`.
+
 - 2026-04-16 08:14 — В [`app/circle-scales.html`](app/circle-scales.html) переписаны заголовок, верхняя и нижняя подсказки и подписи режима клика по кругу более понятным языком для пользователя: выбор тональности, озвучивание аккорда, объяснение клавиатур и кнопки `grey`, настроек генератора звука. Проверка: `npm run verify`.
 
 - 2026-04-16 07:07 — Страница [`for_dany.html`](for_dany.html) оформлена в стиле Undertale: тёмная тема страницы и навигации (`data-site-nav-theme="dark"`), пиксельный шрифт `Press Start 2P`, локальные SVG-ассеты `assets/for_dany/undertale-logo.svg`, `assets/for_dany/undertale-red-soul.svg`, `assets/for_dany/undertale-flowey.svg`, пиксельные рамки и акцентные кнопки для `tg://proxy`-ссылок. Проверка: ручная сверка HTML, `rg` подтвердил подключение шрифта, тёмной темы и локальных undertale-ассетов.

@@ -189,6 +189,7 @@
     g.setAttribute('role', 'button');
     g.setAttribute('tabindex', '0');
     g.setAttribute('aria-pressed', 'false');
+    g.setAttribute('style', '-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;');
     g.setAttribute(
       'aria-label',
       (kind === 'major' ? 'Внешний сектор: ' : 'Внутренний сектор: ') + labelRaw
@@ -207,6 +208,7 @@
     text.setAttribute('y', String(pos.y));
     text.setAttribute('text-anchor', 'middle');
     text.setAttribute('dominant-baseline', 'middle');
+    text.setAttribute('style', '-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;');
     appendLabelLines(text, labelRaw);
     g.appendChild(text);
 

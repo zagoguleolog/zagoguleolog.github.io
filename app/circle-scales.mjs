@@ -297,7 +297,7 @@ function syncClickModeUI() {
 function getChordRootOctaveClamped() {
   const input = document.getElementById('cts-chord-root-octave');
   let o = Number(input?.value);
-  if (!Number.isFinite(o)) o = 4;
+  if (!Number.isFinite(o)) o = 3;
   o = Math.round(o);
   try {
     const { octaveMin, octaveMax } = readOctaveRange(CTS_PREFIX);
@@ -731,11 +731,17 @@ function wireToneRail() {
   function stopAllSound() {
     if (!toneEngine) return;
     clearPianoPointerVisual();
-    toneEngine.stopMonoSmooth();
-    toneEngine.stopAllPolySmooth();
+  lastMonoKeyboardMode = 'hold';
+  toneEngine.keyboardMode = 'hold';
+  syncKeyboardModeUi('hold');
+  toneEngine.mode = 'hold';
+  syncCircleModeUi('hold');
+  toneEngine.stopMonoSmooth();
+  toneEngine.stopAllPolySmooth();
     toneEngine.setLatchedKeyForMono(null);
     prevChordVoiceKeys.clear();
     holdPointerVoices.clear();
+  lastLatchSectorId = null;
     chordAudioEnabled = false;
     refreshToneRailStatus();
   }
@@ -797,6 +803,11 @@ function wireToneRail() {
   if (kbdLatchPoly) kbdLatchPoly.addEventListener('click', () => setKeyboardMode('latchPoly'));
 
   $('stop').addEventListener('click', () => stopAllSound());
+  const stopOverlayBtn = document.getElementById('cts-overlay-stop');
+  if (stopOverlayBtn && !stopOverlayBtn.dataset.ctsWired) {
+    stopOverlayBtn.dataset.ctsWired = '1';
+    stopOverlayBtn.addEventListener('click', () => stopAllSound());
+  }
 
   const kbdGroup = document.getElementById('cts-kbd-mode-group');
   if (kbdGroup && !kbdGroup.dataset.ctsWired) {
