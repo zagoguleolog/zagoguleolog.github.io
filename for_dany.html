@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Для Дани</title>
+  <link rel="canonical" href="for_dany.html" />
+  <link rel="stylesheet" href="site-nav.css" />
+  <style>
+    :root {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      line-height: 1.5;
+      color: #1a1a1a;
+      background: #f4f2ef;
+    }
+
+    body {
+      margin: 0 auto;
+      max-width: 900px;
+      padding: 1.25rem 1rem 3rem;
+    }
+
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 650;
+      margin: 0 0 1rem;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #dcd8d3;
+      border-radius: 12px;
+      padding: 1rem 1.1rem 1.15rem;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    ol {
+      margin: 0;
+      padding-left: 1.4rem;
+    }
+
+    li + li {
+      margin-top: 0.85rem;
+    }
+
+    .proxy-link {
+      display: inline-block;
+      margin-bottom: 0.35rem;
+      color: #fff;
+      background: #0b5bd3;
+      border-radius: 999px;
+      padding: 0.55rem 0.95rem;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .proxy-link:hover {
+      background: #0947a5;
+    }
+
+    code {
+      display: block;
+      overflow-wrap: anywhere;
+      font-family: ui-monospace, "Cascadia Code", monospace;
+      font-size: 0.88rem;
+      background: #f6f4f1;
+      border: 1px solid #e4dfd8;
+      border-radius: 8px;
+      padding: 0.6rem 0.7rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Привет! нажми по очереди на каждую из этих ссылок, они откроются в тг и добавь их</h1>
+
+  <section class="card" aria-label="Telegram proxy links">
+    <ol>
+      <li>
+        <a class="proxy-link" href="tg://proxy?server=nl.simpletg.org&amp;port=2096&amp;secret=7qcRk5iQu0HfZYqTZlYTxFJ3d3cudmsuY29t">Открыть ссылку 1</a>
+        <code>tg://proxy?server=nl.simpletg.org&amp;port=2096&amp;secret=7qcRk5iQu0HfZYqTZlYTxFJ3d3cudmsuY29t</code>
+      </li>
+      <li>
+        <a class="proxy-link" href="tg://proxy?server=37.233.85.148&amp;port=443&amp;secret=7mm9u_FiYvr5DSn0Zp-4U3dnb29nbGUuY29t">Открыть ссылку 2</a>
+        <code>tg://proxy?server=37.233.85.148&amp;port=443&amp;secret=7mm9u_FiYvr5DSn0Zp-4U3dnb29nbGUuY29t</code>
+      </li>
+      <li>
+        <a class="proxy-link" href="tg://proxy?server=silvpn.su&amp;port=443&amp;secret=c7d9227942a916f5d61a4203355ce80a">Открыть ссылку 3</a>
+        <code>tg://proxy?server=silvpn.su&amp;port=443&amp;secret=c7d9227942a916f5d61a4203355ce80a</code>
+      </li>
+      <li>
+        <a class="proxy-link" href="tg://proxy?server=78.57.1.147&amp;port=443&amp;secret=7h4tmK9saZBcFfgigSraAsd3aWxkYmVycmllcy5ydQ">Открыть ссылку 4</a>
+        <code>tg://proxy?server=78.57.1.147&amp;port=443&amp;secret=7h4tmK9saZBcFfgigSraAsd3aWxkYmVycmllcy5ydQ</code>
+      </li>
+      <li>
+        <a class="proxy-link" href="tg://proxy?server=mt.geodema.network&amp;port=443&amp;secret=6fab08b49908b2b3c055eb6e7055ff07">Открыть ссылку 5</a>
+        <code>tg://proxy?server=mt.geodema.network&amp;port=443&amp;secret=6fab08b49908b2b3c055eb6e7055ff07</code>
+      </li>
+    </ol>
+  </section>
+
+  <script type="module">
+    import { mountSiteNav } from './site-nav.mjs';
+    mountSiteNav();
+  </script>
+</body>
+</html>

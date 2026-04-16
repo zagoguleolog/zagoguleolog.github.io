@@ -1,3 +1,5 @@
+#079 | 2026-04-16 — DONE | Добавлена страница `for_dany.html` с пятью Telegram proxy-ссылками в заданном порядке и текстом-инструкцией; `web/stranichki.html` обновлён ссылкой на новую страницу. Проверка: ручная сверка HTML, `rg` — 5 кнопок-ссылок `proxy-link`, ссылка на `for_dany.html` в карте сайта есть.
+
 #078 | 2026-04-11 — DONE | Синхронизация: коммит `50c8983`, push `main` → `origin/main` (система знаков на клавиатурах).
 
 #077 | 2026-04-11 — DONE | **Система знаков** на всех клавиатурах: один хроматический ряд — либо диезы, либо бемоли; по ладу (`lads`/`lads2`), по тональности на `circle-scales` (`tonalityChromaticNamesByPc`, чипы тоники + ПК + триады круга), без гаммы — дефолт **CHROMATIC_NAMES_SHARP_BY_PC** (`keyboard-layouts`, `computer-keyboard-music`, `bayan-keyboard`, `intervals-demo`, `seventh-chords`, `NOTE_NAMES` в `tone-gen-engine`); круг квинт — только смешанные подписи секторов. Обновлены `docs/domain.md`, `music-theory.md`, `synth-structure.md`, `sequencer-demo.html`. Проверка: `npm run verify`, `node --check` OK.
