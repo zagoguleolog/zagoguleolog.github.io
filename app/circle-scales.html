@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Кварто-квинтовый круг и тональность (теория)</title>
+  <title>Кварто-квинтовый круг и тональности</title>
   <link rel="stylesheet" href="circle-of-fifths.css" />
   <link rel="stylesheet" href="circle-scales.css" />
   <link rel="stylesheet" href="template-synth.css" />
@@ -92,19 +92,26 @@
       </aside>
 
       <div class="cts-main-column">
-        <h1>Круг и тональность</h1>
+        <h1>Кварто-квинтовый круг и тональности</h1>
         <p id="cts-theory-warning" class="cts-warning" hidden>
           Подсветка тональности (диатоника) не загрузилась (часто при открытии с диска <span class="mono">file://</span>).
           Откройте эту страницу на опубликованном сайте по HTTPS — тогда подключится <span class="mono">lib/music-theory.js</span>.
         </p>
         <p class="cof-hint">
-          На кольцах — аккорды (внешнее: мажорные центры, внутреннее: относительные миноры). Зелёная подсветка по умолчанию — <strong>три спицы</strong> кластера IV–I–V опорного мажора (шесть аккордов, по два кольца на спице); опционально галочка «седьмая триада» добавляет vii° / ii° на остальной окружности. У <strong>относительных тональностей</strong> (например <strong>C мажор</strong> и <strong>A нат. минор</strong>) кластер на круге тот же геометрически, см. <a href="../docs/music-theory.md">music-theory.md</a>.
-          Синий/голубой выделенный сектор: в режимах <strong>удержание</strong> и <strong>полифония</strong> клик по сектору вкл/выкл выделение; в режиме <strong>фиксация</strong> на круге не больше одного синего сектора — клик по <strong>другому</strong> сектору переключает аккорд; повторный клик по <strong>тому же</strong> выбранному сектору снимает выделение и глушит триаду. <strong>Удержание</strong> — звук пока нажата кнопка мыши/пера; <strong>фиксация</strong> — одна триада у выбранного сектора; <strong>полифония</strong> — несколько выделенных секторов и триад. Режимы круга — блок <strong>Круг</strong> слева под SVG; под клавиатурой — <strong>голоса</strong> (моно/поли) и <strong>артикуляция</strong>: в полифонии «удержание» — несколько нот с ПК и с экрана одновременно (отпускание глушит только свой голос; см. <span class="mono">docs/synth-structure.md</span> про rollover клавиатуры). <strong>Стоп</strong> глушит круг и клавиатуру до следующего действия.
-          Базовая страница без теории: <a href="circle-of-fifths.html">circle-of-fifths.html</a>.
+          Это страница про <strong>кварто-квинтовый круг и тональности</strong>. Вы можете выбрать
+          тонику и лад кнопками выше или щёлкнуть по кругу. Тогда на круге и на клавиатуре
+          подсветятся аккорды и ноты выбранной тональности.
+          Если нужен звук, клик по сектору озвучивает аккорд. Режим круга определяет, что будет
+          дальше: аккорд звучит только во время нажатия, фиксируется один аккорд или можно
+          включить несколько аккордов одновременно.
+          Ниже можно выбрать одну из <strong>четырёх клавиатур</strong>. Кнопка <strong>grey</strong>
+          затемняет клавиши вне тональности, чтобы нужные ноты было легче видеть. Режимы
+          клавиатуры определяют способ нажатия и удержания нот, а слева находятся настройки
+          генератора звука: громкость, тембр, обертоны и угасание.
         </p>
 
         <section class="cts-theory-panel" aria-label="Выбор тональности: тоника и лад">
-          <h2>Тональность (подсветка на круге)</h2>
+          <h2>Выбор тональности</h2>
           <div class="cts-row">
             <span class="cts-row-label">Тоника</span>
             <div id="cts-tonic-group" class="cts-row" style="margin-bottom: 0" role="group" aria-label="Тоника">
@@ -137,13 +144,13 @@
             </label>
           </div>
           <div class="cts-row cts-mode">
-            <span class="cts-row-label">Клик по сектору круга</span>
+            <span class="cts-row-label">Клик по кругу</span>
             <div id="cts-click-mode" class="cts-row" style="margin-bottom: 0">
-              <button type="button" class="cts-toggle" data-click-mode="toggle" aria-pressed="true">
-                Только выделение сектора (тональность не меняется)
-              </button>
               <button type="button" class="cts-toggle" data-click-mode="tonic" aria-pressed="false">
-                Задать тональность по подписи (тоника и лад)
+                Выделить тональность
+              </button>
+              <button type="button" class="cts-toggle" data-click-mode="toggle" aria-pressed="true">
+                Озвучить аккорд
               </button>
             </div>
           </div>
@@ -266,9 +273,15 @@
         </section>
 
         <p class="cof-hint">
-          В режиме «Задать тональность…» клик по <strong>внешнему</strong> сектору задаёт <strong>мажорную</strong> тональность по корню подписи; по <strong>внутреннему</strong> — <strong>натуральный минор</strong> (для «Am» тоника A). Учитывается «A / B».
-          По умолчанию зелёным подсвечиваются только спицы <strong>IV–I–V</strong> по внешнему кольцу (относительный мажор в режиме нат. минора). Галочка выше — также седьмая диатоническая триада вне этой тройки. Подробнее — <span class="mono">docs/music-theory.md</span>.
-          Подписи на кольцах заданы в коде (как в <span class="mono">lib/music-theory.js</span>, константы <span class="mono">CIRCLE_OF_FIFTHS_*</span>); разбор корня рассчитан на имя ноты и суффикс <strong>m</strong> у минора; обозначения вроде <strong>Bdim</strong>, <strong>C7</strong>, <strong>Am7</strong> не гарантируются.
+          В режиме <strong>«Выделить тональность»</strong> клик по <strong>внешнему</strong> кольцу
+          выбирает <strong>мажорную</strong> тональность, а по <strong>внутреннему</strong> —
+          <strong>натуральный минор</strong>. В режиме <strong>«Озвучить аккорд»</strong> текущая
+          тональность не меняется: круг просто проигрывает аккорд выбранного сектора.
+          Зелёная подсветка показывает основные аккорды выбранной тональности. Если включить
+          галочку выше, к ним добавится ещё один аккорд из тональности вне основной тройки.
+          Если нужен просто классический круг без выбора тональности, откройте
+          <a href="circle-of-fifths.html">circle-of-fifths.html</a>. Более подробное объяснение
+          есть в <a href="../docs/music-theory.md">music-theory.md</a>.
         </p>
       </div>
     </div>
