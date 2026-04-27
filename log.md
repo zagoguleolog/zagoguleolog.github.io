@@ -1,5 +1,9 @@
 # Журнал
 
+## 2026-04-27
+
+- 2026-04-27 20:28 — Добавлена мобильная fullscreen-копия страницы септаккордов: [`app/seventh-chords-mobile.html`](app/seventh-chords-mobile.html), [`app/seventh-chords-mobile.mjs`](app/seventh-chords-mobile.mjs), [`app/seventh-chords-mobile.css`](app/seventh-chords-mobile.css). Макет — один горизонтальный экран без прокрутки: верхняя строка звука (громкость, угасание 30 мс, смесь обертонов, детюн), левый столбец шести типов септаккордов, центральная клавиатура, нижний выбор linear/piano/bayiano/bayiano4; «Голоса» и «Артикуляция» скрыты, дефолт `holdPoly`. Исправлены ключи добавочных голосов септаккордов в desktop/mobile (ERR-008), обновлены навигация, карта сайта, `docs/architecture.md`, `docs/synth-ui.md`, `docs/synth-structure.md`, `scripts/verify-http.mjs`. Проверка: `node --check app/seventh-chords-mobile.mjs`, `node --check app/seventh-chords.mjs`, `npm run verify`, `npm run verify:http`.
+
 ## 2026-04-16
 
 - 2026-04-16 08:29 — В [`app/circle-scales.html`](app/circle-scales.html), [`app/circle-scales.mjs`](app/circle-scales.mjs), [`app/circle-scales.css`](app/circle-scales.css), [`app/circle-of-fifths.js`](app/circle-of-fifths.js), [`app/circle-of-fifths.css`](app/circle-of-fifths.css) подписи аккордов на круге сделаны невыделяемыми для mobile long-press; добавлена фиксированная красная кнопка `STOP` поверх страницы, которая останавливает круг и клавиатуры и возвращает клавиатуры в режим удержания; поле `Октава звучания круга` теперь по умолчанию равно `3`. Документация: [`docs/overview.md`](docs/overview.md), [`docs/music-theory.md`](docs/music-theory.md), [`docs/synth-structure.md`](docs/synth-structure.md). Проверка: `npm run verify`.

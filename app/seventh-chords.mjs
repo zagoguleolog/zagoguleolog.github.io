@@ -169,7 +169,7 @@ function syncChordVoices() {
 
     offsets.forEach((semi, idx) => {
       const target = noteNameOctaveFromMidi(baseMidi + semi);
-      const mapKey = `sc7:${voiceKey(target.name, target.octave)}|${chord.id}|${base}|${idx}`;
+      const mapKey = `sc7:${chord.id}:${base}:${idx}|${voiceKey(target.name, target.octave)}`;
       const payload = {
         ...buildPlayPayload(PREFIX, target.name, target.octave),
         mapKey,

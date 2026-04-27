@@ -16,6 +16,7 @@ const SITE_NAV_ENTRIES = [
   { path: 'app/lads2.html', label: 'Лады: три таблицы и арпеджио' },
   { path: 'app/intervals-demo.html', label: 'Интервалы и клавиатура' },
   { path: 'app/seventh-chords.html', label: 'Септаккорды и клавиатура' },
+  { path: 'app/seventh-chords-mobile.html', label: 'Септаккорды fullscreen' },
 ];
 
 export const SITE_NAV_LINKS = SITE_NAV_ENTRIES.map(({ path, label }) => ({

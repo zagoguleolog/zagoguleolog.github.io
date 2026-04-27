@@ -11,6 +11,7 @@ const checks = [
   { path: '/', needType: 'text/html' },
   { path: '/lib/music-theory.js', needType: 'application/javascript' },
   { path: '/app/circle-scales.html', needType: 'text/html' },
+  { path: '/app/seventh-chords-mobile.html', needType: 'text/html' },
   { path: '/theory-tables.html', needType: 'text/html' },
 ];
 
@@ -55,6 +56,7 @@ try {
   console.log('Ссылки (вставьте в браузер):');
   console.log(`  ${base}/`);
   console.log(`  ${base}/app/circle-scales.html`);
+  console.log(`  ${base}/app/seventh-chords-mobile.html`);
   console.log(`  ${base}/theory-tables.html`);
   console.log(`  ${base}/lib/music-theory.js`);
   console.log('');

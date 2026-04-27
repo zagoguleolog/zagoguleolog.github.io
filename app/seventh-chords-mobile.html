@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru" data-site-nav-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Септаккорды: мобильный fullscreen</title>
+  <link rel="stylesheet" href="template-synth.css" />
+  <link rel="stylesheet" href="keyboard-piano.css" />
+  <link rel="stylesheet" href="bayan-keyboard.css" />
+  <link rel="stylesheet" href="circle-scales.css" />
+  <link rel="stylesheet" href="seventh-chords-mobile.css" />
+  <link rel="stylesheet" href="../site-nav.css" />
+</head>
+<body>
+  <main class="sc7m-page synth-kit-root cts-synth-root" aria-label="Септаккорды: мобильный fullscreen">
+    <section class="sc7m-soundbar" aria-label="Звук">
+      <h1 class="sc7m-title">Септаккорды</h1>
+
+      <input type="number" id="sc7m-ntg-a4" class="tpl-sr-only" min="1" max="2000" step="0.1" value="440" tabindex="-1" aria-hidden="true" />
+      <input type="number" id="sc7m-ntg-octave-min" class="tpl-sr-only" min="0" max="8" step="1" value="3" tabindex="-1" aria-hidden="true" />
+      <input type="number" id="sc7m-ntg-octave-max" class="tpl-sr-only" min="0" max="8" step="1" value="5" tabindex="-1" aria-hidden="true" />
+      <input type="range" id="sc7m-ntg-volume" class="tpl-sr-only" min="0" max="100" value="25" tabindex="-1" aria-hidden="true" />
+      <input type="range" id="sc7m-ntg-detune" class="tpl-sr-only" min="-50" max="50" value="0" tabindex="-1" aria-hidden="true" />
+      <input type="range" id="sc7m-ntg-harm-mix" class="tpl-sr-only" min="0" max="100" value="40" tabindex="-1" aria-hidden="true" />
+      <input type="range" id="sc7m-ntg-harm-rolloff" class="tpl-sr-only" min="0.3" max="2.5" value="1" step="0.05" tabindex="-1" aria-hidden="true" />
+      <input type="range" id="sc7m-ntg-release-ms" class="tpl-sr-only" min="20" max="5000" value="30" step="10" tabindex="-1" aria-hidden="true" />
+      <select id="sc7m-ntg-waveform" class="tpl-sr-only" tabindex="-1" aria-hidden="true">
+        <option value="sine" selected>Синусоида</option>
+        <option value="triangle">Треугольник</option>
+        <option value="square">Квадрат</option>
+        <option value="sawtooth">Пила</option>
+      </select>
+      <div id="sc7m-ntg-harmonics" class="sc7m-hidden-harmonics" aria-hidden="true"></div>
+
+      <div class="sc7m-sound-controls">
+        <div class="sc7m-kit-cell">
+          <span class="sc7m-control-label">Громк.</span>
+          <div id="sc7m-ntg-mount-volume"></div>
+          <div id="sc7m-ntg-seg-volume"></div>
+        </div>
+        <div class="sc7m-kit-cell">
+          <span class="sc7m-control-label">Угас.</span>
+          <div id="sc7m-ntg-mount-release"></div>
+          <p class="sc7m-release-label"><strong id="sc7m-ntg-release-ms-val">30 мс</strong></p>
+        </div>
+        <div class="sc7m-kit-cell">
+          <span class="sc7m-control-label">Смесь</span>
+          <div id="sc7m-ntg-mount-harm-mix"></div>
+          <div id="sc7m-ntg-seg-harm-mix"></div>
+        </div>
+        <div class="sc7m-kit-cell">
+          <span class="sc7m-control-label">Детюн</span>
+          <div id="sc7m-ntg-mount-detune"></div>
+          <div id="sc7m-ntg-seg-detune"></div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="sc7m-chords" aria-label="Типы септаккордов">
+      <div id="sc7m-chord-buttons" class="sc7m-chord-buttons" role="group" aria-label="Типы септаккордов"></div>
+    </nav>
+
+    <section class="sc7m-keyboard-panel cts-piano-panel" aria-label="Клавиатура">
+      <div id="sc7m-keyboard-stage" class="sc7m-keyboard-stage cts-keyboard-stage">
+        <div id="sc7m-keys-linear" class="cts-kbd-view">
+          <div class="ntg-keys-wrap" aria-label="Ноты по октавам (линейная раскладка)"></div>
+        </div>
+        <div id="sc7m-keys-piano" class="cts-kbd-view" hidden>
+          <div class="cts-scroll-x">
+            <div class="cts-piano-keyboard" role="group" aria-label="Ноты по октавам (раскладка пиано)"></div>
+          </div>
+        </div>
+        <div id="sc7m-keys-bayiano" class="cts-kbd-view" hidden>
+          <div class="cts-scroll-x cts-bayan-scroll">
+            <div id="sc7m-bayan-wrap" class="cts-bayan-wrap" aria-label="Баян B-system"></div>
+          </div>
+        </div>
+        <div id="sc7m-keys-bayiano4" class="cts-kbd-view" hidden>
+          <div class="cts-scroll-x cts-bayan-scroll">
+            <div
+              id="sc7m-bayan4-wrap"
+              class="cts-bayan-wrap cts-bayan4-wrap"
+              aria-label="Четырёхрядная хроматическая сетка (баян)"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="sc7m-kbdbar" aria-label="Выбор клавиатуры">
+      <span class="sc7m-kbdbar-label" id="sc7m-kbd-toolbar-label">Клавиши</span>
+      <div
+        id="sc7m-kbd-mode-group"
+        class="sc7m-kbd-seg"
+        role="group"
+        aria-labelledby="sc7m-kbd-toolbar-label"
+      >
+        <button type="button" class="sc7m-kbd-btn" data-sc7m-kbd-mode="linear" aria-pressed="true">linear</button>
+        <button type="button" class="sc7m-kbd-btn" data-sc7m-kbd-mode="piano" aria-pressed="false">piano</button>
+        <button type="button" class="sc7m-kbd-btn" data-sc7m-kbd-mode="bayiano" aria-pressed="false">bayiano</button>
+        <button
+          type="button"
+          class="sc7m-kbd-btn"
+          data-sc7m-kbd-mode="bayiano4"
+          aria-pressed="false"
+          title="Четыре ряда (хроматическая сетка мод 4), не B-system"
+        >
+          bayiano4
+        </button>
+      </div>
+      <button type="button" class="sc7m-stop ntg-stop" id="sc7m-ntg-stop">Стоп</button>
+      <button type="button" class="sc7m-fullscreen-btn" id="sc7m-fullscreen-toggle">Fullscreen</button>
+    </footer>
+  </main>
+
+  <div class="sc7m-start" id="sc7m-start-overlay" role="dialog" aria-labelledby="sc7m-start-title" aria-modal="true">
+    <div class="sc7m-start-card">
+      <h2 id="sc7m-start-title">Септаккорды fullscreen</h2>
+      <p>Поверните устройство горизонтально и запустите fullscreen. Страница рассчитана на один экран без прокрутки.</p>
+      <button type="button" id="sc7m-start-button">Открыть fullscreen</button>
+      <button type="button" class="sc7m-start-skip" id="sc7m-start-skip">Продолжить без fullscreen</button>
+      <p class="sc7m-orientation-note" id="sc7m-orientation-note" hidden>Если экран не зафиксировался, поверните устройство горизонтально вручную.</p>
+    </div>
+  </div>
+
+  <script type="module" src="seventh-chords-mobile.mjs"></script>
+</body>
+</html>
