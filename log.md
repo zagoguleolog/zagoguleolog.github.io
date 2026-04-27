@@ -1,5 +1,9 @@
 # Журнал
 
+## 2026-04-27
+
+- 2026-04-27 20:04 UTC — Настроена среда разработки без установки зависимостей: проект не имеет lockfile и npm-зависимостей, локальный static-server запущен через `npm run serve` на `http://127.0.0.1:4173/`. Проверка: `npm run verify`, `npm run verify:http`, ручной smoke в браузере для `/`, `/app/circle-scales.html`, `/theory-tables.html`.
+
 ## 2026-04-16
 
 - 2026-04-16 08:29 — В [`app/circle-scales.html`](app/circle-scales.html), [`app/circle-scales.mjs`](app/circle-scales.mjs), [`app/circle-scales.css`](app/circle-scales.css), [`app/circle-of-fifths.js`](app/circle-of-fifths.js), [`app/circle-of-fifths.css`](app/circle-of-fifths.css) подписи аккордов на круге сделаны невыделяемыми для mobile long-press; добавлена фиксированная красная кнопка `STOP` поверх страницы, которая останавливает круг и клавиатуры и возвращает клавиатуры в режим удержания; поле `Октава звучания круга` теперь по умолчанию равно `3`. Документация: [`docs/overview.md`](docs/overview.md), [`docs/music-theory.md`](docs/music-theory.md), [`docs/synth-structure.md`](docs/synth-structure.md). Проверка: `npm run verify`.
