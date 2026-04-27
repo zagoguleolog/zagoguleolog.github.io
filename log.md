@@ -2,6 +2,8 @@
 
 ## 2026-04-27
 
+- 2026-04-27 20:46 — Исправлена мобильная страница [`app/seventh-chords-mobile.html`](app/seventh-chords-mobile.html): в портретном положении телефона рабочая область теперь остаётся в горизонтальной компоновке через поворот `.sc7m-page`, без пересчёта в вертикальный viewport; кнопки типов септаккордов обрабатывают `pointerdown` / `touchstart` с `click` как fallback. Корневые причины записаны как ERR-009 и ERR-010. Проверка: `node --check app/seventh-chords-mobile.mjs`, `npm run verify`.
+
 - 2026-04-27 20:28 — Добавлена мобильная fullscreen-копия страницы септаккордов: [`app/seventh-chords-mobile.html`](app/seventh-chords-mobile.html), [`app/seventh-chords-mobile.mjs`](app/seventh-chords-mobile.mjs), [`app/seventh-chords-mobile.css`](app/seventh-chords-mobile.css). Макет — один горизонтальный экран без прокрутки: верхняя строка звука (громкость, угасание 30 мс, смесь обертонов, детюн), левый столбец шести типов септаккордов, центральная клавиатура, нижний выбор linear/piano/bayiano/bayiano4; «Голоса» и «Артикуляция» скрыты, дефолт `holdPoly`. Исправлены ключи добавочных голосов септаккордов в desktop/mobile (ERR-008), обновлены навигация, карта сайта, `docs/architecture.md`, `docs/synth-ui.md`, `docs/synth-structure.md`, `scripts/verify-http.mjs`. Проверка: `node --check app/seventh-chords-mobile.mjs`, `node --check app/seventh-chords.mjs`, `npm run verify`, `npm run verify:http`.
 
 ## 2026-04-16

@@ -393,15 +393,21 @@ body {
 
 @media (orientation: portrait) {
   .sc7m-page {
-    filter: saturate(0.72) brightness(0.82);
+    width: 100dvh;
+    height: 100dvw;
+    min-height: 0;
+    transform: rotate(90deg) translateY(-100%);
+    transform-origin: top left;
   }
 
-  .sc7m-start-card::after {
-    content: "Портретная ориентация: поверните экран горизонтально.";
-    display: block;
-    margin-top: 0.75rem;
-    color: #fcd34d;
-    font-size: 0.82rem;
+  .sc7m-start {
+    inset: auto;
+    top: 0;
+    left: 0;
+    width: 100dvh;
+    height: 100dvw;
+    transform: rotate(90deg) translateY(-100%);
+    transform-origin: top left;
   }
 }
 

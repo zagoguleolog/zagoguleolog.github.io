@@ -348,6 +348,14 @@ function renderChordButtons() {
     btn.setAttribute('aria-pressed', 'false');
     btn.title = `${chord.nameRu}: ${chord.intervals.map((iv) => iv.ruShort).join(', ')}`;
     btn.innerHTML = `<span>${chord.ruShort}</span><small>${chord.id}</small>`;
+    btn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      setSelectedChord(chord.id);
+    });
+    btn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      setSelectedChord(chord.id);
+    });
     btn.addEventListener('click', () => setSelectedChord(chord.id));
     group.appendChild(btn);
   }
