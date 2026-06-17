@@ -16,6 +16,7 @@ import {
   frequencyFromMidi,
   frequencyFromNoteNameOctave,
   diatonicTriadRootPcsInKey,
+  diatonicTriadDegreeNumbersInKey,
   relativeMajorTonicNameFromNaturalMinorTonic,
   majorIvRootPcSet,
   referenceMajorTonicForIvIvCluster,
@@ -89,6 +90,19 @@ console.assert(pcsCmaj.size === 7 && pcsAmin.size === 7, 'diatonic triad roots c
 for (const pc of pcsCmaj) {
   console.assert(pcsAmin.has(pc), 'relative C major / A minor same PC set');
 }
+
+console.assert(
+  JSON.stringify(diatonicTriadDegreeNumbersInKey('C', 'major', 0, 'major')) === '[1,3,5]',
+  'C maj triad on C in C major → 1·3·5',
+);
+console.assert(
+  JSON.stringify(diatonicTriadDegreeNumbersInKey('C', 'major', 9, 'minor')) === '[1,3,6]',
+  'Am triad on A in C major → 6·1·3 sorted',
+);
+console.assert(
+  diatonicTriadDegreeNumbersInKey('C', 'major', 1, 'major') == null,
+  'non-diatonic root → null',
+);
 
 console.assert(relativeMajorTonicNameFromNaturalMinorTonic('A') === 'C', 'relative major of A min');
 console.assert(referenceMajorTonicForIvIvCluster('C', 'major') === 'C', 'ref major for C maj');

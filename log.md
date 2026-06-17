@@ -1,5 +1,9 @@
 # Журнал
 
+## 2026-06-17
+
+- 2026-06-17 — GitHub Pages: номера ступеней на выбранном секторе круга (`diatonicTriadDegreeNumbersInKey`, `syncSelectedSectorDegreeLabels`); обновлены `index.html`, `README.md`, `docs/overview.md`, `web/stranichki.html`. Страница: **https://zagoguleolog.github.io/app/circle-scales.html**
+
 ## 2026-04-27
 
 - 2026-04-27 20:46 — Исправлена мобильная страница [`app/seventh-chords-mobile.html`](app/seventh-chords-mobile.html): в портретном положении телефона рабочая область теперь остаётся в горизонтальной компоновке через поворот `.sc7m-page`, без пересчёта в вертикальный viewport; кнопки типов септаккордов обрабатывают `pointerdown` / `touchstart` с `click` как fallback. Корневые причины записаны как ERR-009 и ERR-010. Проверка: `node --check app/seventh-chords-mobile.mjs`, `npm run verify`.
@@ -15,6 +19,10 @@
 - 2026-04-16 07:07 — Страница [`for_dany.html`](for_dany.html) оформлена в стиле Undertale: тёмная тема страницы и навигации (`data-site-nav-theme="dark"`), пиксельный шрифт `Press Start 2P`, локальные SVG-ассеты `assets/for_dany/undertale-logo.svg`, `assets/for_dany/undertale-red-soul.svg`, `assets/for_dany/undertale-flowey.svg`, пиксельные рамки и акцентные кнопки для `tg://proxy`-ссылок. Проверка: ручная сверка HTML, `rg` подтвердил подключение шрифта, тёмной темы и локальных undertale-ассетов.
 
 - 2026-04-16 07:07 — Добавлена страница [`for_dany.html`](for_dany.html) с текстом-инструкцией и пятью `tg://proxy`-ссылками в заданном порядке; в карту сайта [`web/stranichki.html`](web/stranichki.html) добавлена ссылка на новую страницу. Проверка: ручная сверка HTML, `rg` — 5 ссылок `.proxy-link`, запись `for_dany.html` в карте сайта найдена.
+
+## 2026-04-28
+
+- 2026-04-28 18:37 — `README.md`: добавлен раздел «Агент: локальная сеть (LAN)» с последовательной инструкцией для агента (10 шагов): запуск `npm run serve`, проверка порта `4173`, определение `IPv4`, проверка `http://<IPv4>:4173/`, настройка Firewall и self-check `node scripts/verify-http.mjs`.
 
 ## 2026-04-11
 

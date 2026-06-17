@@ -726,6 +726,14 @@ body:has(> .cof-page.cts-wide-page) .cof-sector.is-in-scale.is-selected path {
   stroke: #38bdf8;
 }
 
+body:has(> .cof-page.cts-wide-page) .cof-sector.is-selected text.cof-degree-num {
+  fill: #7dd3fc;
+}
+
+body:has(> .cof-page.cts-wide-page) .cof-sector.is-selected:not(.is-in-scale) text.cof-degree-num {
+  fill: #38bdf8;
+}
+
 body:has(> .cof-page.cts-wide-page) .cof-svg-wrap svg text.cof-empty-msg {
   fill: var(--ntg-muted) !important;
 }

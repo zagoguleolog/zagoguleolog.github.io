@@ -121,6 +121,12 @@ body {
   -webkit-touch-callout: none;
 }
 
+.cof-sector text.cof-degree-num {
+  font-size: 22px;
+  font-weight: 600;
+  fill: var(--cof-accent-border);
+}
+
 .cof-center-disk {
   fill: var(--cof-bg);
   stroke: var(--cof-border);

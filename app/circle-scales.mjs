@@ -10,6 +10,7 @@ import {
   CIRCLE_OF_FIFTHS_INNER_LINE,
   CIRCLE_OF_FIFTHS_OUTER_LINE,
   DEFAULT_A4_HZ,
+  diatonicTriadDegreeNumbersInKey,
   diatonicTriadRootPcsInKey,
   frequencyFromNoteNameOctave,
   isSectorTonalityHighlightOn,
@@ -246,7 +247,59 @@ function applyTonalityHighlight(svg) {
     });
     g.classList.toggle('is-in-scale', on);
   }
+  syncSelectedSectorDegreeLabels(svg);
   syncKeyboardTheoryHighlight();
+}
+
+const COF_DEGREE_NS = 'http://www.w3.org/2000/svg';
+
+/**
+ * На выбранных секторах круга — номера ступеней (1…7) триады в текущей тональности.
+ * @param {SVGElement | null | undefined} svg
+ */
+function syncSelectedSectorDegreeLabels(svg) {
+  if (!svg) return;
+  for (const g of svg.querySelectorAll('.cof-sector')) {
+    const raw = g.dataset.labelRaw ?? '';
+    const rootPc = chordRootPcFromLabel(raw);
+    const sectorKind = g.dataset.kind === 'major' ? 'major' : 'minor';
+    const selected = g.classList.contains('is-selected');
+    const labelText = g.querySelector('text:not(.cof-degree-num)');
+
+    /** @type {SVGElement | null} */
+    let degEl = g.querySelector('text.cof-degree-num');
+
+    if (!selected) {
+      degEl?.remove();
+      continue;
+    }
+
+    const nums =
+      rootPc == null
+        ? null
+        : diatonicTriadDegreeNumbersInKey(state.tonicName, state.keyMode, rootPc, sectorKind);
+    if (nums == null || !labelText) {
+      degEl?.remove();
+      continue;
+    }
+
+    const label = nums.join('·');
+    if (!degEl) {
+      degEl = document.createElementNS(COF_DEGREE_NS, 'text');
+      degEl.setAttribute('class', 'cof-degree-num');
+      degEl.setAttribute('text-anchor', 'middle');
+      degEl.setAttribute('dominant-baseline', 'middle');
+      g.insertBefore(degEl, labelText);
+    }
+    degEl.textContent = label;
+    const lx = labelText.getAttribute('x') ?? '0';
+    const ly = Number(labelText.getAttribute('y') ?? '0');
+    degEl.setAttribute('x', lx);
+    degEl.setAttribute('y', String(ly - 34));
+
+    const ring = sectorKind === 'major' ? 'Внешний сектор' : 'Внутренний сектор';
+    g.setAttribute('aria-label', `${ring}: ${raw}, ступени ${label}`);
+  }
 }
 
 function setExclusivePressed(container, activeEl) {
@@ -930,10 +983,12 @@ function redraw() {
       } else {
         lastLatchSectorId = `${g.dataset.kind}-${g.dataset.index}`;
       }
+      syncSelectedSectorDegreeLabels(svgEl);
       syncChordAudioAndList(svgEl);
     },
     afterDraw(svgEl) {
       applyTonalityHighlight(svgEl);
+      syncSelectedSectorDegreeLabels(svgEl);
       syncChordAudioAndList(svgEl);
     },
   });
