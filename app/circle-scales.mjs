@@ -10,7 +10,7 @@ import {
   CIRCLE_OF_FIFTHS_INNER_LINE,
   CIRCLE_OF_FIFTHS_OUTER_LINE,
   DEFAULT_A4_HZ,
-  diatonicTriadDegreeNumbersInKey,
+  diatonicTriadDegreeLabelInKey,
   diatonicTriadRootPcsInKey,
   frequencyFromNoteNameOctave,
   isSectorTonalityHighlightOn,
@@ -247,58 +247,62 @@ function applyTonalityHighlight(svg) {
     });
     g.classList.toggle('is-in-scale', on);
   }
-  syncSelectedSectorDegreeLabels(svg);
+  syncInScaleDegreeLabels(svg);
   syncKeyboardTheoryHighlight();
 }
 
 const COF_DEGREE_NS = 'http://www.w3.org/2000/svg';
 
+/** @param {SVGGElement} g @param {string} cls @param {string} x @param {number} y @param {string} text */
+function ensureCofDegreeText(g, cls, x, y, text) {
+  /** @type {SVGTextElement | null} */
+  let el = g.querySelector(`text.${cls}`);
+  if (!el) {
+    el = document.createElementNS(COF_DEGREE_NS, 'text');
+    el.setAttribute('class', cls);
+    el.setAttribute('text-anchor', 'middle');
+    el.setAttribute('dominant-baseline', 'middle');
+    g.appendChild(el);
+  }
+  el.textContent = text;
+  el.setAttribute('x', x);
+  el.setAttribute('y', String(y));
+  return el;
+}
+
 /**
- * На выбранных секторах круга — номера ступеней (1…7) триады в текущей тональности.
+ * На секторах с подсветкой «в тональности» (is-in-scale) — римская ступень и функциональное имя.
  * @param {SVGElement | null | undefined} svg
  */
-function syncSelectedSectorDegreeLabels(svg) {
+function syncInScaleDegreeLabels(svg) {
   if (!svg) return;
   for (const g of svg.querySelectorAll('.cof-sector')) {
     const raw = g.dataset.labelRaw ?? '';
     const rootPc = chordRootPcFromLabel(raw);
-    const sectorKind = g.dataset.kind === 'major' ? 'major' : 'minor';
-    const selected = g.classList.contains('is-selected');
-    const labelText = g.querySelector('text:not(.cof-degree-num)');
+    const inScale = g.classList.contains('is-in-scale');
+    const labelText = g.querySelector('text:not(.cof-degree-roman):not(.cof-degree-function)');
 
-    /** @type {SVGElement | null} */
-    let degEl = g.querySelector('text.cof-degree-num');
+    g.querySelector('text.cof-degree-roman')?.remove();
+    g.querySelector('text.cof-degree-function')?.remove();
 
-    if (!selected) {
-      degEl?.remove();
-      continue;
-    }
+    if (!inScale) continue;
 
-    const nums =
-      rootPc == null
-        ? null
-        : diatonicTriadDegreeNumbersInKey(state.tonicName, state.keyMode, rootPc, sectorKind);
-    if (nums == null || !labelText) {
-      degEl?.remove();
-      continue;
-    }
+    const info =
+      rootPc == null ? null : diatonicTriadDegreeLabelInKey(state.tonicName, state.keyMode, rootPc);
+    if (!info || !labelText) continue;
 
-    const label = nums.join('·');
-    if (!degEl) {
-      degEl = document.createElementNS(COF_DEGREE_NS, 'text');
-      degEl.setAttribute('class', 'cof-degree-num');
-      degEl.setAttribute('text-anchor', 'middle');
-      degEl.setAttribute('dominant-baseline', 'middle');
-      g.insertBefore(degEl, labelText);
-    }
-    degEl.textContent = label;
+    const isOuter = g.dataset.kind === 'major';
     const lx = labelText.getAttribute('x') ?? '0';
     const ly = Number(labelText.getAttribute('y') ?? '0');
-    degEl.setAttribute('x', lx);
-    degEl.setAttribute('y', String(ly - 34));
+    const romanY = ly - (isOuter ? 38 : 30);
+    const funcY = ly + (isOuter ? 34 : 28);
 
-    const ring = sectorKind === 'major' ? 'Внешний сектор' : 'Внутренний сектор';
-    g.setAttribute('aria-label', `${ring}: ${raw}, ступени ${label}`);
+    const romanEl = ensureCofDegreeText(g, 'cof-degree-roman', lx, romanY, info.roman);
+    g.insertBefore(romanEl, labelText);
+    ensureCofDegreeText(g, 'cof-degree-function', lx, funcY, info.functionRu);
+
+    const ring = isOuter ? 'Внешний сектор' : 'Внутренний сектор';
+    g.setAttribute('aria-label', `${ring}: ${raw}, ${info.roman}, ${info.functionRu}`);
   }
 }
 
@@ -983,12 +987,10 @@ function redraw() {
       } else {
         lastLatchSectorId = `${g.dataset.kind}-${g.dataset.index}`;
       }
-      syncSelectedSectorDegreeLabels(svgEl);
       syncChordAudioAndList(svgEl);
     },
     afterDraw(svgEl) {
       applyTonalityHighlight(svgEl);
-      syncSelectedSectorDegreeLabels(svgEl);
       syncChordAudioAndList(svgEl);
     },
   });

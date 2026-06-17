@@ -121,10 +121,24 @@ body {
   -webkit-touch-callout: none;
 }
 
-.cof-sector text.cof-degree-num {
-  font-size: 22px;
-  font-weight: 600;
+.cof-sector text.cof-degree-roman {
+  font-size: 20px;
+  font-weight: 700;
   fill: var(--cof-accent-border);
+}
+
+.cof-sector--minor text.cof-degree-roman {
+  font-size: 17px;
+}
+
+.cof-sector text.cof-degree-function {
+  font-size: 13px;
+  font-weight: 500;
+  fill: var(--cof-muted);
+}
+
+.cof-sector--minor text.cof-degree-function {
+  font-size: 11px;
 }
 
 .cof-center-disk {

@@ -17,6 +17,7 @@ import {
   frequencyFromNoteNameOctave,
   diatonicTriadRootPcsInKey,
   diatonicTriadDegreeNumbersInKey,
+  diatonicTriadDegreeLabelInKey,
   relativeMajorTonicNameFromNaturalMinorTonic,
   majorIvRootPcSet,
   referenceMajorTonicForIvIvCluster,
@@ -92,12 +93,27 @@ for (const pc of pcsCmaj) {
 }
 
 console.assert(
-  JSON.stringify(diatonicTriadDegreeNumbersInKey('C', 'major', 0, 'major')) === '[1,3,5]',
-  'C maj triad on C in C major → 1·3·5',
+  diatonicTriadDegreeLabelInKey('C', 'major', 0)?.roman === 'I' &&
+    diatonicTriadDegreeLabelInKey('C', 'major', 0)?.functionRu === 'тоника',
+  'C in C major → I, тоника',
 );
 console.assert(
-  JSON.stringify(diatonicTriadDegreeNumbersInKey('C', 'major', 9, 'minor')) === '[1,3,6]',
-  'Am triad on A in C major → 6·1·3 sorted',
+  diatonicTriadDegreeLabelInKey('C', 'major', 5)?.roman === 'IV' &&
+    diatonicTriadDegreeLabelInKey('C', 'major', 5)?.functionRu === 'субдоминанта',
+  'F in C major → IV, субдоминанта',
+);
+console.assert(
+  diatonicTriadDegreeLabelInKey('C', 'major', 2)?.roman === 'ii',
+  'Dm in C major → ii',
+);
+console.assert(
+  diatonicTriadDegreeLabelInKey('A', 'naturalMinor', 9)?.roman === 'i' &&
+    diatonicTriadDegreeLabelInKey('A', 'naturalMinor', 9)?.functionRu === 'тоника',
+  'Am in A minor → i, тоника',
+);
+console.assert(
+  JSON.stringify(diatonicTriadDegreeNumbersInKey('C', 'major', 0, 'major')) === '[1,3,5]',
+  'C maj triad on C in C major → 1·3·5',
 );
 console.assert(
   diatonicTriadDegreeNumbersInKey('C', 'major', 1, 'major') == null,

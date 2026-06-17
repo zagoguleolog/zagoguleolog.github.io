@@ -2,7 +2,7 @@
 
 ## 2026-06-17
 
-- 2026-06-17 — GitHub Pages: номера ступеней на выбранном секторе круга (`diatonicTriadDegreeNumbersInKey`, `syncSelectedSectorDegreeLabels`); обновлены `index.html`, `README.md`, `docs/overview.md`, `web/stranichki.html`. Страница: **https://zagoguleolog.github.io/app/circle-scales.html**
+- 2026-06-17 — Круг: на **зелёных** секторах диатоники (6 + опционально 2) — римская ступень (**I**, **ii**, **IV** …) и функция (**тоника**, **субдоминанта**, **доминанта** …) относительно выбранной тоники; `diatonicTriadDegreeLabelInKey`, `syncInScaleDegreeLabels`. Страница: **https://zagoguleolog.github.io/app/circle-scales.html**
 
 ## 2026-04-27
 
