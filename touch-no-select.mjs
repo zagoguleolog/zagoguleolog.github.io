@@ -20,6 +20,15 @@ const NO_SELECT_SELECTOR = [
   '.synth-toggle',
   '.synth-matrix__cell',
   '.cof-sector',
+  '.ntg-oct-label',
+  '.cts-piano-oct-label',
+  '.site-nav__home',
+  '.site-nav__toggle',
+  '.cts-keyboard-stage',
+  '.ntg-keys-wrap',
+  '.cts-piano-keyboard',
+  '.cts-bayan-wrap',
+  '.cts-bayan4-wrap',
 ].join(',');
 
 /** @param {EventTarget | null} target */

@@ -1,6 +1,6 @@
 /**
  * Блокировка выделения и iOS callout на интерактивных элементах с подписями
- * (клавиши «C4», кнопки режимов и т.п.). Подключается через site-nav.css.
+ * (клавиши «C4», номера октав, навигация и т.п.). Подключается через site-nav.css.
  */
 
 button,
@@ -27,7 +27,21 @@ button,
 .cof-sector text,
 .cof-sector tspan,
 .cts-bayan-svg text,
-.cts-bayan-row-label {
+.cts-bayan-row-label,
+.ntg-oct-label,
+.cts-piano-oct-label,
+.site-nav__home,
+.site-nav__toggle,
+.cts-keyboard-stage,
+.cts-keyboard-stage *,
+.ntg-keys-wrap,
+.ntg-keys-wrap *,
+.cts-piano-keyboard,
+.cts-piano-keyboard *,
+.cts-bayan-wrap,
+.cts-bayan-wrap *,
+.cts-bayan4-wrap,
+.cts-bayan4-wrap * {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -40,6 +54,8 @@ button,
 .cts-play-key,
 .cts-byan-key,
 [role="button"].cts-byan-key,
+.site-nav__home,
+.site-nav__toggle,
 button:not(.synth-knob):not(.synth-fader__track) {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
