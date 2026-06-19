@@ -210,3 +210,5 @@
 #065 | 2026-06-20 00:09:06 — DONE | Моб.: touch-no-select.css/mjs — блокировка выделения текста на кнопках и клавишах (ERR-011); импорт через site-nav.css, JS из site-nav.mjs и seventh-chords-mobile.mjs. verify OK.
 
 #067 | 2026-06-20 00:38:22 — DONE | Задача 002 пилот: mobile-shell + seventh-chords-mobile swipe (3 экрана)
+
+#068 | 2026-06-20 00:45:00 — DONE | sc7m: пиано white/black, 6 synth-kit, kbdbar справа, scale↑

@@ -56,8 +56,8 @@
               role="group"
               aria-labelledby="sc7m-kbd-toolbar-label"
             >
-              <button type="button" class="sc7m-kbd-btn" data-sc7m-kbd-mode="linear" aria-pressed="true">linear</button>
-              <button type="button" class="sc7m-kbd-btn" data-sc7m-kbd-mode="piano" aria-pressed="false">piano</button>
+              <button type="button" class="sc7m-kbd-btn" data-sc7m-kbd-mode="linear" aria-pressed="false">linear</button>
+              <button type="button" class="sc7m-kbd-btn" data-sc7m-kbd-mode="piano" aria-pressed="true">piano</button>
               <button type="button" class="sc7m-kbd-btn" data-sc7m-kbd-mode="bayiano" aria-pressed="false">bayiano</button>
               <button
                 type="button"
@@ -116,30 +116,38 @@
           <input type="range" id="sc7m-ntg-detune" class="tpl-sr-only" min="-50" max="50" value="0" tabindex="-1" aria-hidden="true" />
           <input type="range" id="sc7m-ntg-harm-mix" class="tpl-sr-only" min="0" max="100" value="40" tabindex="-1" aria-hidden="true" />
           <input type="range" id="sc7m-ntg-harm-rolloff" class="tpl-sr-only" min="0.3" max="2.5" value="1" step="0.05" tabindex="-1" aria-hidden="true" />
-          <input type="range" id="sc7m-ntg-release-ms" class="tpl-sr-only" min="20" max="5000" value="30" step="10" tabindex="-1" aria-hidden="true" />
-          <div id="sc7m-ntg-harmonics" class="sc7m-hidden-harmonics" aria-hidden="true"></div>
+          <input type="range" id="sc7m-ntg-release-ms" class="tpl-sr-only" min="20" max="5000" value="120" step="10" tabindex="-1" aria-hidden="true" />
 
-          <section class="sc7m-soundbar" aria-label="Синтез">
-            <div class="sc7m-sound-controls">
+          <section class="sc7m-soundbar synth-kit-root" aria-label="Синтез">
+            <div class="sc7m-sound-kit">
               <div class="sc7m-kit-cell">
                 <span class="sc7m-control-label">Громк.</span>
                 <div id="sc7m-ntg-mount-volume"></div>
                 <div id="sc7m-ntg-seg-volume"></div>
               </div>
+              <div class="sc7m-harmonics-wrap">
+                <span class="sc7m-control-label">Обертоны</span>
+                <div id="sc7m-ntg-harmonics" role="group" aria-label="Обертоны n=1…16"></div>
+              </div>
               <div class="sc7m-kit-cell">
-                <span class="sc7m-control-label">Угас.</span>
-                <div id="sc7m-ntg-mount-release"></div>
-                <p class="sc7m-release-label"><strong id="sc7m-ntg-release-ms-val">30 мс</strong></p>
+                <span class="sc7m-control-label">Детюн</span>
+                <div id="sc7m-ntg-mount-detune"></div>
+                <div id="sc7m-ntg-seg-detune"></div>
+              </div>
+              <div class="sc7m-kit-cell">
+                <span class="sc7m-control-label">Спад</span>
+                <div id="sc7m-ntg-mount-harm-rolloff"></div>
+                <div id="sc7m-ntg-seg-harm-rolloff"></div>
               </div>
               <div class="sc7m-kit-cell">
                 <span class="sc7m-control-label">Смесь</span>
                 <div id="sc7m-ntg-mount-harm-mix"></div>
                 <div id="sc7m-ntg-seg-harm-mix"></div>
               </div>
-              <div class="sc7m-kit-cell">
-                <span class="sc7m-control-label">Детюн</span>
-                <div id="sc7m-ntg-mount-detune"></div>
-                <div id="sc7m-ntg-seg-detune"></div>
+              <div class="sc7m-kit-cell sc7m-kit-cell--fader">
+                <span class="sc7m-control-label">Угас.</span>
+                <div id="sc7m-ntg-mount-release"></div>
+                <p class="sc7m-release-label">Угасание: <strong id="sc7m-ntg-release-ms-val">120 мс</strong></p>
               </div>
             </div>
           </section>

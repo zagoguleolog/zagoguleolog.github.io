@@ -12,7 +12,6 @@ import {
 } from '../lib/music-theory.js';
 import {
   clamp,
-  HARMONIC_END,
   initToneGenTheory,
   parseVoiceKey,
   ToneGen,
@@ -27,9 +26,7 @@ import {
 } from './computer-keyboard-music.mjs';
 import { createKeyboardSynthController } from './keyboard-synth-controller.mjs';
 import { renderBayanKeyboard } from './bayan-keyboard.mjs';
-import { createFader } from './synth-kit/fader.mjs';
-import { createKnob } from './synth-kit/knob.mjs';
-import { createSegmentDisplay } from './synth-kit/segment-display.mjs';
+import { mountTemplateSynthKit } from './template-synth.mjs';
 import { installTouchNoSelect } from '../touch-no-select.mjs';
 import { mountDeployStampOverlay } from '../deploy-stamp-overlay.mjs';
 import { initMobileShell } from './mobile-shell.mjs';
@@ -214,119 +211,19 @@ function formatReleaseLabel(ms) {
 }
 
 function mountMobileSoundControls() {
-  const volIn = /** @type {HTMLInputElement} */ (field('volume'));
-  const detIn = /** @type {HTMLInputElement} */ (field('detune'));
-  const mixIn = /** @type {HTMLInputElement} */ (field('harm-mix'));
-  const rollIn = /** @type {HTMLInputElement} */ (field('harm-rolloff'));
-  const relIn = /** @type {HTMLInputElement} */ (field('release-ms'));
-  const releaseLabel = /** @type {HTMLElement} */ (field('release-ms-val'));
-
-  const segVol = createSegmentDisplay({
-    mount: field('seg-volume'),
-    value: Number(volIn.value),
-    decimals: 0,
-    width: 3,
-    id: `${PREFIX}seg-display-volume`,
+  mountTemplateSynthKit(PREFIX, {
+    applyVolumeFromUi() {
+      if (!toneEngine) return;
+      toneEngine.setOutputLinear(readToneGenParams(PREFIX).volume);
+    },
+    updateIfPlaying() {
+      if (!toneEngine) return;
+      toneEngine.updateAllPlaying(buildBaseParams(PREFIX));
+      syncChordVoices();
+      kbdController?.syncExecutionHighlight();
+    },
+    formatReleaseLabel,
   });
-  const segDet = createSegmentDisplay({
-    mount: field('seg-detune'),
-    value: Number(detIn.value),
-    decimals: 0,
-    width: 3,
-    id: `${PREFIX}seg-display-detune`,
-  });
-  const segMix = createSegmentDisplay({
-    mount: field('seg-harm-mix'),
-    value: Number(mixIn.value),
-    decimals: 0,
-    width: 3,
-    id: `${PREFIX}seg-display-harm-mix`,
-  });
-  function updateIfPlaying() {
-    if (!toneEngine) return;
-    toneEngine.updateAllPlaying(buildBaseParams(PREFIX));
-    syncChordVoices();
-    kbdController?.syncExecutionHighlight();
-  }
-
-  function applyVolumeFromUi() {
-    if (!toneEngine) return;
-    toneEngine.setOutputLinear(readToneGenParams(PREFIX).volume);
-  }
-
-  createKnob({
-    mount: field('mount-volume'),
-    min: 0,
-    max: 100,
-    value: Number(volIn.value),
-    step: 1,
-    label: 'Громкость',
-    pixelsPerFullRange: 160,
-    id: `${PREFIX}knob-volume`,
-  }).onChange((v) => {
-    volIn.value = String(Math.round(v));
-    segVol.setValue(v);
-    applyVolumeFromUi();
-  });
-
-  createFader({
-    mount: field('mount-release'),
-    min: 20,
-    max: 1000,
-    value: Number(relIn.value),
-    step: 10,
-    pixelsPerFullRange: 120,
-    label: 'Угасание',
-    id: `${PREFIX}fader-release`,
-  }).onChange((v) => {
-    const ms = Math.round(v);
-    relIn.value = String(ms);
-    releaseLabel.textContent = formatReleaseLabel(ms);
-    updateIfPlaying();
-  });
-
-  createKnob({
-    mount: field('mount-harm-mix'),
-    min: 0,
-    max: 100,
-    value: Number(mixIn.value),
-    step: 1,
-    label: 'Смесь обертонов',
-    pixelsPerFullRange: 160,
-    id: `${PREFIX}knob-harm-mix`,
-  }).onChange((v) => {
-    mixIn.value = String(Math.round(v));
-    segMix.setValue(v);
-    updateIfPlaying();
-  });
-
-  createKnob({
-    mount: field('mount-detune'),
-    min: -50,
-    max: 50,
-    value: Number(detIn.value),
-    step: 1,
-    label: 'Детюн',
-    pixelsPerFullRange: 180,
-    id: `${PREFIX}knob-detune`,
-  }).onChange((v) => {
-    detIn.value = String(Math.round(v));
-    segDet.setValue(v);
-    updateIfPlaying();
-  });
-
-  const harmWrap = field('harmonics');
-  harmWrap.replaceChildren();
-  for (let n = 1; n <= HARMONIC_END; n += 1) {
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.dataset.partial = String(n);
-    input.checked = n <= 6;
-    input.tabIndex = -1;
-    harmWrap.appendChild(input);
-  }
-
-  releaseLabel.textContent = formatReleaseLabel(Number(relIn.value));
 }
 
 function setSelectedChord(chordId) {
@@ -630,7 +527,7 @@ function boot() {
   wireHiddenParamChanges();
   wireKeyboardShortcuts();
   rebuildAllKeyboards();
-  setKeyboardLayout('linear');
+  setKeyboardLayout('piano');
 }
 
 if (document.readyState === 'loading') {
