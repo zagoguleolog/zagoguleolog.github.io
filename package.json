@@ -6,6 +6,8 @@
     "serve": "node scripts/static-server.js",
     "verify": "node scripts/verify-theory.js",
     "verify:http": "node scripts/verify-http.mjs",
+    "stamp": "node scripts/stamp-deploy.mjs",
+    "prepare": "node scripts/ensure-git-hooks.mjs",
     "zigzag:gen": "node scripts/generate-zigzag-sequences.mjs",
     "zigzag:analyze": "node scripts/analyze-zigzag-sequences.mjs"
   }

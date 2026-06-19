@@ -31,8 +31,10 @@ import { createFader } from './synth-kit/fader.mjs';
 import { createKnob } from './synth-kit/knob.mjs';
 import { createSegmentDisplay } from './synth-kit/segment-display.mjs';
 import { installTouchNoSelect } from '../touch-no-select.mjs';
+import { mountDeployStampOverlay } from '../deploy-stamp-overlay.mjs';
 
 installTouchNoSelect();
+mountDeployStampOverlay();
 
 initToneGenTheory({
   frequencyFromNoteNameOctave,

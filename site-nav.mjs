@@ -5,8 +5,10 @@
  * GitHub Pages (префикс `/<repo>/`). Полный перечень HTML — `web/stranichki.html`.
  */
 import { installTouchNoSelect } from './touch-no-select.mjs';
+import { mountDeployStampOverlay } from './deploy-stamp-overlay.mjs';
 
 installTouchNoSelect();
+mountDeployStampOverlay();
 const SITE_ROOT = new URL('./', import.meta.url);
 
 function siteHref(relativePath) {

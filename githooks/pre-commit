@@ -1,0 +1,3 @@
+#!/bin/sh
+node scripts/stamp-deploy.mjs
+git add deploy-stamp.mjs
