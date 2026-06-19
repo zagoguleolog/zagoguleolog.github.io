@@ -1,16 +1,5 @@
-# Pipeline
+# Pipeline (stub)
 
-## Стадии
+> Канон при работе из vAIbe-OS vault: `docs/system/pipeline.md` в корне хранилища. Индекс: [README.md](README.md).
 
-1. TICKET — формулировка задачи и критериев.
-2. PLAN — выбор решения и проверка рисков.
-3. IMPLEMENT — реализация изменения.
-4. VERIFY — тесты, линтеры, ручная проверка.
-5. REVIEW — ревью и устранение замечаний.
-6. DOC_UPDATE — синхронизация документации.
-7. RELEASE — подготовка версии.
-
-## Правила переходов
-
-- Нельзя переходить к `REVIEW` без `VERIFY`.
-- Нельзя завершать задачу без `DOC_UPDATE`.
+**Кратко:** TICKET → PLAN → IMPLEMENT → VERIFY → REVIEW → DOC_UPDATE → RELEASE. Задачи vault — `/task-execute`.

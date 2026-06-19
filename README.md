@@ -9,32 +9,16 @@
 ## Структура
 
 ```text
-project_template/
+music/                    ← корень GitHub Pages
 ├── README.md
-├── CONTRIBUTING.md
-├── app/
+├── app/                  ← интерактивные страницы
+├── lib/                  ← music-theory.js, bayan-b-system.js
+├── docs/                 ← domain, architecture, AI_RULES.md
 ├── scripts/
-├── tests/
-├── docs/
-│   ├── AI_RULES.md
-│   ├── overview.md
-│   ├── architecture.md
-│   ├── domain.md
-│   ├── dev-pipeline.md
-│   ├── dev-cheatsheet.md
-│   ├── testing.md
-│   ├── errors.md
-│   └── system/
-│       ├── pipeline.md
-│       ├── development-regulation.md
-│       ├── quality-standard.md
-│       ├── quality-gates.md
-│       ├── commenting-standard.md
-│       ├── versioning.md
-│       └── review-checklist.md
-└── .cursor/
-    └── rules/
+└── tests/ (verify-theory.js)
 ```
+
+Vault: submodule `repositories/music/`; задачи — `Проекты/Музыка/`.
 
 ## Визуализация теории
 
@@ -75,9 +59,17 @@ project_template/
 9. Запустить HTTP-проверку проекта: `node scripts/verify-http.mjs`.
 10. Если всё работает, зафиксировать результат в `ai_log.md` (DONE) и `log.md` (дата, время, что проверено).
 
-## Как использовать
+## vAIbe-OS vault
 
-1. Скопируйте `project_template` в новый репозиторий.
-2. Адаптируйте `docs/overview.md`, `docs/architecture.md`, `docs/domain.md` под предметную область.
-3. Оставьте `docs/system/*` как Source of Truth для процессов и качества.
-4. Настройте правила AI в `.cursor/rules/*` под стек команды.
+Кодовый репозиторий в хранилище: **`repositories/music/`** (submodule → этот remote).
+
+- Задачи vault-проекта «Музыка»: `Проекты/Музыка/Задачи/` (личный, локально).
+- Правила агента при работе из vault: корневой `AGENTS.md`, `docs/workflow.md`.
+- Process layer: vault `docs/system/*`; здесь — [docs/system/README.md](docs/system/README.md) (stub).
+- Логи кода: **`ai_log.md`** / **`log.md`** в этом репо; vault-лог — в корне хранилища.
+
+## Как использовать (standalone)
+
+1. `npm run verify` — проверка теории.
+2. `npm run serve` — локальный сервер (порт 4173).
+3. Домен: `docs/domain.md`, `docs/music-theory.md`; агент: [docs/AI_RULES.md](docs/AI_RULES.md).

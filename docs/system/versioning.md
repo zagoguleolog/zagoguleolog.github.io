@@ -1,13 +1,5 @@
-# Versioning
+# Versioning (stub)
 
-## SemVer
+> Канон в vault: `docs/system/versioning.md`. Индекс: [README.md](README.md).
 
-- MAJOR — несовместимые изменения.
-- MINOR — обратносуместимая функциональность.
-- PATCH — обратносуместимые исправления.
-
-## Changelog
-
-- Фиксируйте только значимые изменения.
-- Группируйте записи по типам: Added, Changed, Fixed, Deprecated, Removed.
-- Каждая запись должна отвечать на вопрос "зачем это изменение".
+**Релизы GitHub Pages:** ветка `main`, корень репо. Vault-результаты задач — `results/v{N}/` в `Проекты/Музыка/Задачи/`.
