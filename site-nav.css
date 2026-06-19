@@ -1,3 +1,5 @@
+@import url("touch-no-select.css");
+
 /* Общая навигация по HTML-страницам music (корень опубликованного сайта или локального сервера разработки). */
 .site-nav {
   position: fixed;

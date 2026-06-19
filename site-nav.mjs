@@ -4,6 +4,9 @@
  * `import.meta.url`, чтобы ссылки работали и при локальном HTTP-сервере разработки и на
  * GitHub Pages (префикс `/<repo>/`). Полный перечень HTML — `web/stranichki.html`.
  */
+import { installTouchNoSelect } from './touch-no-select.mjs';
+
+installTouchNoSelect();
 const SITE_ROOT = new URL('./', import.meta.url);
 
 function siteHref(relativePath) {

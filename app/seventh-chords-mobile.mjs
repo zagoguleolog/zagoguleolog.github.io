@@ -30,6 +30,9 @@ import { renderBayanKeyboard } from './bayan-keyboard.mjs';
 import { createFader } from './synth-kit/fader.mjs';
 import { createKnob } from './synth-kit/knob.mjs';
 import { createSegmentDisplay } from './synth-kit/segment-display.mjs';
+import { installTouchNoSelect } from '../touch-no-select.mjs';
+
+installTouchNoSelect();
 
 initToneGenTheory({
   frequencyFromNoteNameOctave,

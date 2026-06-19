@@ -1,0 +1,46 @@
+/**
+ * Блокировка выделения и iOS callout на интерактивных элементах с подписями
+ * (клавиши «C4», кнопки режимов и т.п.). Подключается через site-nav.css.
+ */
+
+button,
+[role="button"],
+.ntg-key,
+.cts-pkey,
+.cts-play-key,
+.cts-byan-key,
+.cts-chip,
+.cts-toggle,
+.cts-kbd-btn,
+.ntg-seg-btn,
+.ntg-stop,
+.tpl-stop,
+.sc7m-chord-btn,
+.sc7m-kbd-btn,
+.sc7m-stop,
+.sc7m-fullscreen-btn,
+.sc7m-start button,
+.synth-pair__btn,
+.synth-toggle,
+.synth-matrix__cell,
+.cof-sector,
+.cof-sector text,
+.cof-sector tspan,
+.cts-bayan-svg text,
+.cts-bayan-row-label {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.ntg-key,
+.cts-pkey,
+.cts-play-key,
+.cts-byan-key,
+[role="button"].cts-byan-key,
+button:not(.synth-knob):not(.synth-fader__track) {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
