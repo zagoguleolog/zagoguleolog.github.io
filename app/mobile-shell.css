@@ -1,0 +1,148 @@
+/**
+ * Общая оболочка мобильной страницы: псевдо-ландшафт + горизонтальные swipe-экраны.
+ * Подключать на страницах с классом .mobile-shell на корневом контейнере.
+ */
+
+.mobile-shell {
+  --mobile-shell-gap: clamp(0.25rem, 1vmin, 0.55rem);
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100dvh;
+  min-height: 100vh;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.mobile-shell__viewport {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.mobile-shell__track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
+  scrollbar-width: none;
+}
+
+.mobile-shell__track::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-shell__panel {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.mobile-shell__pager {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.2rem 0.45rem max(0.25rem, env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(15, 20, 25, 0.92);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.mobile-shell__counter {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: clamp(0.58rem, 1.8vmin, 0.72rem);
+  font-weight: 600;
+  color: rgba(139, 155, 171, 0.95);
+  min-width: 3.2rem;
+  text-align: center;
+}
+
+.mobile-shell__dots {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.mobile-shell__dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(139, 155, 171, 0.45);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.mobile-shell__dot[aria-current="true"] {
+  background: var(--synth-accent, #5eead4);
+  box-shadow: 0 0 0 1px rgba(94, 234, 212, 0.35);
+}
+
+.mobile-shell__dot:focus-visible {
+  outline: 2px solid var(--synth-focus, #38bdf8);
+  outline-offset: 2px;
+}
+
+/* Псевдо-ландшафт в portrait: не зависит от гироскопа */
+@media (orientation: portrait) {
+  .mobile-shell--landscape-lock {
+    width: 100dvh;
+    height: 100dvw;
+    min-height: 0;
+    transform: rotate(90deg) translateY(-100%);
+    transform-origin: top left;
+  }
+}
+
+/* На широких экранах shell не активируется (класс .mobile-shell--active задаёт JS) */
+@media (min-width: 52.01rem) {
+  .mobile-shell:not(.mobile-shell--force) {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .mobile-shell:not(.mobile-shell--force) .mobile-shell__viewport {
+    overflow: visible;
+  }
+
+  .mobile-shell:not(.mobile-shell--force) .mobile-shell__track {
+    display: block;
+    overflow: visible;
+    scroll-snap-type: none;
+    height: auto;
+  }
+
+  .mobile-shell:not(.mobile-shell--force) .mobile-shell__panel {
+    flex: none;
+    width: auto;
+    height: auto;
+    scroll-snap-align: none;
+  }
+
+  .mobile-shell:not(.mobile-shell--force) .mobile-shell__pager {
+    display: none;
+  }
+}

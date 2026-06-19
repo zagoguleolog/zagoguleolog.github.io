@@ -209,4 +209,4 @@
 
 #065 | 2026-06-20 00:09:06 — DONE | Моб.: touch-no-select.css/mjs — блокировка выделения текста на кнопках и клавишах (ERR-011); импорт через site-nav.css, JS из site-nav.mjs и seventh-chords-mobile.mjs. verify OK.
 
-#066 | 2026-06-20 00:15:12 — DONE | touch-no-select: октавы (.ntg-oct-label), зона клавиатуры, «Главная»/«Меню»; push main.
+#067 | 2026-06-20 00:38:22 — DONE | Задача 002 пилот: mobile-shell + seventh-chords-mobile swipe (3 экрана)

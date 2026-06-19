@@ -32,6 +32,7 @@ import { createKnob } from './synth-kit/knob.mjs';
 import { createSegmentDisplay } from './synth-kit/segment-display.mjs';
 import { installTouchNoSelect } from '../touch-no-select.mjs';
 import { mountDeployStampOverlay } from '../deploy-stamp-overlay.mjs';
+import { initMobileShell } from './mobile-shell.mjs';
 
 installTouchNoSelect();
 mountDeployStampOverlay();
@@ -572,6 +573,15 @@ function wireKeyboardShortcuts() {
 }
 
 function boot() {
+  const shellRoot = document.getElementById('sc7m-root');
+  if (shellRoot) {
+    initMobileShell(shellRoot, {
+      mode: 'always',
+      landscapeLock: true,
+      panelLabels: ['Клавиатура', 'Тип септаккорда', 'Звук и камертон'],
+    });
+  }
+
   renderChordButtons();
   mountMobileSoundControls();
 
