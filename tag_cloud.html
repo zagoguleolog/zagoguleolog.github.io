@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tag Cloud</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin:0; width:100%; height:100%; background:#000; color:#fff; font-family:Arial,Helvetica,sans-serif; }
+  body { display:flex; flex-direction:column; overflow:hidden; }
+  .top { flex:1; min-height:0; display:flex; }
+  .stage { flex:1; min-width:0; position:relative; overflow:hidden; background:#000; }
+  canvas { width:100%; height:100%; display:block; }
+  .panel {
+    width:330px; padding:18px 18px 14px; overflow:auto; border-left:1px solid #222;
+    background:#080808; scrollbar-width:thin;
+  }
+  h1 { font-size:16px; margin:0 0 14px; font-weight:600; }
+  label { display:flex; justify-content:space-between; gap:10px; font-size:12px; margin:12px 0 6px; color:#ccc; }
+  output { color:#fff; font-variant-numeric:tabular-nums; }
+  textarea, input[type=text] {
+    width:100%; color:#fff; background:#111; border:1px solid #333; border-radius:4px;
+    padding:9px; outline:none; font:12px Arial;
+  }
+  textarea { height:105px; resize:vertical; line-height:1.5; }
+  textarea:focus, input:focus { border-color:#666; }
+  input[type=range] { width:100%; accent-color:#fff; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .hint { color:#666; font-size:10px; line-height:1.4; margin-top:5px; }
+  .buttons { display:flex; gap:8px; margin-top:14px; }
+  button {
+    flex:1; border:1px solid #444; background:#151515; color:#fff; border-radius:4px;
+    padding:8px; cursor:pointer;
+  }
+  button:hover { background:#222; }
+  .bottom {
+    height:43px; border-top:1px solid #222; background:#080808; display:flex; align-items:center;
+    padding:0 18px; gap:16px; font-size:12px;
+  }
+  .bottom strong { font-weight:500; white-space:nowrap; }
+  .bottom input { flex:1; }
+  .status { color:#777; min-width:110px; text-align:right; }
+  @media(max-width:800px) {
+    .top { flex-direction:column; }
+    .panel { width:100%; height:45vh; border-left:0; border-top:1px solid #222; }
+    .stage { min-height:45vh; }
+    .bottom { height:auto; min-height:48px; }
+  }
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="stage"><canvas id="cloud"></canvas></div>
+  <aside class="panel">
+    <h1>Tag Cloud</h1>
+
+    <label>Слова <output id="wordCount"></output></label>
+    <textarea id="words">NDI SRT RTMP RTSP HDMI SDI XLR RCA OSC MIDI DMX WebRTC HTTP</textarea>
+
+    <label>Масштаб облака <output data-out="scale"></output></label>
+    <input id="scale" type="range" min="50" max="180" value="100">
+
+    <label>Расстояние между словами <output data-out="gap"></output></label>
+    <input id="gap" type="range" min="0" max="70" value="14">
+
+    <label>Размер текста <output data-out="size"></output></label>
+    <input id="size" type="range" min="10" max="90" value="32">
+
+    <label>Разброс размера <output data-out="sizeVar"></output></label>
+    <input id="sizeVar" type="range" min="0" max="100" value="55">
+
+    <div class="row">
+      <div>
+        <label>Поворот <output data-out="rotation"></output></label>
+        <input id="rotation" type="range" min="-180" max="180" value="0">
+      </div>
+      <div>
+        <label>Разброс поворота <output data-out="rotationVar"></output></label>
+        <input id="rotationVar" type="range" min="0" max="180" value="35">
+      </div>
+    </div>
+
+    <label>Плотность облака <output data-out="density"></output></label>
+    <input id="density" type="range" min="30" max="150" value="100">
+
+    <label>Прозрачность текста <output data-out="opacity"></output></label>
+    <input id="opacity" type="range" min="10" max="100" value="100">
+
+    <label>Разброс яркости <output data-out="brightnessVar"></output></label>
+    <input id="brightnessVar" type="range" min="0" max="100" value="30">
+
+    <label>Цвета</label>
+    <input id="colors" type="text" value="ffffff,dddddd,aaaaaa,888888">
+    <div class="hint">HEX без #. Например: ffffff,ffcc00,55aaff</div>
+
+    <div class="row">
+      <div>
+        <label>Скорость дыхания <output data-out="speed"></output></label>
+        <input id="speed" type="range" min="0" max="100" value="30">
+      </div>
+      <div>
+        <label>Амплитуда <output data-out="breath"></output></label>
+        <input id="breath" type="range" min="0" max="100" value="22">
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button id="randomize">Пересобрать</button>
+      <button id="pause">Пауза</button>
+    </div>
+  </aside>
+</div>
+
+<div class="bottom">
+  <strong>Степень анимированности: <output id="animOut">30</output></strong>
+  <input id="animation" type="range" min="0" max="100" value="30">
+  <div class="status" id="status">дыхание облака</div>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('cloud');
+  const ctx = canvas.getContext('2d');
+  const stage = canvas.parentElement;
+  const $ = id => document.getElementById(id);
+  let W=0,H=0,dpr=1, paused=false, seed=0, words=[], particles=[];
+  const TAU=Math.PI*2;
+
+  const params = {
+    scale:100,gap:14,size:32,sizeVar:55,rotation:0,rotationVar:35,
+    density:100,opacity:100,brightnessVar:30,speed:30,breath:22,animation:30
+  };
+
+  function sync(){
+    Object.keys(params).forEach(k => {
+      const el=$(k);
+      if(el) params[k]=+el.value;
+      const out=document.querySelector(`[data-out="${k}"]`);
+      if(out) out.textContent = k==='rotation' ? `${params[k]}°` : k==='opacity' ? `${params[k]}%` : `${params[k]}${['scale','sizeVar','rotationVar','density','brightnessVar','speed','breath'].includes(k)?'%':''}`;
+    });
+    $('animOut').textContent=params.animation;
+  }
+
+  function resize(){
+    const r=stage.getBoundingClientRect();
+    dpr=Math.min(devicePixelRatio||1,2);
+    W=r.width; H=r.height;
+    canvas.width=W*dpr; canvas.height=H*dpr;
+    canvas.style.width=W+'px'; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    build();
+  }
+
+  function mulberry32(a){
+    return function(){ let t=a+=0x6D2B79F5; t=Math.imul(t^t>>>15,t|1); t^=t+Math.imul(t^t>>>7,t|61); return ((t^t>>>14)>>>0)/4294967296; }
+  }
+
+  function parseWords(){
+    return $('words').value.split(/[\s,;]+/).map(x=>x.trim()).filter(Boolean);
+  }
+
+  function colorBrightness(hex, factor){
+    let n=parseInt(hex,16); if(!Number.isFinite(n)) return '#fff';
+    let r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+    r=Math.max(0,Math.min(255,Math.round(r*factor)));
+    g=Math.max(0,Math.min(255,Math.round(g*factor)));
+    b=Math.max(0,Math.min(255,Math.round(b*factor)));
+    return `rgb(${r},${g},${b})`;
+  }
+
+  function build(){
+    const rng=mulberry32(++seed);
+    const raw=parseWords();
+    $('wordCount').textContent=raw.length+' слов';
+    const colors=$('colors').value.split(',').map(s=>s.trim().replace('#','')).filter(Boolean);
+    particles=[];
+    const baseScale=params.scale/100;
+    const maxCount=Math.max(raw.length, Math.round(raw.length*(params.density/100)));
+    for(let i=0;i<maxCount;i++){
+      const text=raw[i%raw.length];
+      const size=params.size*baseScale*(1 + (rng()*2-1)*(params.sizeVar/100)*.65);
+      const angle=(params.rotation + (rng()*2-1)*params.rotationVar)*Math.PI/180;
+      const radial=Math.sqrt(rng()) * Math.min(W,H)*.43*(1.25-baseScale*.25);
+      const a=rng()*TAU;
+      const bright=1 + (rng()*2-1)*(params.brightnessVar/100)*.65;
+      const col=colors.length?colorBrightness(colors[i%colors.length],bright):'#fff';
+      particles.push({
+        text,size,angle,col,
+        x:Math.cos(a)*radial, y:Math.sin(a)*radial*.68,
+        phase:rng()*TAU, breath:rng()*.7+.65,
+        drift:(rng()*2-1)*.8
+      });
+    }
+  }
+
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    const anim=params.animation/100;
+    const amp=params.breath/100;
+    const speed=.00015*params.speed;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+
+    // Sort approximately by size for a visually soft cloud.
+    const list=particles.slice().sort((a,b)=>a.size-b.size);
+    for(const p of list){
+      const breathe=1 + Math.sin(t*speed*p.breath+p.phase)*amp*.055*anim;
+      const move=anim*amp;
+      const x=W/2+p.x*params.scale/100 + Math.sin(t*.00025+p.phase)*move*2;
+      const y=H/2+p.y*params.scale/100 + Math.cos(t*.00021+p.phase*.7)*move*1.5;
+      ctx.save();
+      ctx.translate(x,y);
+      ctx.rotate(p.angle + Math.sin(t*.00018+p.phase)*.002*anim);
+      ctx.scale(breathe,breathe);
+      ctx.font=`600 ${p.size}px Arial, Helvetica, sans-serif`;
+      ctx.globalAlpha=params.opacity/100;
+      ctx.fillStyle=p.col;
+      ctx.fillText(p.text,0,0);
+      ctx.restore();
+    }
+    if(!paused) requestAnimationFrame(draw);
+  }
+
+  document.querySelectorAll('input[type=range]').forEach(el=>{
+    el.addEventListener('input',()=>{ sync(); if(el.id==='animation') return; build(); });
+  });
+  $('words').addEventListener('input',build);
+  $('colors').addEventListener('change',build);
+  $('randomize').addEventListener('click',build);
+  $('pause').addEventListener('click',()=>{
+    paused=!paused; $('pause').textContent=paused?'Продолжить':'Пауза';
+    if(!paused) requestAnimationFrame(draw);
+  });
+  new ResizeObserver(resize).observe(stage);
+  sync(); resize(); requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>
