@@ -1,5 +1,7 @@
 # zagoguleolog.github.io
 
+**Серверы (канон workspace):** [server-instances.md](../server-instances.md) — если зеркало/файлы на VPS; основной publish — GitHub Pages ниже. Remote SSH на ACTIVE lean запрещён.
+
 Сайт музыкальной теории. Публичная версия: **https://zagoguleolog.github.io/**
 
 ## GitHub Pages
